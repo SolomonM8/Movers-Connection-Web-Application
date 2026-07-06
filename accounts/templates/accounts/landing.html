@@ -1,16 +1,46 @@
 {% extends "base.html" %}
 {% block title %}Movers Connection{% endblock %}
 {% block main %}
-<main class="full-bleed">
-  <div class="choice-grid">
-    <a class="choice-option option-a" href="{% url 'accounts:login' %}">
-      <span class="choice-title">Existing User</span>
-      <span class="choice-subtitle">Log in to your account</span>
-    </a>
-    <a class="choice-option option-b" href="{% url 'accounts:register' %}">
-      <span class="choice-title">New User</span>
-      <span class="choice-subtitle">Create a driver or laborer account</span>
-    </a>
-  </div>
+<main class="landing-page">
+  <section class="hero">
+    <h1>Find Trustworthy Day Labor. Every Time.</h1>
+    <p class="hero-subtitle">
+      Movers Connection connects moving companies and drivers with day-labor
+      crews for out-of-town jobs &mdash; with reviews built in, so you know who
+      you're working with before the job even starts.
+    </p>
+  </section>
+
+  <section class="features">
+    <div class="feature-card">
+      <span class="feature-icon">🚚</span>
+      <h3>For Drivers &amp; Companies</h3>
+      <p>Post a job when you need extra hands on the road, and hire crews with a proven track record.</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">💪</span>
+      <h3>For Laborers &amp; Crews</h3>
+      <p>Find day-labor jobs out of town and build a reputation that gets you hired again.</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">⭐</span>
+      <h3>Built-In Reviews</h3>
+      <p>Every job comes with a review, so good work gets recognized and problems don't get repeated.</p>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <h2>Ready to get started?</h2>
+    <div class="cta-buttons">
+      <a class="cta-option option-a" href="{% url 'accounts:login' %}">
+        <span class="choice-title">Existing User</span>
+        <span class="choice-subtitle">Log in to your account</span>
+      </a>
+      <a class="cta-option option-b" href="{% url 'accounts:register' %}">
+        <span class="choice-title">New User</span>
+        <span class="choice-subtitle">Create a driver or laborer account</span>
+      </a>
+    </div>
+  </section>
 </main>
 {% endblock %}

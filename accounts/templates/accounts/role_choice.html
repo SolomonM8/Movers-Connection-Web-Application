@@ -1,8 +1,14 @@
 {% extends "base.html" %}
 {% block title %}Create an Account - Movers Connection{% endblock %}
 {% block main %}
-<main class="full-bleed">
-  <div class="choice-grid">
+<main>
+  <div class="landing-page">
+    <section class="hero">
+      <h1>What type of account do you need?</h1>
+      <p class="hero-subtitle">Choose the option that matches what you're looking for. You can add more details to your profile after signing up.</p>
+    </section>
+  </div>
+  <div class="choice-grid choice-grid--compact">
     <a class="choice-option option-a" href="{% url 'accounts:register_driver' %}">
       <span class="choice-title">Driver / Company</span>
       <span class="choice-subtitle">I'm looking for day labor out of town</span>
