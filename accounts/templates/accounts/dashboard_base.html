@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{% block dashboard_title %}Dashboard{% endblock %}</h1>
+<p>Welcome back, {{ user.username }}.</p>
+{% block dashboard_content %}{% endblock %}
+{% endblock %}
