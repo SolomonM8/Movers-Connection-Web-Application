@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Sign Up - Movers Connection{% endblock %}
+{% block content %}
+<h1>{{ role_label }} Sign Up</h1>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Create Account</button>
+</form>
+<p class="helper-link">Already have an account? <a href="{% url 'accounts:login' %}">Log in here</a>.</p>
+{% endblock %}

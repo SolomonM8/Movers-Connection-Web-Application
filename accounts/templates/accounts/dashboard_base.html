@@ -1,6 +1,8 @@
 {% extends "base.html" %}
-{% block content %}
-<h1>{% block dashboard_title %}Dashboard{% endblock %}</h1>
-<p>Welcome back, {{ user.username }}.</p>
-{% block dashboard_content %}{% endblock %}
+{% block main %}
+<main class="wide-card">
+  <h1>{% block dashboard_title %}Dashboard{% endblock %}</h1>
+  <p>Welcome back, {{ user.email }}.</p>
+  {% block dashboard_content %}{% endblock %}
+</main>
 {% endblock %}

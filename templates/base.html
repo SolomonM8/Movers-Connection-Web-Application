@@ -5,29 +5,204 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}Movers Connection{% endblock %}</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; background: #f5f5f5; color: #222; }
-    nav { background: #1f2a44; color: #fff; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
-    nav a { color: #fff; text-decoration: none; margin-right: 1rem; }
-    nav a:hover { text-decoration: underline; }
-    nav form { display: inline; }
-    nav button { background: none; border: 1px solid #fff; color: #fff; padding: 0.3rem 0.8rem; border-radius: 4px; cursor: pointer; }
-    main { max-width: 700px; margin: 2rem auto; background: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
-    .errorlist { color: #b00020; }
+    :root {
+      --color-primary: #1656d6;
+      --color-primary-dark: #0f3fa8;
+      --color-primary-light: #eaf1ff;
+      --color-text: #10203a;
+      --color-muted: #5b6b8c;
+      --color-border: #d7e3fb;
+      --nav-height: 3.5rem;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      margin: 0;
+      background: #ffffff;
+      color: var(--color-text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    nav {
+      min-height: var(--nav-height);
+      background: var(--color-primary);
+      color: #fff;
+      padding: 0.6rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem 1rem;
+    }
+
+    nav a.brand {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    nav .nav-links { display: flex; align-items: center; gap: 0.75rem; }
+
+    nav .nav-links a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 0.95rem;
+    }
+
+    nav .nav-links a:hover { text-decoration: underline; }
+
+    nav .user-info { font-size: 0.9rem; opacity: 0.9; }
+
+    nav button {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.7);
+      color: #fff;
+      padding: 0.35rem 0.9rem;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    nav button:hover { background: rgba(255,255,255,0.15); }
+
+    main.card {
+      max-width: 480px;
+      margin: 2rem auto;
+      background: #fff;
+      padding: 2rem;
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(22, 86, 214, 0.08);
+    }
+
+    main.wide-card {
+      max-width: 700px;
+      margin: 2rem auto;
+      background: #fff;
+      padding: 2rem;
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(22, 86, 214, 0.08);
+    }
+
+    main.full-bleed {
+      margin: 0;
+      padding: 0;
+      min-height: calc(100vh - var(--nav-height));
+    }
+
+    h1 { font-size: 1.5rem; margin-top: 0; }
+
+    .errorlist { color: #c0362c; list-style: none; padding: 0; font-size: 0.9rem; }
+
     ul.messages { list-style: none; padding: 0; }
-    ul.messages li { padding: 0.5rem; background: #e6f4ea; border-radius: 4px; margin-bottom: 0.5rem; }
-    label { display: block; margin-top: 0.75rem; font-weight: bold; }
-    input, select { width: 100%; padding: 0.4rem; margin-top: 0.25rem; box-sizing: border-box; }
-    button[type="submit"] { margin-top: 1.25rem; padding: 0.5rem 1.25rem; background: #1f2a44; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+    ul.messages li {
+      padding: 0.6rem 0.9rem;
+      background: var(--color-primary-light);
+      color: var(--color-primary-dark);
+      border-radius: 8px;
+      margin: 1rem 1.25rem 0;
+    }
+
+    label { display: block; margin-top: 0.9rem; font-weight: 600; font-size: 0.9rem; color: var(--color-text); }
+
+    input, select {
+      width: 100%;
+      padding: 0.6rem 0.7rem;
+      margin-top: 0.3rem;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      font-size: 1rem;
+      background: #fff;
+      color: var(--color-text);
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px var(--color-primary-light);
+    }
+
+    button[type="submit"], .btn-primary {
+      display: inline-block;
+      margin-top: 1.5rem;
+      padding: 0.75rem 1.5rem;
+      background: var(--color-primary);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      text-align: center;
+      text-decoration: none;
+      width: 100%;
+    }
+
+    button[type="submit"]:hover, .btn-primary:hover { background: var(--color-primary-dark); }
+
+    p.helper-link { font-size: 0.9rem; color: var(--color-muted); }
+    p.helper-link a { color: var(--color-primary); font-weight: 600; text-decoration: none; }
+    p.helper-link a:hover { text-decoration: underline; }
+
+    /* Giant choice buttons used on the landing and role-choice pages */
+    .choice-grid {
+      display: flex;
+      flex-direction: column;
+      min-height: calc(100vh - var(--nav-height));
+    }
+
+    .choice-option {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      transition: background 0.15s ease;
+    }
+
+    .choice-option .choice-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .choice-option .choice-subtitle {
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+
+    .choice-option.option-a {
+      background: var(--color-primary);
+      color: #fff;
+    }
+    .choice-option.option-a:hover { background: var(--color-primary-dark); }
+
+    .choice-option.option-b {
+      background: #fff;
+      color: var(--color-primary);
+      border-top: 2px solid var(--color-border);
+    }
+    .choice-option.option-b:hover { background: var(--color-primary-light); }
+
+    @media (min-width: 700px) {
+      .choice-grid { flex-direction: row; }
+      .choice-option.option-b { border-top: none; border-left: 2px solid var(--color-border); }
+    }
   </style>
 </head>
 <body>
   <nav>
-    <div>
-      <a href="{% url 'accounts:dashboard' %}">Movers Connection</a>
-    </div>
-    <div>
+    <a class="brand" href="{% url 'landing' %}">Movers Connection</a>
+    <div class="nav-links">
       {% if user.is_authenticated %}
-        <span>{{ user.username }} &middot; {{ user.get_role_display }}</span>
+        <span class="user-info">{{ user.email }} &middot; {{ user.get_role_display }}</span>
         <form action="{% url 'accounts:logout' %}" method="post">
           {% csrf_token %}
           <button type="submit">Log out</button>
@@ -38,13 +213,15 @@
       {% endif %}
     </div>
   </nav>
-  <main>
-    {% if messages %}
-      <ul class="messages">
-        {% for message in messages %}<li>{{ message }}</li>{% endfor %}
-      </ul>
-    {% endif %}
+  {% if messages %}
+    <ul class="messages">
+      {% for message in messages %}<li>{{ message }}</li>{% endfor %}
+    </ul>
+  {% endif %}
+  {% block main %}
+  <main class="card">
     {% block content %}{% endblock %}
   </main>
+  {% endblock %}
 </body>
 </html>

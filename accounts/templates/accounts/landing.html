@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Movers Connection{% endblock %}
+{% block main %}
+<main class="full-bleed">
+  <div class="choice-grid">
+    <a class="choice-option option-a" href="{% url 'accounts:login' %}">
+      <span class="choice-title">Existing User</span>
+      <span class="choice-subtitle">Log in to your account</span>
+    </a>
+    <a class="choice-option option-b" href="{% url 'accounts:register' %}">
+      <span class="choice-title">New User</span>
+      <span class="choice-subtitle">Create a driver or laborer account</span>
+    </a>
+  </div>
+</main>
+{% endblock %}

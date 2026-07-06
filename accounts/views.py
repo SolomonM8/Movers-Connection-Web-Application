@@ -5,14 +5,32 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, TemplateView
 
-from .forms import RoleRestrictedUserCreationForm
+from .forms import DriverSignUpForm, LaborerSignUpForm
 from .models import User
 
 
-class RegisterView(CreateView):
-    form_class = RoleRestrictedUserCreationForm
-    template_name = "accounts/register.html"
+class LandingView(TemplateView):
+    template_name = "accounts/landing.html"
+
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect("accounts:dashboard")
+        return super().get(request, *args, **kwargs)
+
+
+class RoleChoiceView(TemplateView):
+    template_name = "accounts/role_choice.html"
+
+
+class CustomLoginView(LoginView):
+    template_name = "accounts/login.html"
+
+
+class DriverSignUpView(CreateView):
+    form_class = DriverSignUpForm
+    template_name = "accounts/signup_form.html"
     success_url = reverse_lazy("accounts:dashboard")
+    extra_context = {"role_label": "Driver / Moving Company"}
 
     def form_valid(self, form):
         response = super().form_valid(form)
@@ -20,8 +38,16 @@ class RegisterView(CreateView):
         return response
 
 
-class CustomLoginView(LoginView):
-    template_name = "accounts/login.html"
+class LaborerSignUpView(CreateView):
+    form_class = LaborerSignUpForm
+    template_name = "accounts/signup_form.html"
+    success_url = reverse_lazy("accounts:dashboard")
+    extra_context = {"role_label": "Laborer / Labor Group"}
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        login(self.request, self.object)
+        return response
 
 
 def dashboard_redirect(request):

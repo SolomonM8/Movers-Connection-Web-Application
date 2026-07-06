@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Create an Account - Movers Connection{% endblock %}
+{% block main %}
+<main class="full-bleed">
+  <div class="choice-grid">
+    <a class="choice-option option-a" href="{% url 'accounts:register_driver' %}">
+      <span class="choice-title">Driver / Company</span>
+      <span class="choice-subtitle">I'm looking for day labor out of town</span>
+    </a>
+    <a class="choice-option option-b" href="{% url 'accounts:register_laborer' %}">
+      <span class="choice-title">Laborer / Labor Group</span>
+      <span class="choice-subtitle">I'm looking for day labor jobs</span>
+    </a>
+  </div>
+</main>
+{% endblock %}
