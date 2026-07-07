@@ -7,7 +7,24 @@
     <div class="hero-blob blob-2"></div>
     <div class="hero-blob blob-3"></div>
     <div class="hero-content">
-      <h1>Find Trustworthy Day Labor. Every Time.</h1>
+      <div class="hero-heading">
+        {% include "includes/icon-shield.svg" %}
+        <h1>Find Trustworthy Day Labor. Every Time.</h1>
+      </div>
+
+      <div class="hero-cta-buttons">
+        <a class="hero-cta option-a" href="{% url 'accounts:login' %}">
+          {% include "includes/icon-login.svg" %}
+          <span class="choice-title">Existing User</span>
+          <span class="choice-subtitle">Log in to your account</span>
+        </a>
+        <a class="hero-cta option-b" href="{% url 'accounts:register' %}">
+          {% include "includes/icon-user-plus.svg" %}
+          <span class="choice-title">New User</span>
+          <span class="choice-subtitle">Create a driver or laborer account</span>
+        </a>
+      </div>
+
       <p class="hero-subtitle">
         Movers Connection connects moving companies and drivers with day-labor
         crews for out-of-town jobs &mdash; with reviews built in, so you know who
@@ -32,20 +49,6 @@
       <span class="feature-icon">⭐</span>
       <h3>Built-In Reviews</h3>
       <p>Every job comes with a review, so good work gets recognized and problems don't get repeated.</p>
-    </div>
-  </section>
-
-  <section class="cta-section">
-    <h2>Ready to get started?</h2>
-    <div class="cta-buttons">
-      <a class="cta-option option-a" href="{% url 'accounts:login' %}">
-        <span class="choice-title">Existing User</span>
-        <span class="choice-subtitle">Log in to your account</span>
-      </a>
-      <a class="cta-option option-b" href="{% url 'accounts:register' %}">
-        <span class="choice-title">New User</span>
-        <span class="choice-subtitle">Create a driver or laborer account</span>
-      </a>
     </div>
   </section>
 </main>

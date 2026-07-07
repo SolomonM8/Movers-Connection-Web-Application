@@ -1,0 +1,5 @@
+<svg class="icon-inline cta-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <circle cx="9.5" cy="8" r="3.4" stroke="currentColor" stroke-width="1.7"/>
+  <path d="M3 20.5c0-3.6 2.9-6.2 6.5-6.2s6.5 2.6 6.5 6.2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+  <path d="M18.5 8.5v5.5M15.8 11.25h5.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+</svg>
