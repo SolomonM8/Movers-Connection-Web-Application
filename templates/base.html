@@ -134,6 +134,26 @@
 
     h1 { font-size: 1.5rem; margin-top: 0; }
 
+    /* Reusable circular icon badge, used on signup forms and the about section */
+    .icon-badge {
+      width: 4rem;
+      height: 4rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      background: var(--color-primary-light);
+      color: var(--color-primary);
+    }
+
+    .icon-badge .icon-inline { width: 2.2rem; height: 2.2rem; }
+
+    .icon-badge--solid { background: var(--color-primary); color: #fff; }
+
+    .form-header { text-align: center; margin-bottom: 0.5rem; }
+    .form-header h1 { margin-top: 0.25rem; }
+
     .errorlist { color: #c0362c; list-style: none; padding: 0; font-size: 0.9rem; }
 
     ul.messages { list-style: none; padding: 0; }
@@ -453,6 +473,31 @@
       font-size: 0.95rem;
       line-height: 1.5;
     }
+
+    .about-section {
+      border: 1px solid var(--color-border);
+      border-radius: 16px;
+      padding: 2.5rem 1.75rem;
+      margin-bottom: 3rem;
+      background: linear-gradient(180deg, #ffffff, var(--color-primary-light));
+      text-align: center;
+    }
+
+    .about-section h2 {
+      margin: 0 0 1rem;
+      font-size: 1.4rem;
+      color: var(--color-text);
+    }
+
+    .about-section p {
+      max-width: 640px;
+      margin: 0 auto 1rem;
+      color: var(--color-muted);
+      line-height: 1.7;
+      text-align: left;
+    }
+
+    .about-section p:last-child { margin-bottom: 0; }
 
     @media (min-width: 700px) {
       .features { grid-template-columns: repeat(3, 1fr); }

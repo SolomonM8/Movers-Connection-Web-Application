@@ -1,7 +1,10 @@
 {% extends "base.html" %}
 {% block title %}Sign Up - Movers Connection{% endblock %}
 {% block content %}
-<h1>{{ role_label }} Sign Up</h1>
+<div class="form-header">
+  <div class="icon-badge">{% include role_icon %}</div>
+  <h1>{{ role_label }} Sign Up</h1>
+</div>
 <form method="post">
   {% csrf_token %}
   {{ form.as_p }}

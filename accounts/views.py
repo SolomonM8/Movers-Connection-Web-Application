@@ -30,7 +30,10 @@ class DriverSignUpView(CreateView):
     form_class = DriverSignUpForm
     template_name = "accounts/signup_form.html"
     success_url = reverse_lazy("accounts:dashboard")
-    extra_context = {"role_label": "Driver / Moving Company"}
+    extra_context = {
+        "role_label": "Driver / Moving Company",
+        "role_icon": "includes/icon-truck.svg",
+    }
 
     def form_valid(self, form):
         response = super().form_valid(form)
@@ -42,7 +45,10 @@ class LaborerSignUpView(CreateView):
     form_class = LaborerSignUpForm
     template_name = "accounts/signup_form.html"
     success_url = reverse_lazy("accounts:dashboard")
-    extra_context = {"role_label": "Laborer / Labor Group"}
+    extra_context = {
+        "role_label": "Laborer / Labor Group",
+        "role_icon": "includes/icon-hardhat.svg",
+    }
 
     def form_valid(self, form):
         response = super().form_valid(form)
