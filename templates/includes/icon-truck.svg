@@ -1,0 +1,6 @@
+<svg class="icon-inline cta-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <path d="M2.5 6.5h10V16h-10z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+  <path d="M12.5 10h3.4l3.1 3.2V16h-6.5" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+  <circle cx="6.2" cy="17.7" r="1.7" stroke="currentColor" stroke-width="1.6"/>
+  <circle cx="16.2" cy="17.7" r="1.7" stroke="currentColor" stroke-width="1.6"/>
+</svg>

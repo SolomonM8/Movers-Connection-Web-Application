@@ -1,19 +1,26 @@
 {% extends "base.html" %}
 {% block title %}Create an Account - Movers Connection{% endblock %}
 {% block main %}
-<main>
+<main class="page-fill">
   <div class="landing-page">
     <section class="hero">
-      <h1>What type of account do you need?</h1>
-      <p class="hero-subtitle">Choose the option that matches what you're looking for. You can add more details to your profile after signing up.</p>
+      <div class="hero-content">
+        <div class="hero-heading">
+          {% include "includes/icon-shield.svg" %}
+          <h1>What type of account do you need?</h1>
+        </div>
+        <p class="hero-subtitle">Choose the option that matches what you're looking for. You can add more details to your profile after signing up.</p>
+      </div>
     </section>
   </div>
-  <div class="choice-grid choice-grid--compact">
+  <div class="choice-grid choice-grid--fill">
     <a class="choice-option option-a" href="{% url 'accounts:register_driver' %}">
+      {% include "includes/icon-truck.svg" %}
       <span class="choice-title">Driver / Company</span>
       <span class="choice-subtitle">I'm looking for day labor out of town</span>
     </a>
     <a class="choice-option option-b" href="{% url 'accounts:register_laborer' %}">
+      {% include "includes/icon-hardhat.svg" %}
       <span class="choice-title">Laborer / Labor Group</span>
       <span class="choice-subtitle">I'm looking for day labor jobs</span>
     </a>

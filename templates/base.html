@@ -61,33 +61,50 @@
 
     .logo-mark { width: 2.1rem; height: 2.1rem; flex-shrink: 0; display: block; }
 
-    nav .nav-links { display: flex; align-items: center; gap: 0.4rem; }
-
-    nav .nav-links a {
-      color: #fff;
-      text-decoration: none;
-      font-size: 0.95rem;
-      padding: 0.4rem 0.8rem;
-      border-radius: 999px;
-      transition: background 0.15s ease;
-    }
-
-    nav .nav-links a:hover { background: rgba(255,255,255,0.18); }
+    nav .nav-links { display: flex; align-items: center; gap: 0.6rem; }
 
     nav .user-info { font-size: 0.9rem; opacity: 0.95; padding: 0.4rem 0.2rem; }
 
-    nav button {
-      background: transparent;
-      border: 1px solid rgba(255,255,255,0.7);
-      color: #fff;
-      padding: 0.35rem 0.9rem;
-      border-radius: 999px;
-      cursor: pointer;
+    .nav-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font: inherit;
       font-size: 0.9rem;
-      transition: background 0.15s ease;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      padding: 0.4rem 1rem;
+      border-radius: 999px;
+      border: 2px solid transparent;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, color 0.15s ease;
     }
 
-    nav button:hover { background: rgba(255,255,255,0.18); }
+    .nav-btn .icon-inline { width: 1.1rem; height: 1.1rem; }
+
+    .nav-btn--ghost {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.75);
+    }
+    .nav-btn--ghost:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: translateY(-1px);
+    }
+
+    .nav-btn--solid {
+      background: #fff;
+      color: var(--color-primary-dark);
+      border-color: #fff;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+    }
+    .nav-btn--solid:hover {
+      background: var(--color-primary-light);
+      transform: translateY(-1px);
+      box-shadow: 0 5px 14px rgba(0, 0, 0, 0.3);
+    }
+
+    .icon-flip { display: inline-flex; transform: scaleX(-1); }
 
     main.card {
       max-width: 480px;
@@ -176,14 +193,21 @@
     p.helper-link a:hover { text-decoration: underline; }
 
     /* Giant choice buttons used on the landing and role-choice pages */
+    main.page-fill {
+      display: flex;
+      flex-direction: column;
+      min-height: calc(100vh - var(--nav-height));
+    }
+
     .choice-grid {
       display: flex;
       flex-direction: column;
       min-height: calc(100vh - var(--nav-height));
     }
 
-    .choice-grid.choice-grid--compact {
-      min-height: 50vh;
+    .choice-grid.choice-grid--fill {
+      flex: 1;
+      min-height: 0;
     }
 
     .choice-option {
@@ -198,6 +222,13 @@
       text-align: center;
       transition: background 0.15s ease;
       border: 2px solid var(--color-border);
+    }
+
+    .choice-option .icon-inline {
+      width: 2.4rem;
+      height: 2.4rem;
+      margin-bottom: 0.3rem;
+      transition: transform 0.25s ease;
     }
 
     .choice-option .choice-title {
@@ -216,19 +247,21 @@
       border-color: var(--color-primary-dark);
     }
     .choice-option.option-a:hover { background: var(--color-primary-dark); }
+    .choice-option.option-a:hover .icon-inline { transform: translateX(5px); }
 
     .choice-option.option-b {
-      background: #fff;
+      background: linear-gradient(180deg, #ffffff, var(--color-primary-light));
       color: var(--color-primary);
     }
     .choice-option.option-b:hover { background: var(--color-primary-light); }
+    .choice-option.option-b:hover .icon-inline { transform: scale(1.15) rotate(-6deg); }
 
     @media (min-width: 700px) {
       .choice-grid { flex-direction: row; }
     }
 
     /* Landing page: hero, feature cards, and call-to-action */
-    .landing-page { max-width: 1000px; margin: 0 auto; padding: 0 1.25rem; }
+    .landing-page { width: 100%; max-width: 1000px; margin: 0 auto; padding: 0 1.25rem; }
 
     .hero {
       position: relative;
@@ -461,11 +494,20 @@
         <span class="user-info">{{ user.email }} &middot; {{ user.get_role_display }}</span>
         <form action="{% url 'accounts:logout' %}" method="post">
           {% csrf_token %}
-          <button type="submit">Log out</button>
+          <button type="submit" class="nav-btn nav-btn--ghost">
+            <span class="icon-flip">{% include "includes/icon-login.svg" %}</span>
+            Log out
+          </button>
         </form>
       {% else %}
-        <a href="{% url 'accounts:login' %}">Log in</a>
-        <a href="{% url 'accounts:register' %}">Register</a>
+        <a href="{% url 'accounts:login' %}" class="nav-btn nav-btn--ghost">
+          {% include "includes/icon-login.svg" %}
+          Log in
+        </a>
+        <a href="{% url 'accounts:register' %}" class="nav-btn nav-btn--solid">
+          {% include "includes/icon-user-plus.svg" %}
+          Register
+        </a>
       {% endif %}
     </div>
   </nav>
