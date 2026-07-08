@@ -1,0 +1,5946 @@
+[
+{
+"name": "Marysville",
+"state": "WA",
+"population": 63269,
+"lat": 48.0517637,
+"lon": -122.1770818,
+"major": false
+},
+{
+"name": "Perris",
+"state": "CA",
+"population": 72326,
+"lat": 33.7825194,
+"lon": -117.22864779999999,
+"major": false
+},
+{
+"name": "Cleveland",
+"state": "OH",
+"population": 390113,
+"lat": 41.499320000000004,
+"lon": -81.6943605,
+"major": false
+},
+{
+"name": "Worcester",
+"state": "MA",
+"population": 182544,
+"lat": 42.262593200000005,
+"lon": -71.8022934,
+"major": false
+},
+{
+"name": "Columbia",
+"state": "SC",
+"population": 133358,
+"lat": 34.0007104,
+"lon": -81.0348144,
+"major": false
+},
+{
+"name": "Waterbury",
+"state": "CT",
+"population": 109676,
+"lat": 41.558152500000006,
+"lon": -73.0514965,
+"major": false
+},
+{
+"name": "Eagan",
+"state": "MN",
+"population": 65453,
+"lat": 44.804132200000005,
+"lon": -93.1668858,
+"major": false
+},
+{
+"name": "Southfield",
+"state": "MI",
+"population": 73006,
+"lat": 42.473368799999996,
+"lon": -83.2218731,
+"major": false
+},
+{
+"name": "Lafayette",
+"state": "LA",
+"population": 124276,
+"lat": 30.2240897,
+"lon": -92.0198427,
+"major": false
+},
+{
+"name": "Boise City",
+"state": "ID",
+"population": 214237,
+"lat": 43.6187102,
+"lon": -116.2146068,
+"major": false
+},
+{
+"name": "Elkhart",
+"state": "IN",
+"population": 51265,
+"lat": 41.6819935,
+"lon": -85.9766671,
+"major": false
+},
+{
+"name": "Buena Park",
+"state": "CA",
+"population": 82882,
+"lat": 33.867514299999996,
+"lon": -117.99811809999999,
+"major": false
+},
+{
+"name": "Marietta",
+"state": "GA",
+"population": 59089,
+"lat": 33.952602,
+"lon": -84.5499327,
+"major": false
+},
+{
+"name": "West Palm Beach",
+"state": "FL",
+"population": 102436,
+"lat": 26.7153424,
+"lon": -80.0533746,
+"major": false
+},
+{
+"name": "Aurora",
+"state": "IL",
+"population": 199963,
+"lat": 41.7605849,
+"lon": -88.3200715,
+"major": false
+},
+{
+"name": "Doral",
+"state": "FL",
+"population": 50213,
+"lat": 25.8195424,
+"lon": -80.3553302,
+"major": false
+},
+{
+"name": "Westminster",
+"state": "CA",
+"population": 91739,
+"lat": 33.7513419,
+"lon": -117.99399209999999,
+"major": false
+},
+{
+"name": "Lubbock",
+"state": "TX",
+"population": 239538,
+"lat": 33.5778631,
+"lon": -101.85516650000001,
+"major": false
+},
+{
+"name": "Overland Park",
+"state": "KS",
+"population": 181260,
+"lat": 38.9822282,
+"lon": -94.6707917,
+"major": false
+},
+{
+"name": "Jackson",
+"state": "MS",
+"population": 172638,
+"lat": 32.298757300000005,
+"lon": -90.1848103,
+"major": false
+},
+{
+"name": "Gastonia",
+"state": "NC",
+"population": 73209,
+"lat": 35.262082,
+"lon": -81.1873005,
+"major": false
+},
+{
+"name": "Daytona Beach",
+"state": "FL",
+"population": 62316,
+"lat": 29.2108147,
+"lon": -81.02283309999999,
+"major": false
+},
+{
+"name": "Kansas City",
+"state": "MO",
+"population": 467007,
+"lat": 39.0997265,
+"lon": -94.5785667,
+"major": false
+},
+{
+"name": "Burnsville",
+"state": "MN",
+"population": 61434,
+"lat": 44.7677424,
+"lon": -93.27772259999999,
+"major": false
+},
+{
+"name": "Rowlett",
+"state": "TX",
+"population": 58043,
+"lat": 32.9029017,
+"lon": -96.56388000000001,
+"major": false
+},
+{
+"name": "Montgomery",
+"state": "AL",
+"population": 201332,
+"lat": 32.366805199999995,
+"lon": -86.2999689,
+"major": false
+},
+{
+"name": "Allentown",
+"state": "PA",
+"population": 118577,
+"lat": 40.6084305,
+"lon": -75.4901833,
+"major": false
+},
+{
+"name": "Mount Pleasant",
+"state": "SC",
+"population": 74885,
+"lat": 32.8323225,
+"lon": -79.82842579999999,
+"major": false
+},
+{
+"name": "Columbus",
+"state": "GA",
+"population": 202824,
+"lat": 32.4609764,
+"lon": -84.9877094,
+"major": false
+},
+{
+"name": "Buffalo",
+"state": "NY",
+"population": 258959,
+"lat": 42.8864468,
+"lon": -78.8783689,
+"major": false
+},
+{
+"name": "North Richland Hills",
+"state": "TX",
+"population": 67317,
+"lat": 32.8342952,
+"lon": -97.22890290000001,
+"major": false
+},
+{
+"name": "Sacramento",
+"state": "CA",
+"population": 479686,
+"lat": 38.5815719,
+"lon": -121.49439960000001,
+"major": false
+},
+{
+"name": "Fort Smith",
+"state": "AR",
+"population": 87650,
+"lat": 35.385924200000005,
+"lon": -94.39854749999999,
+"major": false
+},
+{
+"name": "Mount Vernon",
+"state": "NY",
+"population": 68224,
+"lat": 40.9125992,
+"lon": -73.8370786,
+"major": false
+},
+{
+"name": "Lakewood",
+"state": "CO",
+"population": 147214,
+"lat": 39.7047095,
+"lon": -105.08137340000002,
+"major": false
+},
+{
+"name": "Henderson",
+"state": "NV",
+"population": 270811,
+"lat": 36.0395247,
+"lon": -114.9817213,
+"major": false
+},
+{
+"name": "Stamford",
+"state": "CT",
+"population": 126456,
+"lat": 41.0534302,
+"lon": -73.53873409999999,
+"major": false
+},
+{
+"name": "Bloomington",
+"state": "IN",
+"population": 82575,
+"lat": 39.165325,
+"lon": -86.5263857,
+"major": false
+},
+{
+"name": "Kingsport",
+"state": "TN",
+"population": 52962,
+"lat": 36.548434,
+"lon": -82.5618186,
+"major": false
+},
+{
+"name": "Spokane",
+"state": "WA",
+"population": 210721,
+"lat": 47.6587802,
+"lon": -117.4260466,
+"major": false
+},
+{
+"name": "Kennewick",
+"state": "WA",
+"population": 76762,
+"lat": 46.2112458,
+"lon": -119.1372338,
+"major": false
+},
+{
+"name": "Philadelphia",
+"state": "PA",
+"population": 1553165,
+"lat": 39.9525839,
+"lon": -75.1652215,
+"major": true
+},
+{
+"name": "Bellingham",
+"state": "WA",
+"population": 82631,
+"lat": 48.74908,
+"lon": -122.4781473,
+"major": false
+},
+{
+"name": "Visalia",
+"state": "CA",
+"population": 127763,
+"lat": 36.330228399999996,
+"lon": -119.2920585,
+"major": false
+},
+{
+"name": "La Crosse",
+"state": "WI",
+"population": 51522,
+"lat": 43.8013556,
+"lon": -91.2395807,
+"major": false
+},
+{
+"name": "Council Bluffs",
+"state": "IA",
+"population": 61969,
+"lat": 41.2619444,
+"lon": -95.8608333,
+"major": false
+},
+{
+"name": "Dallas",
+"state": "TX",
+"population": 1257676,
+"lat": 32.7766642,
+"lon": -96.7969879,
+"major": true
+},
+{
+"name": "Antioch",
+"state": "CA",
+"population": 107100,
+"lat": 38.0049214,
+"lon": -121.80578899999999,
+"major": false
+},
+{
+"name": "Sterling Heights",
+"state": "MI",
+"population": 131224,
+"lat": 42.5803122,
+"lon": -83.0302033,
+"major": false
+},
+{
+"name": "Deerfield Beach",
+"state": "FL",
+"population": 78041,
+"lat": 26.318412300000002,
+"lon": -80.0997657,
+"major": false
+},
+{
+"name": "Fishers",
+"state": "IN",
+"population": 83891,
+"lat": 39.95675479999999,
+"lon": -86.01335,
+"major": false
+},
+{
+"name": "Cheyenne",
+"state": "WY",
+"population": 62448,
+"lat": 41.1399814,
+"lon": -104.8202462,
+"major": false
+},
+{
+"name": "Murrieta",
+"state": "CA",
+"population": 107479,
+"lat": 33.553914299999995,
+"lon": -117.21392320000001,
+"major": false
+},
+{
+"name": "Lenexa",
+"state": "KS",
+"population": 50344,
+"lat": 38.9536174,
+"lon": -94.7335709,
+"major": false
+},
+{
+"name": "Noblesville",
+"state": "IN",
+"population": 56540,
+"lat": 40.0455917,
+"lon": -86.0085955,
+"major": false
+},
+{
+"name": "Southaven",
+"state": "MS",
+"population": 50997,
+"lat": 34.9889818,
+"lon": -90.0125913,
+"major": false
+},
+{
+"name": "Chino",
+"state": "CA",
+"population": 80988,
+"lat": 34.0122346,
+"lon": -117.68894399999999,
+"major": false
+},
+{
+"name": "Gaithersburg",
+"state": "MD",
+"population": 65690,
+"lat": 39.143440600000005,
+"lon": -77.2013705,
+"major": false
+},
+{
+"name": "Fountain Valley",
+"state": "CA",
+"population": 56707,
+"lat": 33.7091847,
+"lon": -117.95366969999999,
+"major": false
+},
+{
+"name": "Frederick",
+"state": "MD",
+"population": 66893,
+"lat": 39.414268799999995,
+"lon": -77.41054090000002,
+"major": false
+},
+{
+"name": "Greenville",
+"state": "NC",
+"population": 89130,
+"lat": 35.612660999999996,
+"lon": -77.3663538,
+"major": false
+},
+{
+"name": "West Allis",
+"state": "WI",
+"population": 60697,
+"lat": 43.0166806,
+"lon": -88.0070315,
+"major": false
+},
+{
+"name": "Thornton",
+"state": "CO",
+"population": 127359,
+"lat": 39.8680412,
+"lon": -104.9719243,
+"major": false
+},
+{
+"name": "West Des Moines",
+"state": "IA",
+"population": 61255,
+"lat": 41.5772115,
+"lon": -93.711332,
+"major": false
+},
+{
+"name": "Fall River",
+"state": "MA",
+"population": 88697,
+"lat": 41.7014912,
+"lon": -71.1550451,
+"major": false
+},
+{
+"name": "Tulare",
+"state": "CA",
+"population": 61170,
+"lat": 36.20772879999999,
+"lon": -119.3473379,
+"major": false
+},
+{
+"name": "Chula Vista",
+"state": "CA",
+"population": 256780,
+"lat": 32.6400541,
+"lon": -117.0841955,
+"major": false
+},
+{
+"name": "Coral Springs",
+"state": "FL",
+"population": 126604,
+"lat": 26.271192,
+"lon": -80.27060440000001,
+"major": false
+},
+{
+"name": "Concord",
+"state": "NC",
+"population": 83506,
+"lat": 35.4087517,
+"lon": -80.579511,
+"major": false
+},
+{
+"name": "Smyrna",
+"state": "GA",
+"population": 53438,
+"lat": 33.883992600000006,
+"lon": -84.51437609999999,
+"major": false
+},
+{
+"name": "Grand Forks",
+"state": "ND",
+"population": 54932,
+"lat": 47.9252568,
+"lon": -97.0328547,
+"major": false
+},
+{
+"name": "Naperville",
+"state": "IL",
+"population": 144864,
+"lat": 41.7508391,
+"lon": -88.15353520000001,
+"major": false
+},
+{
+"name": "Hollywood",
+"state": "FL",
+"population": 146526,
+"lat": 26.0112014,
+"lon": -80.1494901,
+"major": false
+},
+{
+"name": "Rogers",
+"state": "AR",
+"population": 60112,
+"lat": 36.3320196,
+"lon": -94.1185366,
+"major": false
+},
+{
+"name": "New Orleans",
+"state": "LA",
+"population": 378715,
+"lat": 29.9510658,
+"lon": -90.0715323,
+"major": false
+},
+{
+"name": "Lakewood",
+"state": "WA",
+"population": 59097,
+"lat": 47.1717649,
+"lon": -122.51845800000001,
+"major": false
+},
+{
+"name": "Oak Lawn",
+"state": "IL",
+"population": 57073,
+"lat": 41.719978000000005,
+"lon": -87.7479528,
+"major": false
+},
+{
+"name": "Portland",
+"state": "OR",
+"population": 609456,
+"lat": 45.523062200000005,
+"lon": -122.67648159999999,
+"major": true
+},
+{
+"name": "Concord",
+"state": "CA",
+"population": 125880,
+"lat": 37.9779776,
+"lon": -122.0310733,
+"major": false
+},
+{
+"name": "St. Charles",
+"state": "MO",
+"population": 67569,
+"lat": 38.7881062,
+"lon": -90.4974359,
+"major": false
+},
+{
+"name": "Waukesha",
+"state": "WI",
+"population": 71016,
+"lat": 43.0116784,
+"lon": -88.2314813,
+"major": false
+},
+{
+"name": "Flagstaff",
+"state": "AZ",
+"population": 68667,
+"lat": 35.1982836,
+"lon": -111.651302,
+"major": false
+},
+{
+"name": "Schenectady",
+"state": "NY",
+"population": 65902,
+"lat": 42.8142432,
+"lon": -73.93956870000001,
+"major": false
+},
+{
+"name": "Denver",
+"state": "CO",
+"population": 649495,
+"lat": 39.739235799999996,
+"lon": -104.990251,
+"major": true
+},
+{
+"name": "Springfield",
+"state": "IL",
+"population": 117006,
+"lat": 39.7817213,
+"lon": -89.6501481,
+"major": false
+},
+{
+"name": "Moreno Valley",
+"state": "CA",
+"population": 201175,
+"lat": 33.9424658,
+"lon": -117.2296717,
+"major": false
+},
+{
+"name": "Kettering",
+"state": "OH",
+"population": 55870,
+"lat": 39.6895036,
+"lon": -84.16882740000001,
+"major": false
+},
+{
+"name": "Lake Havasu City",
+"state": "AZ",
+"population": 52844,
+"lat": 34.483901,
+"lon": -114.32245479999999,
+"major": false
+},
+{
+"name": "North Little Rock",
+"state": "AR",
+"population": 66075,
+"lat": 34.769535999999995,
+"lon": -92.2670941,
+"major": false
+},
+{
+"name": "Reno",
+"state": "NV",
+"population": 233294,
+"lat": 39.529632899999996,
+"lon": -119.8138027,
+"major": false
+},
+{
+"name": "Dublin",
+"state": "CA",
+"population": 52105,
+"lat": 37.7021521,
+"lon": -121.9357918,
+"major": false
+},
+{
+"name": "Portland",
+"state": "ME",
+"population": 66318,
+"lat": 43.661471,
+"lon": -70.2553259,
+"major": false
+},
+{
+"name": "Brooklyn Park",
+"state": "MN",
+"population": 78373,
+"lat": 45.0941315,
+"lon": -93.3563405,
+"major": false
+},
+{
+"name": "West Haven",
+"state": "CT",
+"population": 55046,
+"lat": 41.2705484,
+"lon": -72.94697109999998,
+"major": false
+},
+{
+"name": "Flint",
+"state": "MI",
+"population": 99763,
+"lat": 43.012527399999996,
+"lon": -83.6874562,
+"major": false
+},
+{
+"name": "Pittsburg",
+"state": "CA",
+"population": 66695,
+"lat": 38.027976200000005,
+"lon": -121.88468059999998,
+"major": false
+},
+{
+"name": "Buckeye",
+"state": "AZ",
+"population": 56683,
+"lat": 33.370319699999996,
+"lon": -112.58377659999998,
+"major": false
+},
+{
+"name": "Indio",
+"state": "CA",
+"population": 83539,
+"lat": 33.7205771,
+"lon": -116.2155619,
+"major": false
+},
+{
+"name": "Scottsdale",
+"state": "AZ",
+"population": 226918,
+"lat": 33.494170399999994,
+"lon": -111.9260519,
+"major": false
+},
+{
+"name": "Columbus",
+"state": "OH",
+"population": 822553,
+"lat": 39.9611755,
+"lon": -82.9987942,
+"major": true
+},
+{
+"name": "Lancaster",
+"state": "PA",
+"population": 59325,
+"lat": 40.0378755,
+"lon": -76.3055144,
+"major": false
+},
+{
+"name": "Lincoln",
+"state": "NE",
+"population": 268738,
+"lat": 40.8257625,
+"lon": -96.6851982,
+"major": false
+},
+{
+"name": "Trenton",
+"state": "NJ",
+"population": 84349,
+"lat": 40.2170534,
+"lon": -74.74293840000001,
+"major": false
+},
+{
+"name": "Boston",
+"state": "MA",
+"population": 645966,
+"lat": 42.360082500000004,
+"lon": -71.0588801,
+"major": true
+},
+{
+"name": "Glendora",
+"state": "CA",
+"population": 51074,
+"lat": 34.136118700000004,
+"lon": -117.86533899999999,
+"major": false
+},
+{
+"name": "Rochester",
+"state": "MN",
+"population": 110742,
+"lat": 44.0121221,
+"lon": -92.4801989,
+"major": false
+},
+{
+"name": "Florissant",
+"state": "MO",
+"population": 52363,
+"lat": 38.789217,
+"lon": -90.322614,
+"major": false
+},
+{
+"name": "Chapel Hill",
+"state": "NC",
+"population": 59635,
+"lat": 35.913199600000006,
+"lon": -79.05584449999999,
+"major": false
+},
+{
+"name": "Missoula",
+"state": "MT",
+"population": 69122,
+"lat": 46.8787176,
+"lon": -113.99658600000001,
+"major": false
+},
+{
+"name": "Clovis",
+"state": "CA",
+"population": 99769,
+"lat": 36.8252277,
+"lon": -119.70291940000001,
+"major": false
+},
+{
+"name": "Pearland",
+"state": "TX",
+"population": 100065,
+"lat": 29.5635666,
+"lon": -95.2860474,
+"major": false
+},
+{
+"name": "Gilbert",
+"state": "AZ",
+"population": 229972,
+"lat": 33.3528264,
+"lon": -111.789027,
+"major": false
+},
+{
+"name": "Raleigh",
+"state": "NC",
+"population": 431746,
+"lat": 35.7795897,
+"lon": -78.6381787,
+"major": false
+},
+{
+"name": "Orange",
+"state": "CA",
+"population": 139969,
+"lat": 33.787794399999996,
+"lon": -117.8531119,
+"major": false
+},
+{
+"name": "Walnut Creek",
+"state": "CA",
+"population": 66900,
+"lat": 37.9100783,
+"lon": -122.06518190000001,
+"major": false
+},
+{
+"name": "Porterville",
+"state": "CA",
+"population": 55174,
+"lat": 36.06523,
+"lon": -119.0167679,
+"major": false
+},
+{
+"name": "Tallahassee",
+"state": "FL",
+"population": 186411,
+"lat": 30.4382559,
+"lon": -84.2807329,
+"major": false
+},
+{
+"name": "Conroe",
+"state": "TX",
+"population": 63032,
+"lat": 30.311876899999998,
+"lon": -95.4560512,
+"major": false
+},
+{
+"name": "San Antonio",
+"state": "TX",
+"population": 1409019,
+"lat": 29.4241219,
+"lon": -98.4936282,
+"major": true
+},
+{
+"name": "Hartford",
+"state": "CT",
+"population": 125017,
+"lat": 41.7637111,
+"lon": -72.6850932,
+"major": false
+},
+{
+"name": "Waterloo",
+"state": "IA",
+"population": 68366,
+"lat": 42.492785999999995,
+"lon": -92.3425775,
+"major": false
+},
+{
+"name": "Meridian",
+"state": "ID",
+"population": 83596,
+"lat": 43.61210870000001,
+"lon": -116.39151310000001,
+"major": false
+},
+{
+"name": "Baytown",
+"state": "TX",
+"population": 75418,
+"lat": 29.735504700000003,
+"lon": -94.97742740000001,
+"major": false
+},
+{
+"name": "Cary",
+"state": "NC",
+"population": 151088,
+"lat": 35.791540000000005,
+"lon": -78.78111690000001,
+"major": false
+},
+{
+"name": "Weymouth Town",
+"state": "MA",
+"population": 55419,
+"lat": 42.2180724,
+"lon": -70.94103559999999,
+"major": false
+},
+{
+"name": "Tulsa",
+"state": "OK",
+"population": 398121,
+"lat": 36.1539816,
+"lon": -95.992775,
+"major": false
+},
+{
+"name": "Mission",
+"state": "TX",
+"population": 81050,
+"lat": 26.2159066,
+"lon": -98.3252932,
+"major": false
+},
+{
+"name": "Malden",
+"state": "MA",
+"population": 60509,
+"lat": 42.4250964,
+"lon": -71.066163,
+"major": false
+},
+{
+"name": "Allen",
+"state": "TX",
+"population": 92020,
+"lat": 33.1031744,
+"lon": -96.6705503,
+"major": false
+},
+{
+"name": "Tucson",
+"state": "AZ",
+"population": 526116,
+"lat": 32.2217429,
+"lon": -110.926479,
+"major": true
+},
+{
+"name": "Franklin",
+"state": "TN",
+"population": 68886,
+"lat": 35.9250637,
+"lon": -86.86888990000001,
+"major": false
+},
+{
+"name": "Jacksonville",
+"state": "FL",
+"population": 842583,
+"lat": 30.3321838,
+"lon": -81.655651,
+"major": true
+},
+{
+"name": "Erie",
+"state": "PA",
+"population": 100671,
+"lat": 42.1292241,
+"lon": -80.085059,
+"major": false
+},
+{
+"name": "Merced",
+"state": "CA",
+"population": 81102,
+"lat": 37.3021632,
+"lon": -120.48296770000002,
+"major": false
+},
+{
+"name": "Abilene",
+"state": "TX",
+"population": 120099,
+"lat": 32.4487364,
+"lon": -99.7331439,
+"major": false
+},
+{
+"name": "Yorba Linda",
+"state": "CA",
+"population": 67032,
+"lat": 33.888625899999994,
+"lon": -117.8131125,
+"major": false
+},
+{
+"name": "Greenville",
+"state": "SC",
+"population": 61397,
+"lat": 34.8526176,
+"lon": -82.3940104,
+"major": false
+},
+{
+"name": "Huntersville",
+"state": "NC",
+"population": 50458,
+"lat": 35.410694,
+"lon": -80.8428504,
+"major": false
+},
+{
+"name": "St. Clair Shores",
+"state": "MI",
+"population": 60070,
+"lat": 42.4974085,
+"lon": -82.8963604,
+"major": false
+},
+{
+"name": "San Buenaventura (Ventura)",
+"state": "CA",
+"population": 108817,
+"lat": 34.274646000000004,
+"lon": -119.22903159999998,
+"major": false
+},
+{
+"name": "Fremont",
+"state": "CA",
+"population": 224922,
+"lat": 37.548269700000006,
+"lon": -121.98857190000001,
+"major": false
+},
+{
+"name": "Pueblo",
+"state": "CO",
+"population": 108249,
+"lat": 38.2544472,
+"lon": -104.60914090000001,
+"major": false
+},
+{
+"name": "Minneapolis",
+"state": "MN",
+"population": 400070,
+"lat": 44.977753,
+"lon": -93.2650108,
+"major": false
+},
+{
+"name": "Bartlett",
+"state": "TN",
+"population": 58226,
+"lat": 35.204532799999996,
+"lon": -89.8739753,
+"major": false
+},
+{
+"name": "Wichita Falls",
+"state": "TX",
+"population": 104898,
+"lat": 33.913708500000006,
+"lon": -98.49338730000001,
+"major": false
+},
+{
+"name": "Missouri City",
+"state": "TX",
+"population": 70185,
+"lat": 29.6185669,
+"lon": -95.5377215,
+"major": false
+},
+{
+"name": "St. Louis",
+"state": "MO",
+"population": 318416,
+"lat": 38.6270025,
+"lon": -90.1994042,
+"major": false
+},
+{
+"name": "Pharr",
+"state": "TX",
+"population": 73790,
+"lat": 26.1947962,
+"lon": -98.1836216,
+"major": false
+},
+{
+"name": "Albuquerque",
+"state": "NM",
+"population": 556495,
+"lat": 35.0853336,
+"lon": -106.6055534,
+"major": true
+},
+{
+"name": "Athens-Clarke County",
+"state": "GA",
+"population": 119980,
+"lat": 33.9519347,
+"lon": -83.357567,
+"major": false
+},
+{
+"name": "South Jordan",
+"state": "UT",
+"population": 59366,
+"lat": 40.5621704,
+"lon": -111.929658,
+"major": false
+},
+{
+"name": "North Las Vegas",
+"state": "NV",
+"population": 226877,
+"lat": 36.1988592,
+"lon": -115.1175013,
+"major": false
+},
+{
+"name": "Pomona",
+"state": "CA",
+"population": 151348,
+"lat": 34.055103,
+"lon": -117.7499909,
+"major": false
+},
+{
+"name": "Eastvale",
+"state": "CA",
+"population": 55191,
+"lat": 33.952463,
+"lon": -117.5848025,
+"major": false
+},
+{
+"name": "Lawrence",
+"state": "KS",
+"population": 90811,
+"lat": 38.971668900000004,
+"lon": -95.23525009999999,
+"major": false
+},
+{
+"name": "Midland",
+"state": "TX",
+"population": 123933,
+"lat": 31.9973456,
+"lon": -102.0779146,
+"major": false
+},
+{
+"name": "Oklahoma City",
+"state": "OK",
+"population": 610613,
+"lat": 35.4675602,
+"lon": -97.5164276,
+"major": true
+},
+{
+"name": "Mesa",
+"state": "AZ",
+"population": 457587,
+"lat": 33.4151843,
+"lon": -111.83147240000001,
+"major": false
+},
+{
+"name": "Norwalk",
+"state": "CT",
+"population": 87776,
+"lat": 41.117744,
+"lon": -73.4081575,
+"major": false
+},
+{
+"name": "Kentwood",
+"state": "MI",
+"population": 50233,
+"lat": 42.8694731,
+"lon": -85.6447492,
+"major": false
+},
+{
+"name": "Tustin",
+"state": "CA",
+"population": 78327,
+"lat": 33.7458511,
+"lon": -117.82616599999999,
+"major": false
+},
+{
+"name": "St. Cloud",
+"state": "MN",
+"population": 66297,
+"lat": 45.5579451,
+"lon": -94.1632404,
+"major": false
+},
+{
+"name": "Passaic",
+"state": "NJ",
+"population": 70868,
+"lat": 40.8567662,
+"lon": -74.12847640000001,
+"major": false
+},
+{
+"name": "Escondido",
+"state": "CA",
+"population": 148738,
+"lat": 33.1192068,
+"lon": -117.086421,
+"major": false
+},
+{
+"name": "Berkeley",
+"state": "CA",
+"population": 116768,
+"lat": 37.87159260000001,
+"lon": -122.272747,
+"major": false
+},
+{
+"name": "San Clemente",
+"state": "CA",
+"population": 65040,
+"lat": 33.4269728,
+"lon": -117.6119925,
+"major": false
+},
+{
+"name": "Lawton",
+"state": "OK",
+"population": 97151,
+"lat": 34.6035669,
+"lon": -98.3959291,
+"major": false
+},
+{
+"name": "Eau Claire",
+"state": "WI",
+"population": 67545,
+"lat": 44.811349,
+"lon": -91.4984941,
+"major": false
+},
+{
+"name": "DeSoto",
+"state": "TX",
+"population": 51483,
+"lat": 32.589699800000005,
+"lon": -96.8570738,
+"major": false
+},
+{
+"name": "Fort Wayne",
+"state": "IN",
+"population": 256496,
+"lat": 41.079273,
+"lon": -85.13935129999999,
+"major": false
+},
+{
+"name": "Shoreline",
+"state": "WA",
+"population": 54790,
+"lat": 47.7556531,
+"lon": -122.3415178,
+"major": false
+},
+{
+"name": "Medford",
+"state": "MA",
+"population": 57170,
+"lat": 42.4184296,
+"lon": -71.10616390000001,
+"major": false
+},
+{
+"name": "La Habra",
+"state": "CA",
+"population": 61653,
+"lat": 33.9319578,
+"lon": -117.94617340000002,
+"major": false
+},
+{
+"name": "Albany",
+"state": "NY",
+"population": 98424,
+"lat": 42.65257929999999,
+"lon": -73.7562317,
+"major": false
+},
+{
+"name": "Daly City",
+"state": "CA",
+"population": 104739,
+"lat": 37.687924100000004,
+"lon": -122.47020790000002,
+"major": false
+},
+{
+"name": "Taylor",
+"state": "MI",
+"population": 61817,
+"lat": 42.240871999999996,
+"lon": -83.2696509,
+"major": false
+},
+{
+"name": "Lynchburg",
+"state": "VA",
+"population": 78014,
+"lat": 37.4137536,
+"lon": -79.1422464,
+"major": false
+},
+{
+"name": "Bowie",
+"state": "MD",
+"population": 56759,
+"lat": 39.0067768,
+"lon": -76.77913649999999,
+"major": false
+},
+{
+"name": "Danbury",
+"state": "CT",
+"population": 83684,
+"lat": 41.394816999999996,
+"lon": -73.45401109999999,
+"major": false
+},
+{
+"name": "El Monte",
+"state": "CA",
+"population": 115708,
+"lat": 34.0686206,
+"lon": -118.02756670000001,
+"major": false
+},
+{
+"name": "Goodyear",
+"state": "AZ",
+"population": 72864,
+"lat": 33.4353394,
+"lon": -112.3576567,
+"major": false
+},
+{
+"name": "Paterson",
+"state": "NJ",
+"population": 145948,
+"lat": 40.916765399999996,
+"lon": -74.171811,
+"major": false
+},
+{
+"name": "Salem",
+"state": "OR",
+"population": 160614,
+"lat": 44.9428975,
+"lon": -123.03509629999999,
+"major": false
+},
+{
+"name": "Kissimmee",
+"state": "FL",
+"population": 65173,
+"lat": 28.291955699999995,
+"lon": -81.40757099999999,
+"major": false
+},
+{
+"name": "Saginaw",
+"state": "MI",
+"population": 50303,
+"lat": 43.419469899999996,
+"lon": -83.9508068,
+"major": false
+},
+{
+"name": "Brownsville",
+"state": "TX",
+"population": 181860,
+"lat": 25.9017472,
+"lon": -97.4974838,
+"major": false
+},
+{
+"name": "Flower Mound",
+"state": "TX",
+"population": 68609,
+"lat": 33.0145673,
+"lon": -97.0969552,
+"major": false
+},
+{
+"name": "Grapevine",
+"state": "TX",
+"population": 50195,
+"lat": 32.9342919,
+"lon": -97.07806540000001,
+"major": false
+},
+{
+"name": "Detroit",
+"state": "MI",
+"population": 688701,
+"lat": 42.331427000000005,
+"lon": -83.0457538,
+"major": true
+},
+{
+"name": "Mansfield",
+"state": "TX",
+"population": 60872,
+"lat": 32.5631924,
+"lon": -97.1416768,
+"major": false
+},
+{
+"name": "Rochester",
+"state": "NY",
+"population": 210358,
+"lat": 43.16103,
+"lon": -77.61092190000001,
+"major": false
+},
+{
+"name": "Birmingham",
+"state": "AL",
+"population": 212113,
+"lat": 33.5206608,
+"lon": -86.80249,
+"major": false
+},
+{
+"name": "Austin",
+"state": "TX",
+"population": 885400,
+"lat": 30.267153000000004,
+"lon": -97.7430608,
+"major": true
+},
+{
+"name": "Santa Barbara",
+"state": "CA",
+"population": 90412,
+"lat": 34.4208305,
+"lon": -119.69819009999999,
+"major": false
+},
+{
+"name": "Rio Rancho",
+"state": "NM",
+"population": 91956,
+"lat": 35.2327544,
+"lon": -106.66304369999999,
+"major": false
+},
+{
+"name": "Normal",
+"state": "IL",
+"population": 54664,
+"lat": 40.514202600000004,
+"lon": -88.99063120000001,
+"major": false
+},
+{
+"name": "Coon Rapids",
+"state": "MN",
+"population": 62103,
+"lat": 45.1732394,
+"lon": -93.30300629999999,
+"major": false
+},
+{
+"name": "San Mateo",
+"state": "CA",
+"population": 101128,
+"lat": 37.562991700000005,
+"lon": -122.32552539999999,
+"major": false
+},
+{
+"name": "Orlando",
+"state": "FL",
+"population": 255483,
+"lat": 28.5383355,
+"lon": -81.3792365,
+"major": false
+},
+{
+"name": "Casper",
+"state": "WY",
+"population": 59628,
+"lat": 42.866632,
+"lon": -106.31308100000001,
+"major": false
+},
+{
+"name": "Wilmington",
+"state": "NC",
+"population": 112067,
+"lat": 34.2257255,
+"lon": -77.9447102,
+"major": false
+},
+{
+"name": "Kansas City",
+"state": "KS",
+"population": 148483,
+"lat": 39.114053000000006,
+"lon": -94.6274636,
+"major": false
+},
+{
+"name": "Newton",
+"state": "MA",
+"population": 87971,
+"lat": 42.337041299999996,
+"lon": -71.2092214,
+"major": false
+},
+{
+"name": "North Miami",
+"state": "FL",
+"population": 61007,
+"lat": 25.890094899999998,
+"lon": -80.18671379999999,
+"major": false
+},
+{
+"name": "Newark",
+"state": "NJ",
+"population": 278427,
+"lat": 40.735657,
+"lon": -74.1723667,
+"major": false
+},
+{
+"name": "Blaine",
+"state": "MN",
+"population": 60407,
+"lat": 45.1607987,
+"lon": -93.2349489,
+"major": false
+},
+{
+"name": "Harlingen",
+"state": "TX",
+"population": 65665,
+"lat": 26.190630600000002,
+"lon": -97.69610259999999,
+"major": false
+},
+{
+"name": "Denton",
+"state": "TX",
+"population": 123099,
+"lat": 33.2148412,
+"lon": -97.13306829999999,
+"major": false
+},
+{
+"name": "Greenwood",
+"state": "IN",
+"population": 53665,
+"lat": 39.6136578,
+"lon": -86.10665259999999,
+"major": false
+},
+{
+"name": "Salinas",
+"state": "CA",
+"population": 155662,
+"lat": 36.6777372,
+"lon": -121.6555013,
+"major": false
+},
+{
+"name": "Miami Gardens",
+"state": "FL",
+"population": 111378,
+"lat": 25.942037699999997,
+"lon": -80.2456045,
+"major": false
+},
+{
+"name": "Laredo",
+"state": "TX",
+"population": 248142,
+"lat": 27.530567100000003,
+"lon": -99.48032409999999,
+"major": false
+},
+{
+"name": "Melbourne",
+"state": "FL",
+"population": 77508,
+"lat": 28.0836269,
+"lon": -80.6081089,
+"major": false
+},
+{
+"name": "Palm Bay",
+"state": "FL",
+"population": 104898,
+"lat": 28.034462100000006,
+"lon": -80.5886646,
+"major": false
+},
+{
+"name": "Parma",
+"state": "OH",
+"population": 80429,
+"lat": 41.404774200000006,
+"lon": -81.72290859999998,
+"major": false
+},
+{
+"name": "Rapid City",
+"state": "SD",
+"population": 70812,
+"lat": 44.0805434,
+"lon": -103.2310149,
+"major": false
+},
+{
+"name": "Springfield",
+"state": "MA",
+"population": 153703,
+"lat": 42.1014831,
+"lon": -72.589811,
+"major": false
+},
+{
+"name": "Fort Collins",
+"state": "CO",
+"population": 152061,
+"lat": 40.5852602,
+"lon": -105.084423,
+"major": false
+},
+{
+"name": "San Leandro",
+"state": "CA",
+"population": 87965,
+"lat": 37.7249296,
+"lon": -122.1560768,
+"major": false
+},
+{
+"name": "Vista",
+"state": "CA",
+"population": 96929,
+"lat": 33.2000368,
+"lon": -117.2425355,
+"major": false
+},
+{
+"name": "Yonkers",
+"state": "NY",
+"population": 199766,
+"lat": 40.9312099,
+"lon": -73.8987469,
+"major": false
+},
+{
+"name": "Cincinnati",
+"state": "OH",
+"population": 297517,
+"lat": 39.103118200000004,
+"lon": -84.5120196,
+"major": false
+},
+{
+"name": "Sanford",
+"state": "FL",
+"population": 56002,
+"lat": 28.802861199999995,
+"lon": -81.269453,
+"major": false
+},
+{
+"name": "Union City",
+"state": "NJ",
+"population": 68247,
+"lat": 40.697589799999996,
+"lon": -74.2631635,
+"major": false
+},
+{
+"name": "Toledo",
+"state": "OH",
+"population": 282313,
+"lat": 41.6639383,
+"lon": -83.555212,
+"major": false
+},
+{
+"name": "Newport News",
+"state": "VA",
+"population": 182020,
+"lat": 37.087082099999996,
+"lon": -76.4730122,
+"major": false
+},
+{
+"name": "Hammond",
+"state": "IN",
+"population": 78967,
+"lat": 41.583368799999995,
+"lon": -87.5000412,
+"major": false
+},
+{
+"name": "Sugar Land",
+"state": "TX",
+"population": 83860,
+"lat": 29.6196787,
+"lon": -95.6349463,
+"major": false
+},
+{
+"name": "Huntsville",
+"state": "AL",
+"population": 186254,
+"lat": 34.730368799999994,
+"lon": -86.5861037,
+"major": false
+},
+{
+"name": "Lodi",
+"state": "CA",
+"population": 63338,
+"lat": 38.1341477,
+"lon": -121.27221940000001,
+"major": false
+},
+{
+"name": "Rocky Mount",
+"state": "NC",
+"population": 56954,
+"lat": 35.938210299999994,
+"lon": -77.7905339,
+"major": false
+},
+{
+"name": "Pontiac",
+"state": "MI",
+"population": 59887,
+"lat": 42.6389216,
+"lon": -83.2910468,
+"major": false
+},
+{
+"name": "National City",
+"state": "CA",
+"population": 59834,
+"lat": 32.6781085,
+"lon": -117.0991967,
+"major": false
+},
+{
+"name": "Hayward",
+"state": "CA",
+"population": 151574,
+"lat": 37.6688205,
+"lon": -122.08079640000001,
+"major": false
+},
+{
+"name": "Sparks",
+"state": "NV",
+"population": 93282,
+"lat": 39.5349112,
+"lon": -119.7526886,
+"major": false
+},
+{
+"name": "Hanford",
+"state": "CA",
+"population": 54686,
+"lat": 36.3274502,
+"lon": -119.64568440000001,
+"major": false
+},
+{
+"name": "Youngstown",
+"state": "OH",
+"population": 65184,
+"lat": 41.0997803,
+"lon": -80.6495194,
+"major": false
+},
+{
+"name": "Redlands",
+"state": "CA",
+"population": 69999,
+"lat": 34.055569299999995,
+"lon": -117.1825381,
+"major": false
+},
+{
+"name": "Nampa",
+"state": "ID",
+"population": 86518,
+"lat": 43.5407172,
+"lon": -116.5634624,
+"major": false
+},
+{
+"name": "Washington",
+"state": "DC",
+"population": 646449,
+"lat": 38.9071923,
+"lon": -77.03687070000001,
+"major": true
+},
+{
+"name": "Wheaton",
+"state": "IL",
+"population": 53648,
+"lat": 41.8661403,
+"lon": -88.1070127,
+"major": false
+},
+{
+"name": "Rialto",
+"state": "CA",
+"population": 101910,
+"lat": 34.1064001,
+"lon": -117.37032350000001,
+"major": false
+},
+{
+"name": "Fargo",
+"state": "ND",
+"population": 113658,
+"lat": 46.8771863,
+"lon": -96.78980340000001,
+"major": false
+},
+{
+"name": "Peoria",
+"state": "IL",
+"population": 116513,
+"lat": 40.6936488,
+"lon": -89.58898640000001,
+"major": false
+},
+{
+"name": "Omaha",
+"state": "NE",
+"population": 434353,
+"lat": 41.25236339999999,
+"lon": -95.99798829999999,
+"major": false
+},
+{
+"name": "Manhattan",
+"state": "KS",
+"population": 56143,
+"lat": 39.1836082,
+"lon": -96.5716694,
+"major": false
+},
+{
+"name": "San Diego",
+"state": "CA",
+"population": 1355896,
+"lat": 32.715738,
+"lon": -117.1610838,
+"major": true
+},
+{
+"name": "Santa Rosa",
+"state": "CA",
+"population": 171990,
+"lat": 38.440428999999995,
+"lon": -122.7140548,
+"major": false
+},
+{
+"name": "Lowell",
+"state": "MA",
+"population": 108861,
+"lat": 42.633424700000006,
+"lon": -71.3161718,
+"major": false
+},
+{
+"name": "Broken Arrow",
+"state": "OK",
+"population": 103500,
+"lat": 36.060949,
+"lon": -95.7974526,
+"major": false
+},
+{
+"name": "Kent",
+"state": "WA",
+"population": 124435,
+"lat": 47.380933500000005,
+"lon": -122.23484309999999,
+"major": false
+},
+{
+"name": "Nashville",
+"state": "TN",
+"population": 634464,
+"lat": 36.1626638,
+"lon": -86.78160159999999,
+"major": true
+},
+{
+"name": "Broomfield",
+"state": "CO",
+"population": 59471,
+"lat": 39.9205411,
+"lon": -105.0866504,
+"major": false
+},
+{
+"name": "Durham",
+"state": "NC",
+"population": 245475,
+"lat": 35.99403289999999,
+"lon": -78.898619,
+"major": false
+},
+{
+"name": "Wichita",
+"state": "KS",
+"population": 386552,
+"lat": 37.688889,
+"lon": -97.336111,
+"major": false
+},
+{
+"name": "Cathedral City",
+"state": "CA",
+"population": 52977,
+"lat": 33.780538799999995,
+"lon": -116.46680359999999,
+"major": false
+},
+{
+"name": "Lakeville",
+"state": "MN",
+"population": 58562,
+"lat": 44.6496868,
+"lon": -93.24271999999999,
+"major": false
+},
+{
+"name": "Sunnyvale",
+"state": "CA",
+"population": 147559,
+"lat": 37.368829999999996,
+"lon": -122.03634960000001,
+"major": false
+},
+{
+"name": "Santa Cruz",
+"state": "CA",
+"population": 62864,
+"lat": 36.9741171,
+"lon": -122.0307963,
+"major": false
+},
+{
+"name": "Kenosha",
+"state": "WI",
+"population": 99889,
+"lat": 42.5847425,
+"lon": -87.8211854,
+"major": false
+},
+{
+"name": "Pompano Beach",
+"state": "FL",
+"population": 104410,
+"lat": 26.2378597,
+"lon": -80.1247667,
+"major": false
+},
+{
+"name": "San Angelo",
+"state": "TX",
+"population": 97492,
+"lat": 31.4637723,
+"lon": -100.4370375,
+"major": false
+},
+{
+"name": "Bloomington",
+"state": "IL",
+"population": 78902,
+"lat": 40.4842027,
+"lon": -88.9936873,
+"major": false
+},
+{
+"name": "Tracy",
+"state": "CA",
+"population": 84691,
+"lat": 37.7396513,
+"lon": -121.42522269999999,
+"major": false
+},
+{
+"name": "Nashua",
+"state": "NH",
+"population": 87137,
+"lat": 42.7653662,
+"lon": -71.467566,
+"major": false
+},
+{
+"name": "Macon",
+"state": "GA",
+"population": 89981,
+"lat": 32.8406946,
+"lon": -83.6324022,
+"major": false
+},
+{
+"name": "Hempstead",
+"state": "NY",
+"population": 55361,
+"lat": 40.706212799999996,
+"lon": -73.6187397,
+"major": false
+},
+{
+"name": "Camden",
+"state": "NJ",
+"population": 76903,
+"lat": 39.9259463,
+"lon": -75.1196199,
+"major": false
+},
+{
+"name": "Palm Desert",
+"state": "CA",
+"population": 50508,
+"lat": 33.7222445,
+"lon": -116.37445559999999,
+"major": false
+},
+{
+"name": "Chesapeake",
+"state": "VA",
+"population": 230571,
+"lat": 36.7682088,
+"lon": -76.2874927,
+"major": false
+},
+{
+"name": "Camarillo",
+"state": "CA",
+"population": 66086,
+"lat": 34.216393700000005,
+"lon": -119.0376023,
+"major": false
+},
+{
+"name": "Elizabeth",
+"state": "NJ",
+"population": 127558,
+"lat": 40.6639916,
+"lon": -74.2107006,
+"major": false
+},
+{
+"name": "Anchorage",
+"state": "AK",
+"population": 300950,
+"lat": 61.2180556,
+"lon": -149.90027780000003,
+"major": false
+},
+{
+"name": "Davie",
+"state": "FL",
+"population": 96830,
+"lat": 26.076478299999998,
+"lon": -80.2521157,
+"major": false
+},
+{
+"name": "McAllen",
+"state": "TX",
+"population": 136639,
+"lat": 26.203407100000003,
+"lon": -98.2300124,
+"major": false
+},
+{
+"name": "McKinney",
+"state": "TX",
+"population": 148559,
+"lat": 33.197246500000006,
+"lon": -96.6397822,
+"major": false
+},
+{
+"name": "Killeen",
+"state": "TX",
+"population": 137147,
+"lat": 31.117119399999996,
+"lon": -97.7277959,
+"major": false
+},
+{
+"name": "Oakland",
+"state": "CA",
+"population": 406253,
+"lat": 37.8043637,
+"lon": -122.27111370000002,
+"major": false
+},
+{
+"name": "Mountain View",
+"state": "CA",
+"population": 77846,
+"lat": 37.3860517,
+"lon": -122.08385109999999,
+"major": false
+},
+{
+"name": "Lake Elsinore",
+"state": "CA",
+"population": 57525,
+"lat": 33.668077200000006,
+"lon": -117.3272615,
+"major": false
+},
+{
+"name": "Amarillo",
+"state": "TX",
+"population": 196429,
+"lat": 35.2219971,
+"lon": -101.8312969,
+"major": false
+},
+{
+"name": "Provo",
+"state": "UT",
+"population": 116288,
+"lat": 40.233843799999995,
+"lon": -111.6585337,
+"major": false
+},
+{
+"name": "Atlanta",
+"state": "GA",
+"population": 447841,
+"lat": 33.7489954,
+"lon": -84.3879824,
+"major": false
+},
+{
+"name": "Monterey Park",
+"state": "CA",
+"population": 61085,
+"lat": 34.0625106,
+"lon": -118.1228476,
+"major": false
+},
+{
+"name": "Madera",
+"state": "CA",
+"population": 63105,
+"lat": 36.961335600000005,
+"lon": -120.0607176,
+"major": false
+},
+{
+"name": "Decatur",
+"state": "IL",
+"population": 74710,
+"lat": 39.84031470000001,
+"lon": -88.9548001,
+"major": false
+},
+{
+"name": "Mobile",
+"state": "AL",
+"population": 194899,
+"lat": 30.6953657,
+"lon": -88.0398912,
+"major": false
+},
+{
+"name": "Vallejo",
+"state": "CA",
+"population": 118837,
+"lat": 38.1040864,
+"lon": -122.25663670000002,
+"major": false
+},
+{
+"name": "Arcadia",
+"state": "CA",
+"population": 57639,
+"lat": 34.139729200000005,
+"lon": -118.0353449,
+"major": false
+},
+{
+"name": "Longview",
+"state": "TX",
+"population": 81443,
+"lat": 32.5007037,
+"lon": -94.74048909999999,
+"major": false
+},
+{
+"name": "Chandler",
+"state": "AZ",
+"population": 249146,
+"lat": 33.3061605,
+"lon": -111.8412502,
+"major": false
+},
+{
+"name": "Arvada",
+"state": "CO",
+"population": 111707,
+"lat": 39.802764399999994,
+"lon": -105.08748419999999,
+"major": false
+},
+{
+"name": "Alhambra",
+"state": "CA",
+"population": 84577,
+"lat": 34.095287,
+"lon": -118.1270146,
+"major": false
+},
+{
+"name": "Kokomo",
+"state": "IN",
+"population": 56895,
+"lat": 40.486427,
+"lon": -86.13360329999999,
+"major": false
+},
+{
+"name": "Indianapolis",
+"state": "IN",
+"population": 843393,
+"lat": 39.768403,
+"lon": -86.158068,
+"major": true
+},
+{
+"name": "Boynton Beach",
+"state": "FL",
+"population": 71097,
+"lat": 26.531786600000004,
+"lon": -80.0905465,
+"major": false
+},
+{
+"name": "Mount Prospect",
+"state": "IL",
+"population": 54771,
+"lat": 42.066416700000005,
+"lon": -87.9372908,
+"major": false
+},
+{
+"name": "Cranston",
+"state": "RI",
+"population": 80566,
+"lat": 41.7798226,
+"lon": -71.4372796,
+"major": false
+},
+{
+"name": "Lafayette",
+"state": "IN",
+"population": 70373,
+"lat": 40.4167022,
+"lon": -86.8752869,
+"major": false
+},
+{
+"name": "Olathe",
+"state": "KS",
+"population": 131885,
+"lat": 38.8813958,
+"lon": -94.8191285,
+"major": false
+},
+{
+"name": "Johns Creek",
+"state": "GA",
+"population": 82788,
+"lat": 34.0289259,
+"lon": -84.19857900000001,
+"major": false
+},
+{
+"name": "Greensboro",
+"state": "NC",
+"population": 279639,
+"lat": 36.072635399999996,
+"lon": -79.79197540000001,
+"major": false
+},
+{
+"name": "Kalamazoo",
+"state": "MI",
+"population": 75548,
+"lat": 42.291706899999994,
+"lon": -85.5872286,
+"major": false
+},
+{
+"name": "Tigard",
+"state": "OR",
+"population": 50444,
+"lat": 45.4312294,
+"lon": -122.7714861,
+"major": false
+},
+{
+"name": "Jacksonville",
+"state": "NC",
+"population": 69079,
+"lat": 34.7540524,
+"lon": -77.43024140000001,
+"major": false
+},
+{
+"name": "Citrus Heights",
+"state": "CA",
+"population": 85285,
+"lat": 38.7071247,
+"lon": -121.2810611,
+"major": false
+},
+{
+"name": "Tuscaloosa",
+"state": "AL",
+"population": 95334,
+"lat": 33.2098407,
+"lon": -87.5691735,
+"major": false
+},
+{
+"name": "Ankeny",
+"state": "IA",
+"population": 51567,
+"lat": 41.7317884,
+"lon": -93.6001278,
+"major": false
+},
+{
+"name": "Hawthorne",
+"state": "CA",
+"population": 86199,
+"lat": 33.9164032,
+"lon": -118.35257479999999,
+"major": false
+},
+{
+"name": "Hoover",
+"state": "AL",
+"population": 84126,
+"lat": 33.405386699999994,
+"lon": -86.8113781,
+"major": false
+},
+{
+"name": "Delray Beach",
+"state": "FL",
+"population": 64072,
+"lat": 26.4614625,
+"lon": -80.07282009999999,
+"major": false
+},
+{
+"name": "Wellington",
+"state": "FL",
+"population": 60202,
+"lat": 26.6617635,
+"lon": -80.2683571,
+"major": false
+},
+{
+"name": "Weston",
+"state": "FL",
+"population": 68388,
+"lat": 26.100365399999998,
+"lon": -80.3997748,
+"major": false
+},
+{
+"name": "Troy",
+"state": "MI",
+"population": 82821,
+"lat": 42.6064095,
+"lon": -83.1497751,
+"major": false
+},
+{
+"name": "New Rochelle",
+"state": "NY",
+"population": 79446,
+"lat": 40.9114882,
+"lon": -73.78235490000002,
+"major": false
+},
+{
+"name": "Stockton",
+"state": "CA",
+"population": 298118,
+"lat": 37.9577016,
+"lon": -121.29077959999998,
+"major": false
+},
+{
+"name": "Royal Oak",
+"state": "MI",
+"population": 58946,
+"lat": 42.4894801,
+"lon": -83.1446485,
+"major": false
+},
+{
+"name": "Laguna Niguel",
+"state": "CA",
+"population": 64652,
+"lat": 33.5225261,
+"lon": -117.70755259999999,
+"major": false
+},
+{
+"name": "Spokane Valley",
+"state": "WA",
+"population": 91113,
+"lat": 47.6732281,
+"lon": -117.2393748,
+"major": false
+},
+{
+"name": "Costa Mesa",
+"state": "CA",
+"population": 112174,
+"lat": 33.6411316,
+"lon": -117.9186689,
+"major": false
+},
+{
+"name": "Grand Prairie",
+"state": "TX",
+"population": 183372,
+"lat": 32.7459645,
+"lon": -96.99778459999999,
+"major": false
+},
+{
+"name": "Portsmouth",
+"state": "VA",
+"population": 96205,
+"lat": 36.835425799999996,
+"lon": -76.29827420000001,
+"major": false
+},
+{
+"name": "Sioux City",
+"state": "IA",
+"population": 82459,
+"lat": 42.4999942,
+"lon": -96.4003069,
+"major": false
+},
+{
+"name": "Encinitas",
+"state": "CA",
+"population": 61588,
+"lat": 33.0369867,
+"lon": -117.2919818,
+"major": false
+},
+{
+"name": "Huntington Park",
+"state": "CA",
+"population": 58879,
+"lat": 33.981681200000004,
+"lon": -118.22507250000001,
+"major": false
+},
+{
+"name": "Eden Prairie",
+"state": "MN",
+"population": 62603,
+"lat": 44.8546856,
+"lon": -93.470786,
+"major": false
+},
+{
+"name": "Peoria",
+"state": "AZ",
+"population": 162592,
+"lat": 33.5805955,
+"lon": -112.23737790000001,
+"major": false
+},
+{
+"name": "Tempe",
+"state": "AZ",
+"population": 168228,
+"lat": 33.4255104,
+"lon": -111.9400054,
+"major": false
+},
+{
+"name": "Wilmington",
+"state": "DE",
+"population": 71525,
+"lat": 39.7390721,
+"lon": -75.5397878,
+"major": false
+},
+{
+"name": "Taylorsville",
+"state": "UT",
+"population": 60519,
+"lat": 40.667724799999995,
+"lon": -111.93882579999999,
+"major": false
+},
+{
+"name": "Westland",
+"state": "MI",
+"population": 82578,
+"lat": 42.324203999999995,
+"lon": -83.400211,
+"major": false
+},
+{
+"name": "Mesquite",
+"state": "TX",
+"population": 143484,
+"lat": 32.7667955,
+"lon": -96.5991593,
+"major": false
+},
+{
+"name": "Burlington",
+"state": "NC",
+"population": 51510,
+"lat": 36.0956918,
+"lon": -79.43779909999999,
+"major": false
+},
+{
+"name": "Garland",
+"state": "TX",
+"population": 234566,
+"lat": 32.912624,
+"lon": -96.6388833,
+"major": false
+},
+{
+"name": "Richmond",
+"state": "CA",
+"population": 107571,
+"lat": 37.9357576,
+"lon": -122.3477486,
+"major": false
+},
+{
+"name": "Bismarck",
+"state": "ND",
+"population": 67034,
+"lat": 46.808326799999996,
+"lon": -100.7837392,
+"major": false
+},
+{
+"name": "Carson City",
+"state": "NV",
+"population": 54080,
+"lat": 39.1637984,
+"lon": -119.76740339999999,
+"major": false
+},
+{
+"name": "Augusta-Richmond County",
+"state": "GA",
+"population": 197350,
+"lat": 33.4734978,
+"lon": -82.0105148,
+"major": false
+},
+{
+"name": "Fayetteville",
+"state": "NC",
+"population": 204408,
+"lat": 35.0526641,
+"lon": -78.87835849999999,
+"major": false
+},
+{
+"name": "Albany",
+"state": "GA",
+"population": 76185,
+"lat": 31.578507399999996,
+"lon": -84.155741,
+"major": false
+},
+{
+"name": "Diamond Bar",
+"state": "CA",
+"population": 56449,
+"lat": 34.028622600000006,
+"lon": -117.81033670000001,
+"major": false
+},
+{
+"name": "Decatur",
+"state": "AL",
+"population": 55816,
+"lat": 34.605925299999996,
+"lon": -86.9833417,
+"major": false
+},
+{
+"name": "Chattanooga",
+"state": "TN",
+"population": 173366,
+"lat": 35.0456297,
+"lon": -85.3096801,
+"major": false
+},
+{
+"name": "Baldwin Park",
+"state": "CA",
+"population": 76635,
+"lat": 34.0852868,
+"lon": -117.96089779999998,
+"major": false
+},
+{
+"name": "Miami Beach",
+"state": "FL",
+"population": 91026,
+"lat": 25.790654,
+"lon": -80.1300455,
+"major": false
+},
+{
+"name": "Jackson",
+"state": "TN",
+"population": 67685,
+"lat": 35.6145169,
+"lon": -88.8139469,
+"major": false
+},
+{
+"name": "Port Arthur",
+"state": "TX",
+"population": 54135,
+"lat": 29.884950399999997,
+"lon": -93.939947,
+"major": false
+},
+{
+"name": "Newport Beach",
+"state": "CA",
+"population": 87273,
+"lat": 33.6189101,
+"lon": -117.9289469,
+"major": false
+},
+{
+"name": "Yakima",
+"state": "WA",
+"population": 93257,
+"lat": 46.6020711,
+"lon": -120.5058987,
+"major": false
+},
+{
+"name": "Dayton",
+"state": "OH",
+"population": 143355,
+"lat": 39.758947799999994,
+"lon": -84.1916069,
+"major": false
+},
+{
+"name": "Gulfport",
+"state": "MS",
+"population": 71012,
+"lat": 30.367419800000004,
+"lon": -89.0928155,
+"major": false
+},
+{
+"name": "Long Beach",
+"state": "CA",
+"population": 469428,
+"lat": 33.770050399999995,
+"lon": -118.1937395,
+"major": false
+},
+{
+"name": "Chico",
+"state": "CA",
+"population": 88077,
+"lat": 39.728494399999995,
+"lon": -121.8374777,
+"major": false
+},
+{
+"name": "Eugene",
+"state": "OR",
+"population": 159190,
+"lat": 44.0520691,
+"lon": -123.08675359999998,
+"major": false
+},
+{
+"name": "Colton",
+"state": "CA",
+"population": 53243,
+"lat": 34.0739016,
+"lon": -117.3136547,
+"major": false
+},
+{
+"name": "Montebello",
+"state": "CA",
+"population": 63495,
+"lat": 34.0165053,
+"lon": -118.11375349999999,
+"major": false
+},
+{
+"name": "Pleasanton",
+"state": "CA",
+"population": 74110,
+"lat": 37.6624312,
+"lon": -121.8746789,
+"major": false
+},
+{
+"name": "Everett",
+"state": "WA",
+"population": 105370,
+"lat": 47.9789848,
+"lon": -122.2020794,
+"major": false
+},
+{
+"name": "Fairfield",
+"state": "CA",
+"population": 109320,
+"lat": 38.2493581,
+"lon": -122.03996629999999,
+"major": false
+},
+{
+"name": "Avondale",
+"state": "AZ",
+"population": 78822,
+"lat": 33.4355977,
+"lon": -112.3496021,
+"major": false
+},
+{
+"name": "Battle Creek",
+"state": "MI",
+"population": 51848,
+"lat": 42.32115220000001,
+"lon": -85.17971419999999,
+"major": false
+},
+{
+"name": "Bloomington",
+"state": "MN",
+"population": 86319,
+"lat": 44.840798,
+"lon": -93.29827990000001,
+"major": false
+},
+{
+"name": "Beaverton",
+"state": "OR",
+"population": 93542,
+"lat": 45.487062,
+"lon": -122.8037102,
+"major": false
+},
+{
+"name": "Kenner",
+"state": "LA",
+"population": 66975,
+"lat": 29.9940924,
+"lon": -90.2417434,
+"major": false
+},
+{
+"name": "Milpitas",
+"state": "CA",
+"population": 69783,
+"lat": 37.4323341,
+"lon": -121.8995741,
+"major": false
+},
+{
+"name": "Des Plaines",
+"state": "IL",
+"population": 58918,
+"lat": 42.03336229999999,
+"lon": -87.88339909999999,
+"major": false
+},
+{
+"name": "Placentia",
+"state": "CA",
+"population": 52206,
+"lat": 33.87223710000001,
+"lon": -117.87033629999999,
+"major": false
+},
+{
+"name": "Taunton",
+"state": "MA",
+"population": 56069,
+"lat": 41.900101,
+"lon": -71.08976740000001,
+"major": false
+},
+{
+"name": "Johnson City",
+"state": "TN",
+"population": 65123,
+"lat": 36.3134397,
+"lon": -82.35347270000001,
+"major": false
+},
+{
+"name": "Savannah",
+"state": "GA",
+"population": 142772,
+"lat": 32.0835407,
+"lon": -81.0998342,
+"major": false
+},
+{
+"name": "Vancouver",
+"state": "WA",
+"population": 167405,
+"lat": 45.6387281,
+"lon": -122.6614861,
+"major": false
+},
+{
+"name": "Sunrise",
+"state": "FL",
+"population": 90116,
+"lat": 26.1669711,
+"lon": -80.25659499999999,
+"major": false
+},
+{
+"name": "Muncie",
+"state": "IN",
+"population": 70316,
+"lat": 40.1933767,
+"lon": -85.3863599,
+"major": false
+},
+{
+"name": "Lehi",
+"state": "UT",
+"population": 54382,
+"lat": 40.3916172,
+"lon": -111.8507662,
+"major": false
+},
+{
+"name": "San Francisco",
+"state": "CA",
+"population": 837442,
+"lat": 37.7749295,
+"lon": -122.4194155,
+"major": true
+},
+{
+"name": "Fontana",
+"state": "CA",
+"population": 203003,
+"lat": 34.0922335,
+"lon": -117.435048,
+"major": false
+},
+{
+"name": "Frisco",
+"state": "TX",
+"population": 136791,
+"lat": 33.1506744,
+"lon": -96.82361159999999,
+"major": false
+},
+{
+"name": "Chino Hills",
+"state": "CA",
+"population": 76572,
+"lat": 33.989818799999995,
+"lon": -117.7325848,
+"major": false
+},
+{
+"name": "New Brunswick",
+"state": "NJ",
+"population": 55831,
+"lat": 40.4862157,
+"lon": -74.4518188,
+"major": false
+},
+{
+"name": "Norfolk",
+"state": "VA",
+"population": 246139,
+"lat": 36.8507689,
+"lon": -76.28587259999999,
+"major": false
+},
+{
+"name": "Hillsboro",
+"state": "OR",
+"population": 97368,
+"lat": 45.5228939,
+"lon": -122.989827,
+"major": false
+},
+{
+"name": "Pensacola",
+"state": "FL",
+"population": 52703,
+"lat": 30.421309,
+"lon": -87.2169149,
+"major": false
+},
+{
+"name": "Hamilton",
+"state": "OH",
+"population": 62258,
+"lat": 39.3995008,
+"lon": -84.5613355,
+"major": false
+},
+{
+"name": "San Bernardino",
+"state": "CA",
+"population": 213708,
+"lat": 34.1083449,
+"lon": -117.2897652,
+"major": false
+},
+{
+"name": "Victorville",
+"state": "CA",
+"population": 121096,
+"lat": 34.5362184,
+"lon": -117.29276409999999,
+"major": false
+},
+{
+"name": "Gary",
+"state": "IN",
+"population": 78450,
+"lat": 41.5933696,
+"lon": -87.3464271,
+"major": false
+},
+{
+"name": "Casa Grande",
+"state": "AZ",
+"population": 50111,
+"lat": 32.8795022,
+"lon": -111.75735209999999,
+"major": false
+},
+{
+"name": "Dubuque",
+"state": "IA",
+"population": 58253,
+"lat": 42.5005583,
+"lon": -90.6645718,
+"major": false
+},
+{
+"name": "Syracuse",
+"state": "NY",
+"population": 144669,
+"lat": 43.0481221,
+"lon": -76.1474244,
+"major": false
+},
+{
+"name": "Clarksville",
+"state": "TN",
+"population": 142357,
+"lat": 36.5297706,
+"lon": -87.3594528,
+"major": false
+},
+{
+"name": "Lakeland",
+"state": "FL",
+"population": 100710,
+"lat": 28.039465399999997,
+"lon": -81.9498042,
+"major": false
+},
+{
+"name": "Palatine",
+"state": "IL",
+"population": 69350,
+"lat": 42.1103041,
+"lon": -88.03424,
+"major": false
+},
+{
+"name": "Seattle",
+"state": "WA",
+"population": 652405,
+"lat": 47.6062095,
+"lon": -122.33207079999998,
+"major": true
+},
+{
+"name": "Elk Grove",
+"state": "CA",
+"population": 161007,
+"lat": 38.4087993,
+"lon": -121.37161780000001,
+"major": false
+},
+{
+"name": "Shreveport",
+"state": "LA",
+"population": 200327,
+"lat": 32.5251516,
+"lon": -93.75017890000001,
+"major": false
+},
+{
+"name": "Ogden",
+"state": "UT",
+"population": 84249,
+"lat": 41.223,
+"lon": -111.9738304,
+"major": false
+},
+{
+"name": "Harrisonburg",
+"state": "VA",
+"population": 51395,
+"lat": 38.449568799999994,
+"lon": -78.8689155,
+"major": false
+},
+{
+"name": "Inglewood",
+"state": "CA",
+"population": 111542,
+"lat": 33.9616801,
+"lon": -118.3531311,
+"major": false
+},
+{
+"name": "Pasadena",
+"state": "CA",
+"population": 139731,
+"lat": 34.1477849,
+"lon": -118.1445155,
+"major": false
+},
+{
+"name": "Lawrence",
+"state": "MA",
+"population": 77657,
+"lat": 42.7070354,
+"lon": -71.1631137,
+"major": false
+},
+{
+"name": "Petaluma",
+"state": "CA",
+"population": 59440,
+"lat": 38.232417,
+"lon": -122.6366524,
+"major": false
+},
+{
+"name": "Springfield",
+"state": "OH",
+"population": 59357,
+"lat": 39.9242266,
+"lon": -83.8088171,
+"major": false
+},
+{
+"name": "Napa",
+"state": "CA",
+"population": 79068,
+"lat": 38.2975381,
+"lon": -122.28686499999999,
+"major": false
+},
+{
+"name": "Aurora",
+"state": "CO",
+"population": 345803,
+"lat": 39.729431899999994,
+"lon": -104.8319195,
+"major": false
+},
+{
+"name": "Duluth",
+"state": "MN",
+"population": 86128,
+"lat": 46.7866719,
+"lon": -92.10048520000001,
+"major": false
+},
+{
+"name": "Roanoke",
+"state": "VA",
+"population": 98465,
+"lat": 37.270970399999996,
+"lon": -79.9414266,
+"major": false
+},
+{
+"name": "Bend",
+"state": "OR",
+"population": 81236,
+"lat": 44.058172799999994,
+"lon": -121.31530959999999,
+"major": false
+},
+{
+"name": "Apple Valley",
+"state": "CA",
+"population": 70924,
+"lat": 34.5008311,
+"lon": -117.18587590000001,
+"major": false
+},
+{
+"name": "Waltham",
+"state": "MA",
+"population": 62227,
+"lat": 42.376485200000005,
+"lon": -71.2356113,
+"major": false
+},
+{
+"name": "Fort Myers",
+"state": "FL",
+"population": 68190,
+"lat": 26.640628000000003,
+"lon": -81.87230840000001,
+"major": false
+},
+{
+"name": "Tampa",
+"state": "FL",
+"population": 352957,
+"lat": 27.950575,
+"lon": -82.4571776,
+"major": false
+},
+{
+"name": "Upland",
+"state": "CA",
+"population": 75413,
+"lat": 34.09751,
+"lon": -117.64838759999999,
+"major": false
+},
+{
+"name": "Plantation",
+"state": "FL",
+"population": 90268,
+"lat": 26.1275862,
+"lon": -80.23310359999999,
+"major": false
+},
+{
+"name": "Colorado Springs",
+"state": "CO",
+"population": 439886,
+"lat": 38.8338816,
+"lon": -104.82136340000001,
+"major": false
+},
+{
+"name": "Modesto",
+"state": "CA",
+"population": 204933,
+"lat": 37.6390972,
+"lon": -120.99687820000001,
+"major": false
+},
+{
+"name": "Grand Rapids",
+"state": "MI",
+"population": 192294,
+"lat": 42.9633599,
+"lon": -85.6680863,
+"major": false
+},
+{
+"name": "Oak Park",
+"state": "IL",
+"population": 52066,
+"lat": 41.885031700000006,
+"lon": -87.7845025,
+"major": false
+},
+{
+"name": "Sarasota",
+"state": "FL",
+"population": 53326,
+"lat": 27.3364347,
+"lon": -82.5306527,
+"major": false
+},
+{
+"name": "Jurupa Valley",
+"state": "CA",
+"population": 98030,
+"lat": 33.9971974,
+"lon": -117.48548020000001,
+"major": false
+},
+{
+"name": "Bellflower",
+"state": "CA",
+"population": 77593,
+"lat": 33.881681799999996,
+"lon": -118.1170117,
+"major": false
+},
+{
+"name": "Boulder",
+"state": "CO",
+"population": 103166,
+"lat": 40.0149856,
+"lon": -105.2705456,
+"major": false
+},
+{
+"name": "Santa Fe",
+"state": "NM",
+"population": 69976,
+"lat": 35.686975200000006,
+"lon": -105.937799,
+"major": false
+},
+{
+"name": "Riverside",
+"state": "CA",
+"population": 316619,
+"lat": 33.9533487,
+"lon": -117.3961564,
+"major": false
+},
+{
+"name": "Palmdale",
+"state": "CA",
+"population": 157161,
+"lat": 34.5794343,
+"lon": -118.11646129999998,
+"major": false
+},
+{
+"name": "Novato",
+"state": "CA",
+"population": 54194,
+"lat": 38.107419799999995,
+"lon": -122.5697032,
+"major": false
+},
+{
+"name": "Layton",
+"state": "UT",
+"population": 70790,
+"lat": 41.0602216,
+"lon": -111.9710529,
+"major": false
+},
+{
+"name": "Bolingbrook",
+"state": "IL",
+"population": 73936,
+"lat": 41.6986416,
+"lon": -88.0683955,
+"major": false
+},
+{
+"name": "Mission Viejo",
+"state": "CA",
+"population": 96346,
+"lat": 33.6000232,
+"lon": -117.67199529999999,
+"major": false
+},
+{
+"name": "Folsom",
+"state": "CA",
+"population": 73098,
+"lat": 38.6779591,
+"lon": -121.17605829999998,
+"major": false
+},
+{
+"name": "Las Cruces",
+"state": "NM",
+"population": 101324,
+"lat": 32.3199396,
+"lon": -106.7636538,
+"major": false
+},
+{
+"name": "Schaumburg",
+"state": "IL",
+"population": 74907,
+"lat": 42.0333607,
+"lon": -88.0834059,
+"major": false
+},
+{
+"name": "Warren",
+"state": "MI",
+"population": 134873,
+"lat": 42.5144566,
+"lon": -83.01465259999999,
+"major": false
+},
+{
+"name": "St. Peters",
+"state": "MO",
+"population": 54842,
+"lat": 38.7874699,
+"lon": -90.6298922,
+"major": false
+},
+{
+"name": "Ames",
+"state": "IA",
+"population": 61792,
+"lat": 42.034721999999995,
+"lon": -93.62,
+"major": false
+},
+{
+"name": "Surprise",
+"state": "AZ",
+"population": 123546,
+"lat": 33.62923370000001,
+"lon": -112.36792790000001,
+"major": false
+},
+{
+"name": "Richardson",
+"state": "TX",
+"population": 104475,
+"lat": 32.948333500000004,
+"lon": -96.72985190000001,
+"major": false
+},
+{
+"name": "San Marcos",
+"state": "TX",
+"population": 54076,
+"lat": 29.8832749,
+"lon": -97.9413941,
+"major": false
+},
+{
+"name": "Appleton",
+"state": "WI",
+"population": 73596,
+"lat": 44.2619309,
+"lon": -88.4153847,
+"major": false
+},
+{
+"name": "Shawnee",
+"state": "KS",
+"population": 64323,
+"lat": 39.0228485,
+"lon": -94.7151865,
+"major": false
+},
+{
+"name": "Livermore",
+"state": "CA",
+"population": 85156,
+"lat": 37.6818745,
+"lon": -121.7680088,
+"major": false
+},
+{
+"name": "Charlotte",
+"state": "NC",
+"population": 792862,
+"lat": 35.2270869,
+"lon": -80.8431267,
+"major": true
+},
+{
+"name": "Owensboro",
+"state": "KY",
+"population": 58416,
+"lat": 37.771907399999996,
+"lon": -87.1111676,
+"major": false
+},
+{
+"name": "Jupiter",
+"state": "FL",
+"population": 58298,
+"lat": 26.934224600000004,
+"lon": -80.09420870000001,
+"major": false
+},
+{
+"name": "Chicago",
+"state": "IL",
+"population": 2718782,
+"lat": 41.8781136,
+"lon": -87.62979820000001,
+"major": true
+},
+{
+"name": "Billings",
+"state": "MT",
+"population": 109059,
+"lat": 45.783285600000006,
+"lon": -108.50069040000001,
+"major": false
+},
+{
+"name": "New Haven",
+"state": "CT",
+"population": 130660,
+"lat": 41.308274,
+"lon": -72.9278835,
+"major": false
+},
+{
+"name": "Knoxville",
+"state": "TN",
+"population": 183270,
+"lat": 35.96063839999999,
+"lon": -83.9207392,
+"major": false
+},
+{
+"name": "Elyria",
+"state": "OH",
+"population": 53956,
+"lat": 41.36837979999999,
+"lon": -82.10764859999999,
+"major": false
+},
+{
+"name": "Alameda",
+"state": "CA",
+"population": 76419,
+"lat": 37.7652065,
+"lon": -122.2416355,
+"major": false
+},
+{
+"name": "Manteca",
+"state": "CA",
+"population": 71948,
+"lat": 37.797427299999995,
+"lon": -121.21605259999998,
+"major": false
+},
+{
+"name": "Medford",
+"state": "OR",
+"population": 77677,
+"lat": 42.3265152,
+"lon": -122.8755949,
+"major": false
+},
+{
+"name": "Murfreesboro",
+"state": "TN",
+"population": 117044,
+"lat": 35.8456213,
+"lon": -86.39027,
+"major": false
+},
+{
+"name": "Yuba City",
+"state": "CA",
+"population": 65416,
+"lat": 39.1404477,
+"lon": -121.6169108,
+"major": false
+},
+{
+"name": "Scranton",
+"state": "PA",
+"population": 75806,
+"lat": 41.408969,
+"lon": -75.66241219999999,
+"major": false
+},
+{
+"name": "Auburn",
+"state": "AL",
+"population": 58582,
+"lat": 32.6098566,
+"lon": -85.48078249999999,
+"major": false
+},
+{
+"name": "Vacaville",
+"state": "CA",
+"population": 94275,
+"lat": 38.3565773,
+"lon": -121.98774440000001,
+"major": false
+},
+{
+"name": "Santa Monica",
+"state": "CA",
+"population": 92472,
+"lat": 34.01945429999999,
+"lon": -118.4911912,
+"major": false
+},
+{
+"name": "Suffolk",
+"state": "VA",
+"population": 85728,
+"lat": 36.7282054,
+"lon": -76.5835621,
+"major": false
+},
+{
+"name": "Rochester Hills",
+"state": "MI",
+"population": 72952,
+"lat": 42.6583661,
+"lon": -83.14993220000001,
+"major": false
+},
+{
+"name": "Charleston",
+"state": "WV",
+"population": 50821,
+"lat": 38.3498195,
+"lon": -81.6326234,
+"major": false
+},
+{
+"name": "Delano",
+"state": "CA",
+"population": 52403,
+"lat": 35.7688425,
+"lon": -119.24705359999999,
+"major": false
+},
+{
+"name": "Charleston",
+"state": "SC",
+"population": 127999,
+"lat": 32.776474900000004,
+"lon": -79.9310512,
+"major": false
+},
+{
+"name": "Corona",
+"state": "CA",
+"population": 159503,
+"lat": 33.8752935,
+"lon": -117.56643840000001,
+"major": false
+},
+{
+"name": "Rocklin",
+"state": "CA",
+"population": 59738,
+"lat": 38.7907339,
+"lon": -121.2357828,
+"major": false
+},
+{
+"name": "Lee's Summit",
+"state": "MO",
+"population": 93184,
+"lat": 38.9108408,
+"lon": -94.3821724,
+"major": false
+},
+{
+"name": "Palm Coast",
+"state": "FL",
+"population": 78740,
+"lat": 29.584452399999996,
+"lon": -81.2078699,
+"major": false
+},
+{
+"name": "Sandy",
+"state": "UT",
+"population": 90231,
+"lat": 40.564978100000005,
+"lon": -111.8389726,
+"major": false
+},
+{
+"name": "Santa Clarita",
+"state": "CA",
+"population": 179590,
+"lat": 34.3916641,
+"lon": -118.54258600000001,
+"major": false
+},
+{
+"name": "New Braunfels",
+"state": "TX",
+"population": 63279,
+"lat": 29.7030024,
+"lon": -98.1244531,
+"major": false
+},
+{
+"name": "Memphis",
+"state": "TN",
+"population": 653450,
+"lat": 35.1495343,
+"lon": -90.0489801,
+"major": true
+},
+{
+"name": "Irving",
+"state": "TX",
+"population": 228653,
+"lat": 32.814017699999994,
+"lon": -96.9488945,
+"major": false
+},
+{
+"name": "Alexandria",
+"state": "VA",
+"population": 148892,
+"lat": 38.804835499999996,
+"lon": -77.0469214,
+"major": false
+},
+{
+"name": "Hesperia",
+"state": "CA",
+"population": 92147,
+"lat": 34.4263886,
+"lon": -117.3008784,
+"major": false
+},
+{
+"name": "Skokie",
+"state": "IL",
+"population": 65176,
+"lat": 42.0324025,
+"lon": -87.7416246,
+"major": false
+},
+{
+"name": "Bethlehem",
+"state": "PA",
+"population": 75018,
+"lat": 40.6259316,
+"lon": -75.3704579,
+"major": false
+},
+{
+"name": "St. Joseph",
+"state": "MO",
+"population": 77147,
+"lat": 39.767457799999995,
+"lon": -94.846681,
+"major": false
+},
+{
+"name": "Redondo Beach",
+"state": "CA",
+"population": 67815,
+"lat": 33.8491816,
+"lon": -118.3884078,
+"major": false
+},
+{
+"name": "Houston",
+"state": "TX",
+"population": 2195914,
+"lat": 29.7604267,
+"lon": -95.36980279999999,
+"major": true
+},
+{
+"name": "Temecula",
+"state": "CA",
+"population": 106780,
+"lat": 33.4936391,
+"lon": -117.14836480000001,
+"major": false
+},
+{
+"name": "Ann Arbor",
+"state": "MI",
+"population": 117025,
+"lat": 42.2808256,
+"lon": -83.7430378,
+"major": false
+},
+{
+"name": "Beaumont",
+"state": "TX",
+"population": 117796,
+"lat": 30.080174,
+"lon": -94.12655620000001,
+"major": false
+},
+{
+"name": "Santee",
+"state": "CA",
+"population": 56105,
+"lat": 32.8383828,
+"lon": -116.97391670000002,
+"major": false
+},
+{
+"name": "Tamarac",
+"state": "FL",
+"population": 63155,
+"lat": 26.2128609,
+"lon": -80.2497707,
+"major": false
+},
+{
+"name": "Bellevue",
+"state": "NE",
+"population": 53663,
+"lat": 41.154362299999995,
+"lon": -95.9145568,
+"major": false
+},
+{
+"name": "Pembroke Pines",
+"state": "FL",
+"population": 162329,
+"lat": 26.007765,
+"lon": -80.2962555,
+"major": false
+},
+{
+"name": "Springdale",
+"state": "AR",
+"population": 75229,
+"lat": 36.18674420000001,
+"lon": -94.1288141,
+"major": false
+},
+{
+"name": "Oxnard",
+"state": "CA",
+"population": 203007,
+"lat": 34.1975048,
+"lon": -119.17705159999998,
+"major": false
+},
+{
+"name": "Odessa",
+"state": "TX",
+"population": 110720,
+"lat": 31.8456816,
+"lon": -102.3676431,
+"major": false
+},
+{
+"name": "Brockton",
+"state": "MA",
+"population": 94089,
+"lat": 42.083433500000005,
+"lon": -71.0183787,
+"major": false
+},
+{
+"name": "Bayonne",
+"state": "NJ",
+"population": 65028,
+"lat": 40.6687141,
+"lon": -74.11430909999999,
+"major": false
+},
+{
+"name": "Paramount",
+"state": "CA",
+"population": 54980,
+"lat": 33.8894598,
+"lon": -118.15979109999998,
+"major": false
+},
+{
+"name": "Jersey City",
+"state": "NJ",
+"population": 257342,
+"lat": 40.7281575,
+"lon": -74.0776417,
+"major": false
+},
+{
+"name": "St. Paul",
+"state": "MN",
+"population": 294873,
+"lat": 44.953702899999996,
+"lon": -93.0899578,
+"major": false
+},
+{
+"name": "Deltona",
+"state": "FL",
+"population": 86290,
+"lat": 28.9005446,
+"lon": -81.2636738,
+"major": false
+},
+{
+"name": "Iowa City",
+"state": "IA",
+"population": 71591,
+"lat": 41.6611277,
+"lon": -91.5301683,
+"major": false
+},
+{
+"name": "Anaheim",
+"state": "CA",
+"population": 345012,
+"lat": 33.8352932,
+"lon": -117.91450359999999,
+"major": false
+},
+{
+"name": "Apple Valley",
+"state": "MN",
+"population": 50201,
+"lat": 44.7319094,
+"lon": -93.21772,
+"major": false
+},
+{
+"name": "Great Falls",
+"state": "MT",
+"population": 59351,
+"lat": 47.4941836,
+"lon": -111.2833449,
+"major": false
+},
+{
+"name": "West Valley City",
+"state": "UT",
+"population": 133579,
+"lat": 40.691613200000006,
+"lon": -112.00105009999999,
+"major": false
+},
+{
+"name": "Hampton",
+"state": "VA",
+"population": 136699,
+"lat": 37.0298687,
+"lon": -76.3452218,
+"major": false
+},
+{
+"name": "Georgetown",
+"state": "TX",
+"population": 54898,
+"lat": 30.633261800000003,
+"lon": -97.67798420000001,
+"major": false
+},
+{
+"name": "Orem",
+"state": "UT",
+"population": 91648,
+"lat": 40.2968979,
+"lon": -111.69464750000002,
+"major": false
+},
+{
+"name": "Little Rock",
+"state": "AR",
+"population": 197357,
+"lat": 34.7464809,
+"lon": -92.2895948,
+"major": false
+},
+{
+"name": "Santa Ana",
+"state": "CA",
+"population": 334227,
+"lat": 33.7455731,
+"lon": -117.8678338,
+"major": false
+},
+{
+"name": "White Plains",
+"state": "NY",
+"population": 57866,
+"lat": 41.0339862,
+"lon": -73.76290970000001,
+"major": false
+},
+{
+"name": "Idaho Falls",
+"state": "ID",
+"population": 58292,
+"lat": 43.491651399999995,
+"lon": -112.0339645,
+"major": false
+},
+{
+"name": "Bellevue",
+"state": "WA",
+"population": 133992,
+"lat": 47.610377,
+"lon": -122.20067859999999,
+"major": false
+},
+{
+"name": "Roseville",
+"state": "CA",
+"population": 127035,
+"lat": 38.752123499999996,
+"lon": -121.28800590000002,
+"major": false
+},
+{
+"name": "Perth Amboy",
+"state": "NJ",
+"population": 51982,
+"lat": 40.5067723,
+"lon": -74.2654234,
+"major": false
+},
+{
+"name": "Peabody",
+"state": "MA",
+"population": 52044,
+"lat": 42.5278731,
+"lon": -70.92866090000001,
+"major": false
+},
+{
+"name": "Grand Island",
+"state": "NE",
+"population": 50550,
+"lat": 40.92639570000001,
+"lon": -98.34201180000001,
+"major": false
+},
+{
+"name": "Columbia",
+"state": "MO",
+"population": 115276,
+"lat": 38.95170529999999,
+"lon": -92.33407240000001,
+"major": false
+},
+{
+"name": "Racine",
+"state": "WI",
+"population": 78199,
+"lat": 42.7261309,
+"lon": -87.78285229999999,
+"major": false
+},
+{
+"name": "Carmel",
+"state": "IN",
+"population": 85927,
+"lat": 39.978371,
+"lon": -86.1180435,
+"major": false
+},
+{
+"name": "Woodland",
+"state": "CA",
+"population": 56590,
+"lat": 38.6785157,
+"lon": -121.7732971,
+"major": false
+},
+{
+"name": "Revere",
+"state": "MA",
+"population": 53756,
+"lat": 42.408430200000005,
+"lon": -71.0119948,
+"major": false
+},
+{
+"name": "Euless",
+"state": "TX",
+"population": 53224,
+"lat": 32.8370727,
+"lon": -97.08195409999999,
+"major": false
+},
+{
+"name": "Arlington Heights",
+"state": "IL",
+"population": 75994,
+"lat": 42.0883603,
+"lon": -87.9806265,
+"major": false
+},
+{
+"name": "Hemet",
+"state": "CA",
+"population": 81750,
+"lat": 33.7475203,
+"lon": -116.97196840000001,
+"major": false
+},
+{
+"name": "High Point",
+"state": "NC",
+"population": 107741,
+"lat": 35.955692299999995,
+"lon": -80.0053176,
+"major": false
+},
+{
+"name": "Midwest City",
+"state": "OK",
+"population": 56756,
+"lat": 35.4495065,
+"lon": -97.39670190000001,
+"major": false
+},
+{
+"name": "San Marcos",
+"state": "CA",
+"population": 89387,
+"lat": 33.1433723,
+"lon": -117.1661449,
+"major": false
+},
+{
+"name": "Port Orange",
+"state": "FL",
+"population": 57203,
+"lat": 29.1383165,
+"lon": -80.9956105,
+"major": false
+},
+{
+"name": "Lakewood",
+"state": "CA",
+"population": 81121,
+"lat": 33.853626899999995,
+"lon": -118.13395630000001,
+"major": false
+},
+{
+"name": "Rockford",
+"state": "IL",
+"population": 150251,
+"lat": 42.2711311,
+"lon": -89.09399520000001,
+"major": false
+},
+{
+"name": "El Cajon",
+"state": "CA",
+"population": 102211,
+"lat": 32.7947731,
+"lon": -116.96252690000001,
+"major": false
+},
+{
+"name": "St. Petersburg",
+"state": "FL",
+"population": 249688,
+"lat": 27.773056,
+"lon": -82.64,
+"major": false
+},
+{
+"name": "Milford",
+"state": "CT",
+"population": 51644,
+"lat": 41.2306979,
+"lon": -73.064036,
+"major": false
+},
+{
+"name": "Albany",
+"state": "OR",
+"population": 51583,
+"lat": 44.6365107,
+"lon": -123.10592820000001,
+"major": false
+},
+{
+"name": "Las Vegas",
+"state": "NV",
+"population": 603488,
+"lat": 36.169941200000004,
+"lon": -115.13982959999998,
+"major": true
+},
+{
+"name": "Pasadena",
+"state": "TX",
+"population": 152735,
+"lat": 29.6910625,
+"lon": -95.2091006,
+"major": false
+},
+{
+"name": "Port St. Lucie",
+"state": "FL",
+"population": 171016,
+"lat": 27.273049199999996,
+"lon": -80.3582261,
+"major": false
+},
+{
+"name": "Cedar Rapids",
+"state": "IA",
+"population": 128429,
+"lat": 41.9778795,
+"lon": -91.66562320000001,
+"major": false
+},
+{
+"name": "Quincy",
+"state": "MA",
+"population": 93494,
+"lat": 42.25287720000001,
+"lon": -71.0022705,
+"major": false
+},
+{
+"name": "Miramar",
+"state": "FL",
+"population": 130288,
+"lat": 25.9860762,
+"lon": -80.3035602,
+"major": false
+},
+{
+"name": "El Paso",
+"state": "TX",
+"population": 674433,
+"lat": 31.7775757,
+"lon": -106.44245590000001,
+"major": true
+},
+{
+"name": "Topeka",
+"state": "KS",
+"population": 127679,
+"lat": 39.055823499999995,
+"lon": -95.6890185,
+"major": false
+},
+{
+"name": "Rosemead",
+"state": "CA",
+"population": 54561,
+"lat": 34.0805651,
+"lon": -118.072846,
+"major": false
+},
+{
+"name": "Minnetonka",
+"state": "MN",
+"population": 51368,
+"lat": 44.9211836,
+"lon": -93.46874890000001,
+"major": false
+},
+{
+"name": "Akron",
+"state": "OH",
+"population": 198100,
+"lat": 41.081444700000006,
+"lon": -81.51900529999999,
+"major": false
+},
+{
+"name": "Edinburg",
+"state": "TX",
+"population": 80836,
+"lat": 26.3017374,
+"lon": -98.1633432,
+"major": false
+},
+{
+"name": "Rancho Cucamonga",
+"state": "CA",
+"population": 171386,
+"lat": 34.1063989,
+"lon": -117.5931084,
+"major": false
+},
+{
+"name": "North Charleston",
+"state": "SC",
+"population": 104054,
+"lat": 32.8546197,
+"lon": -79.9748103,
+"major": false
+},
+{
+"name": "Louisville",
+"state": "KY",
+"population": 609893,
+"lat": 38.252664700000004,
+"lon": -85.7584557,
+"major": true
+},
+{
+"name": "Watsonville",
+"state": "CA",
+"population": 52477,
+"lat": 36.910231,
+"lon": -121.7568946,
+"major": false
+},
+{
+"name": "Coconut Creek",
+"state": "FL",
+"population": 56792,
+"lat": 26.2517482,
+"lon": -80.17893509999999,
+"major": false
+},
+{
+"name": "Bradenton",
+"state": "FL",
+"population": 51763,
+"lat": 27.4989278,
+"lon": -82.5748194,
+"major": false
+},
+{
+"name": "Carlsbad",
+"state": "CA",
+"population": 110972,
+"lat": 33.158093300000004,
+"lon": -117.3505939,
+"major": false
+},
+{
+"name": "Redding",
+"state": "CA",
+"population": 91119,
+"lat": 40.5865396,
+"lon": -122.3916754,
+"major": false
+},
+{
+"name": "Wyoming",
+"state": "MI",
+"population": 74100,
+"lat": 42.9133602,
+"lon": -85.7053085,
+"major": false
+},
+{
+"name": "Lorain",
+"state": "OH",
+"population": 63710,
+"lat": 41.452819,
+"lon": -82.18237459999999,
+"major": false
+},
+{
+"name": "Fort Lauderdale",
+"state": "FL",
+"population": 172389,
+"lat": 26.122438600000002,
+"lon": -80.13731740000001,
+"major": false
+},
+{
+"name": "Warner Robins",
+"state": "GA",
+"population": 72531,
+"lat": 32.6130007,
+"lon": -83.624201,
+"major": false
+},
+{
+"name": "Clearwater",
+"state": "FL",
+"population": 109703,
+"lat": 27.9658533,
+"lon": -82.8001026,
+"major": false
+},
+{
+"name": "Terre Haute",
+"state": "IN",
+"population": 61025,
+"lat": 39.4667034,
+"lon": -87.4139092,
+"major": false
+},
+{
+"name": "Temple",
+"state": "TX",
+"population": 70190,
+"lat": 31.0982344,
+"lon": -97.342782,
+"major": false
+},
+{
+"name": "Sioux Falls",
+"state": "SD",
+"population": 164676,
+"lat": 43.5445959,
+"lon": -96.73110340000001,
+"major": false
+},
+{
+"name": "Margate",
+"state": "FL",
+"population": 55456,
+"lat": 26.244526300000004,
+"lon": -80.206436,
+"major": false
+},
+{
+"name": "Warwick",
+"state": "RI",
+"population": 81971,
+"lat": 41.700100899999995,
+"lon": -71.4161671,
+"major": false
+},
+{
+"name": "Bakersfield",
+"state": "CA",
+"population": 363630,
+"lat": 35.3732921,
+"lon": -119.0187125,
+"major": false
+},
+{
+"name": "Miami",
+"state": "FL",
+"population": 417650,
+"lat": 25.7616798,
+"lon": -80.1917902,
+"major": false
+},
+{
+"name": "Lake Charles",
+"state": "LA",
+"population": 74024,
+"lat": 30.226594899999995,
+"lon": -93.21737579999999,
+"major": false
+},
+{
+"name": "Richland",
+"state": "WA",
+"population": 52413,
+"lat": 46.2856907,
+"lon": -119.2844621,
+"major": false
+},
+{
+"name": "South San Francisco",
+"state": "CA",
+"population": 66174,
+"lat": 37.654656,
+"lon": -122.40774979999999,
+"major": false
+},
+{
+"name": "Plymouth",
+"state": "MN",
+"population": 73987,
+"lat": 45.01051939999999,
+"lon": -93.4555093,
+"major": false
+},
+{
+"name": "South Bend",
+"state": "IN",
+"population": 100886,
+"lat": 41.676354499999995,
+"lon": -86.25198979999999,
+"major": false
+},
+{
+"name": "Edmond",
+"state": "OK",
+"population": 87004,
+"lat": 35.6528323,
+"lon": -97.4780954,
+"major": false
+},
+{
+"name": "Des Moines",
+"state": "IA",
+"population": 207510,
+"lat": 41.600544799999994,
+"lon": -93.6091064,
+"major": false
+},
+{
+"name": "Whittier",
+"state": "CA",
+"population": 86635,
+"lat": 33.97917929999999,
+"lon": -118.032844,
+"major": false
+},
+{
+"name": "Livonia",
+"state": "MI",
+"population": 95208,
+"lat": 42.36837,
+"lon": -83.3527097,
+"major": false
+},
+{
+"name": "Milwaukee",
+"state": "WI",
+"population": 599164,
+"lat": 43.0389025,
+"lon": -87.9064736,
+"major": true
+},
+{
+"name": "Auburn",
+"state": "WA",
+"population": 74860,
+"lat": 47.307322799999994,
+"lon": -122.22845320000002,
+"major": false
+},
+{
+"name": "Renton",
+"state": "WA",
+"population": 97003,
+"lat": 47.4828776,
+"lon": -122.21706609999998,
+"major": false
+},
+{
+"name": "Centennial",
+"state": "CO",
+"population": 106114,
+"lat": 39.5807452,
+"lon": -104.87717260000001,
+"major": false
+},
+{
+"name": "Richmond",
+"state": "VA",
+"population": 214114,
+"lat": 37.540724600000004,
+"lon": -77.4360481,
+"major": false
+},
+{
+"name": "Anderson",
+"state": "IN",
+"population": 55670,
+"lat": 40.1053196,
+"lon": -85.6802541,
+"major": false
+},
+{
+"name": "Pflugerville",
+"state": "TX",
+"population": 53752,
+"lat": 30.4393696,
+"lon": -97.62000429999999,
+"major": false
+},
+{
+"name": "Hoboken",
+"state": "NJ",
+"population": 52575,
+"lat": 40.7439905,
+"lon": -74.0323626,
+"major": false
+},
+{
+"name": "Lexington-Fayette",
+"state": "KY",
+"population": 308428,
+"lat": 38.040583700000006,
+"lon": -84.50371640000002,
+"major": false
+},
+{
+"name": "Norwalk",
+"state": "CA",
+"population": 106589,
+"lat": 33.9022367,
+"lon": -118.08173300000001,
+"major": false
+},
+{
+"name": "Yuma",
+"state": "AZ",
+"population": 91923,
+"lat": 32.6926512,
+"lon": -114.62769159999999,
+"major": false
+},
+{
+"name": "Highland",
+"state": "CA",
+"population": 54291,
+"lat": 34.1283442,
+"lon": -117.2086513,
+"major": false
+},
+{
+"name": "Joliet",
+"state": "IL",
+"population": 147806,
+"lat": 41.525031,
+"lon": -88.0817251,
+"major": false
+},
+{
+"name": "Rock Hill",
+"state": "SC",
+"population": 69103,
+"lat": 34.9248667,
+"lon": -81.02507840000001,
+"major": false
+},
+{
+"name": "Rancho Cordova",
+"state": "CA",
+"population": 67911,
+"lat": 38.5890723,
+"lon": -121.302728,
+"major": false
+},
+{
+"name": "Dearborn Heights",
+"state": "MI",
+"population": 56620,
+"lat": 42.3369816,
+"lon": -83.2732627,
+"major": false
+},
+{
+"name": "Honolulu",
+"state": "HI",
+"population": 347884,
+"lat": 21.3069444,
+"lon": -157.8583333,
+"major": false
+},
+{
+"name": "Victoria",
+"state": "TX",
+"population": 65098,
+"lat": 28.805267399999998,
+"lon": -97.00359820000001,
+"major": false
+},
+{
+"name": "Carrollton",
+"state": "TX",
+"population": 126700,
+"lat": 32.975641499999995,
+"lon": -96.88996359999999,
+"major": false
+},
+{
+"name": "Hoffman Estates",
+"state": "IL",
+"population": 52398,
+"lat": 42.062991499999995,
+"lon": -88.1227199,
+"major": false
+},
+{
+"name": "North Port",
+"state": "FL",
+"population": 59212,
+"lat": 27.044224,
+"lon": -82.23592540000001,
+"major": false
+},
+{
+"name": "Rockville",
+"state": "MD",
+"population": 64072,
+"lat": 39.0839973,
+"lon": -77.1527578,
+"major": false
+},
+{
+"name": "Burbank",
+"state": "CA",
+"population": 104709,
+"lat": 34.18083920000001,
+"lon": -118.30896609999998,
+"major": false
+},
+{
+"name": "Fullerton",
+"state": "CA",
+"population": 138981,
+"lat": 33.8703596,
+"lon": -117.9242966,
+"major": false
+},
+{
+"name": "Oshkosh",
+"state": "WI",
+"population": 66778,
+"lat": 44.024706200000004,
+"lon": -88.5426136,
+"major": false
+},
+{
+"name": "Farmington Hills",
+"state": "MI",
+"population": 81295,
+"lat": 42.4989936,
+"lon": -83.3677168,
+"major": false
+},
+{
+"name": "Pico Rivera",
+"state": "CA",
+"population": 63771,
+"lat": 33.9830688,
+"lon": -118.09673500000001,
+"major": false
+},
+{
+"name": "Grand Junction",
+"state": "CO",
+"population": 59778,
+"lat": 39.0638705,
+"lon": -108.5506486,
+"major": false
+},
+{
+"name": "Enid",
+"state": "OK",
+"population": 50725,
+"lat": 36.3955891,
+"lon": -97.8783911,
+"major": false
+},
+{
+"name": "San Jose",
+"state": "CA",
+"population": 998537,
+"lat": 37.338208200000004,
+"lon": -121.88632859999998,
+"major": true
+},
+{
+"name": "Round Rock",
+"state": "TX",
+"population": 109821,
+"lat": 30.508255100000003,
+"lon": -97.678896,
+"major": false
+},
+{
+"name": "Maple Grove",
+"state": "MN",
+"population": 65415,
+"lat": 45.072464200000006,
+"lon": -93.4557877,
+"major": false
+},
+{
+"name": "Norman",
+"state": "OK",
+"population": 118197,
+"lat": 35.222566799999996,
+"lon": -97.4394777,
+"major": false
+},
+{
+"name": "Homestead",
+"state": "FL",
+"population": 64079,
+"lat": 25.468722399999997,
+"lon": -80.4775569,
+"major": false
+},
+{
+"name": "Irvine",
+"state": "CA",
+"population": 236716,
+"lat": 33.6839473,
+"lon": -117.79469420000001,
+"major": false
+},
+{
+"name": "Pocatello",
+"state": "ID",
+"population": 54350,
+"lat": 42.8713032,
+"lon": -112.4455344,
+"major": false
+},
+{
+"name": "Bossier City",
+"state": "LA",
+"population": 66333,
+"lat": 32.5159852,
+"lon": -93.7321228,
+"major": false
+},
+{
+"name": "Cedar Park",
+"state": "TX",
+"population": 61238,
+"lat": 30.505197999999996,
+"lon": -97.82028879999999,
+"major": false
+},
+{
+"name": "Sandy Springs",
+"state": "GA",
+"population": 99770,
+"lat": 33.9304352,
+"lon": -84.3733147,
+"major": false
+},
+{
+"name": "Champaign",
+"state": "IL",
+"population": 83424,
+"lat": 40.116420399999996,
+"lon": -88.2433829,
+"major": false
+},
+{
+"name": "Clifton",
+"state": "NJ",
+"population": 85390,
+"lat": 40.858432799999996,
+"lon": -74.16375529999999,
+"major": false
+},
+{
+"name": "Moore",
+"state": "OK",
+"population": 58414,
+"lat": 35.339507899999994,
+"lon": -97.48670279999999,
+"major": false
+},
+{
+"name": "Blue Springs",
+"state": "MO",
+"population": 53294,
+"lat": 39.0169509,
+"lon": -94.2816148,
+"major": false
+},
+{
+"name": "Lancaster",
+"state": "CA",
+"population": 159523,
+"lat": 34.6867846,
+"lon": -118.1541632,
+"major": false
+},
+{
+"name": "Bryan",
+"state": "TX",
+"population": 78709,
+"lat": 30.674364299999997,
+"lon": -96.3699632,
+"major": false
+},
+{
+"name": "Cape Coral",
+"state": "FL",
+"population": 165831,
+"lat": 26.5628537,
+"lon": -81.94953309999998,
+"major": false
+},
+{
+"name": "Cupertino",
+"state": "CA",
+"population": 60189,
+"lat": 37.322997799999996,
+"lon": -122.03218229999999,
+"major": false
+},
+{
+"name": "Gilroy",
+"state": "CA",
+"population": 51701,
+"lat": 37.0057816,
+"lon": -121.5682751,
+"major": false
+},
+{
+"name": "Manchester",
+"state": "NH",
+"population": 110378,
+"lat": 42.995639700000005,
+"lon": -71.4547891,
+"major": false
+},
+{
+"name": "Virginia Beach",
+"state": "VA",
+"population": 448479,
+"lat": 36.8529263,
+"lon": -75.977985,
+"major": false
+},
+{
+"name": "Somerville",
+"state": "MA",
+"population": 78804,
+"lat": 42.3875968,
+"lon": -71.0994968,
+"major": false
+},
+{
+"name": "Largo",
+"state": "FL",
+"population": 78409,
+"lat": 27.909466499999997,
+"lon": -82.7873244,
+"major": false
+},
+{
+"name": "Fresno",
+"state": "CA",
+"population": 509924,
+"lat": 36.7468422,
+"lon": -119.7725868,
+"major": true
+},
+{
+"name": "Berwyn",
+"state": "IL",
+"population": 56758,
+"lat": 41.8505874,
+"lon": -87.79366850000001,
+"major": false
+},
+{
+"name": "Palm Beach Gardens",
+"state": "FL",
+"population": 50699,
+"lat": 26.8233946,
+"lon": -80.1386547,
+"major": false
+},
+{
+"name": "Pawtucket",
+"state": "RI",
+"population": 71172,
+"lat": 41.878710999999996,
+"lon": -71.38255579999999,
+"major": false
+},
+{
+"name": "Winston-Salem",
+"state": "NC",
+"population": 236441,
+"lat": 36.0998596,
+"lon": -80.24421600000001,
+"major": false
+},
+{
+"name": "Alpharetta",
+"state": "GA",
+"population": 62298,
+"lat": 34.07537620000001,
+"lon": -84.2940899,
+"major": false
+},
+{
+"name": "O'Fallon",
+"state": "MO",
+"population": 82809,
+"lat": 38.8106075,
+"lon": -90.6998477,
+"major": false
+},
+{
+"name": "Redwood City",
+"state": "CA",
+"population": 80872,
+"lat": 37.4852152,
+"lon": -122.2363548,
+"major": false
+},
+{
+"name": "Union City",
+"state": "CA",
+"population": 72528,
+"lat": 37.59339179999999,
+"lon": -122.0438298,
+"major": false
+},
+{
+"name": "Aliso Viejo",
+"state": "CA",
+"population": 50175,
+"lat": 33.5676842,
+"lon": -117.72560829999999,
+"major": false
+},
+{
+"name": "Menifee",
+"state": "CA",
+"population": 83447,
+"lat": 33.6971468,
+"lon": -117.185294,
+"major": false
+},
+{
+"name": "Loveland",
+"state": "CO",
+"population": 71334,
+"lat": 40.397761200000005,
+"lon": -105.0749801,
+"major": false
+},
+{
+"name": "Providence",
+"state": "RI",
+"population": 177994,
+"lat": 41.8239891,
+"lon": -71.4128343,
+"major": false
+},
+{
+"name": "Hialeah",
+"state": "FL",
+"population": 233394,
+"lat": 25.8575963,
+"lon": -80.2781057,
+"major": false
+},
+{
+"name": "San Ramon",
+"state": "CA",
+"population": 74513,
+"lat": 37.7799273,
+"lon": -121.9780153,
+"major": false
+},
+{
+"name": "Ontario",
+"state": "CA",
+"population": 167500,
+"lat": 34.0633443,
+"lon": -117.65088759999999,
+"major": false
+},
+{
+"name": "Kirkland",
+"state": "WA",
+"population": 84430,
+"lat": 47.6814875,
+"lon": -122.20873529999999,
+"major": false
+},
+{
+"name": "St. George",
+"state": "UT",
+"population": 76817,
+"lat": 37.0965278,
+"lon": -113.5684164,
+"major": false
+},
+{
+"name": "Glendale",
+"state": "CA",
+"population": 196021,
+"lat": 34.1425078,
+"lon": -118.255075,
+"major": false
+},
+{
+"name": "Meriden",
+"state": "CT",
+"population": 60456,
+"lat": 41.5381535,
+"lon": -72.8070435,
+"major": false
+},
+{
+"name": "Gardena",
+"state": "CA",
+"population": 59957,
+"lat": 33.8883487,
+"lon": -118.30896240000001,
+"major": false
+},
+{
+"name": "Elgin",
+"state": "IL",
+"population": 110145,
+"lat": 42.035408399999994,
+"lon": -88.2825668,
+"major": false
+},
+{
+"name": "Plano",
+"state": "TX",
+"population": 274409,
+"lat": 33.0198431,
+"lon": -96.6988856,
+"major": false
+},
+{
+"name": "Longmont",
+"state": "CO",
+"population": 89919,
+"lat": 40.167206799999995,
+"lon": -105.10192749999999,
+"major": false
+},
+{
+"name": "Lakewood",
+"state": "OH",
+"population": 51143,
+"lat": 41.481993200000005,
+"lon": -81.7981908,
+"major": false
+},
+{
+"name": "Jonesboro",
+"state": "AR",
+"population": 71551,
+"lat": 35.8422967,
+"lon": -90.704279,
+"major": false
+},
+{
+"name": "College Station",
+"state": "TX",
+"population": 100050,
+"lat": 30.627977,
+"lon": -96.3344068,
+"major": false
+},
+{
+"name": "Dearborn",
+"state": "MI",
+"population": 95884,
+"lat": 42.3222599,
+"lon": -83.1763145,
+"major": false
+},
+{
+"name": "Utica",
+"state": "NY",
+"population": 61808,
+"lat": 43.100903,
+"lon": -75.232664,
+"major": false
+},
+{
+"name": "Baltimore",
+"state": "MD",
+"population": 622104,
+"lat": 39.2903848,
+"lon": -76.6121893,
+"major": true
+},
+{
+"name": "Springfield",
+"state": "MO",
+"population": 164122,
+"lat": 37.20895720000001,
+"lon": -93.2922989,
+"major": false
+},
+{
+"name": "Plainfield",
+"state": "NJ",
+"population": 50588,
+"lat": 40.6337136,
+"lon": -74.40737359999999,
+"major": false
+},
+{
+"name": "Lynn",
+"state": "MA",
+"population": 91589,
+"lat": 42.466763,
+"lon": -70.9494938,
+"major": false
+},
+{
+"name": "Woodbury",
+"state": "MN",
+"population": 65656,
+"lat": 44.923855200000006,
+"lon": -92.9593797,
+"major": false
+},
+{
+"name": "Gainesville",
+"state": "FL",
+"population": 127488,
+"lat": 29.6516344,
+"lon": -82.3248262,
+"major": false
+},
+{
+"name": "Sammamish",
+"state": "WA",
+"population": 50169,
+"lat": 47.616268299999994,
+"lon": -122.0355736,
+"major": false
+},
+{
+"name": "Fayetteville",
+"state": "AR",
+"population": 78960,
+"lat": 36.0625795,
+"lon": -94.1574263,
+"major": false
+},
+{
+"name": "San Rafael",
+"state": "CA",
+"population": 58994,
+"lat": 37.9735346,
+"lon": -122.5310874,
+"major": false
+},
+{
+"name": "Conway",
+"state": "AR",
+"population": 63816,
+"lat": 35.0886963,
+"lon": -92.44210109999999,
+"major": false
+},
+{
+"name": "Tacoma",
+"state": "WA",
+"population": 203446,
+"lat": 47.252876799999996,
+"lon": -122.4442906,
+"major": false
+},
+{
+"name": "New York",
+"state": "NY",
+"population": 8405837,
+"lat": 40.7127837,
+"lon": -74.00594129999999,
+"major": true
+},
+{
+"name": "Simi Valley",
+"state": "CA",
+"population": 126181,
+"lat": 34.2694474,
+"lon": -118.78148200000001,
+"major": false
+},
+{
+"name": "West Covina",
+"state": "CA",
+"population": 107740,
+"lat": 34.0686208,
+"lon": -117.93895259999998,
+"major": false
+},
+{
+"name": "Castle Rock",
+"state": "CO",
+"population": 53063,
+"lat": 39.372212100000006,
+"lon": -104.8560902,
+"major": false
+},
+{
+"name": "Valdosta",
+"state": "GA",
+"population": 56481,
+"lat": 30.8327022,
+"lon": -83.2784851,
+"major": false
+},
+{
+"name": "Fort Worth",
+"state": "TX",
+"population": 792727,
+"lat": 32.7554883,
+"lon": -97.3307658,
+"major": true
+},
+{
+"name": "Carson",
+"state": "CA",
+"population": 92599,
+"lat": 33.8316745,
+"lon": -118.28169299999999,
+"major": false
+},
+{
+"name": "Evansville",
+"state": "IN",
+"population": 120310,
+"lat": 37.9715592,
+"lon": -87.5710898,
+"major": false
+},
+{
+"name": "Santa Maria",
+"state": "CA",
+"population": 102216,
+"lat": 34.953033700000006,
+"lon": -120.43571909999999,
+"major": false
+},
+{
+"name": "La Mesa",
+"state": "CA",
+"population": 58642,
+"lat": 32.7678287,
+"lon": -117.02308390000002,
+"major": false
+},
+{
+"name": "Westminster",
+"state": "CO",
+"population": 110945,
+"lat": 39.836652799999996,
+"lon": -105.03720459999998,
+"major": false
+},
+{
+"name": "Reading",
+"state": "PA",
+"population": 87893,
+"lat": 40.335648299999995,
+"lon": -75.9268747,
+"major": false
+},
+{
+"name": "Turlock",
+"state": "CA",
+"population": 70365,
+"lat": 37.494656799999994,
+"lon": -120.84659409999999,
+"major": false
+},
+{
+"name": "Greeley",
+"state": "CO",
+"population": 96539,
+"lat": 40.42331420000001,
+"lon": -104.7091322,
+"major": false
+},
+{
+"name": "Tyler",
+"state": "TX",
+"population": 100223,
+"lat": 32.351260100000005,
+"lon": -95.3010624,
+"major": false
+},
+{
+"name": "Waco",
+"state": "TX",
+"population": 129030,
+"lat": 31.549333,
+"lon": -97.1466695,
+"major": false
+},
+{
+"name": "Thousand Oaks",
+"state": "CA",
+"population": 128731,
+"lat": 34.1705609,
+"lon": -118.83759369999999,
+"major": false
+},
+{
+"name": "Bridgeport",
+"state": "CT",
+"population": 147216,
+"lat": 41.18654779999999,
+"lon": -73.1951767,
+"major": false
+},
+{
+"name": "Pasco",
+"state": "WA",
+"population": 67599,
+"lat": 46.239579299999995,
+"lon": -119.10056570000002,
+"major": false
+},
+{
+"name": "Torrance",
+"state": "CA",
+"population": 147478,
+"lat": 33.835849200000006,
+"lon": -118.34062879999999,
+"major": false
+},
+{
+"name": "Madison",
+"state": "WI",
+"population": 243344,
+"lat": 43.07305170000001,
+"lon": -89.4012302,
+"major": false
+},
+{
+"name": "Janesville",
+"state": "WI",
+"population": 63820,
+"lat": 42.6827885,
+"lon": -89.01872220000001,
+"major": false
+},
+{
+"name": "Waukegan",
+"state": "IL",
+"population": 88826,
+"lat": 42.3636331,
+"lon": -87.84479379999999,
+"major": false
+},
+{
+"name": "Bowling Green",
+"state": "KY",
+"population": 61488,
+"lat": 36.9685219,
+"lon": -86.48080429999999,
+"major": false
+},
+{
+"name": "Arlington",
+"state": "TX",
+"population": 379577,
+"lat": 32.735687,
+"lon": -97.10806559999999,
+"major": false
+},
+{
+"name": "Lewisville",
+"state": "TX",
+"population": 101074,
+"lat": 33.046233,
+"lon": -96.994174,
+"major": false
+},
+{
+"name": "Palo Alto",
+"state": "CA",
+"population": 66642,
+"lat": 37.441883399999995,
+"lon": -122.14301950000001,
+"major": false
+},
+{
+"name": "Springfield",
+"state": "OR",
+"population": 60177,
+"lat": 44.0462362,
+"lon": -123.02202890000001,
+"major": false
+},
+{
+"name": "New Bedford",
+"state": "MA",
+"population": 95078,
+"lat": 41.6362152,
+"lon": -70.934205,
+"major": false
+},
+{
+"name": "Redmond",
+"state": "WA",
+"population": 57530,
+"lat": 47.6739881,
+"lon": -122.12151200000001,
+"major": false
+},
+{
+"name": "Brentwood",
+"state": "CA",
+"population": 55000,
+"lat": 37.931868,
+"lon": -121.6957863,
+"major": false
+},
+{
+"name": "Davis",
+"state": "CA",
+"population": 66205,
+"lat": 38.5449065,
+"lon": -121.74051670000001,
+"major": false
+},
+{
+"name": "Dothan",
+"state": "AL",
+"population": 68001,
+"lat": 31.223231300000002,
+"lon": -85.39048879999999,
+"major": false
+},
+{
+"name": "East Orange",
+"state": "NJ",
+"population": 64544,
+"lat": 40.767323,
+"lon": -74.20486770000001,
+"major": false
+},
+{
+"name": "Tinley Park",
+"state": "IL",
+"population": 57282,
+"lat": 41.5731442,
+"lon": -87.7932939,
+"major": false
+},
+{
+"name": "Garden Grove",
+"state": "CA",
+"population": 175140,
+"lat": 33.773905299999996,
+"lon": -117.9414477,
+"major": false
+},
+{
+"name": "Lynwood",
+"state": "CA",
+"population": 71371,
+"lat": 33.930293,
+"lon": -118.21146029999998,
+"major": false
+},
+{
+"name": "Canton",
+"state": "OH",
+"population": 72535,
+"lat": 40.7989473,
+"lon": -81.378447,
+"major": false
+},
+{
+"name": "Brookhaven",
+"state": "GA",
+"population": 50603,
+"lat": 33.8651033,
+"lon": -84.3365917,
+"major": false
+},
+{
+"name": "Baton Rouge",
+"state": "LA",
+"population": 229426,
+"lat": 30.458282899999997,
+"lon": -91.1403196,
+"major": false
+},
+{
+"name": "Bristol",
+"state": "CT",
+"population": 60568,
+"lat": 41.6717648,
+"lon": -72.9492703,
+"major": false
+},
+{
+"name": "Independence",
+"state": "MO",
+"population": 117240,
+"lat": 39.0911161,
+"lon": -94.4155068,
+"major": false
+},
+{
+"name": "Lansing",
+"state": "MI",
+"population": 113972,
+"lat": 42.732535,
+"lon": -84.55553470000001,
+"major": false
+},
+{
+"name": "Orland Park",
+"state": "IL",
+"population": 58590,
+"lat": 41.6303103,
+"lon": -87.8539425,
+"major": false
+},
+{
+"name": "Vineland",
+"state": "NJ",
+"population": 61050,
+"lat": 39.4863773,
+"lon": -75.0259637,
+"major": false
+},
+{
+"name": "Green Bay",
+"state": "WI",
+"population": 104779,
+"lat": 44.519159,
+"lon": -88.019826,
+"major": false
+},
+{
+"name": "Evanston",
+"state": "IL",
+"population": 75570,
+"lat": 42.0450722,
+"lon": -87.6876969,
+"major": false
+},
+{
+"name": "Los Angeles",
+"state": "CA",
+"population": 3884307,
+"lat": 34.0522342,
+"lon": -118.24368490000002,
+"major": true
+},
+{
+"name": "Federal Way",
+"state": "WA",
+"population": 92734,
+"lat": 47.3223221,
+"lon": -122.3126222,
+"major": false
+},
+{
+"name": "West Jordan",
+"state": "UT",
+"population": 110077,
+"lat": 40.6096698,
+"lon": -111.9391031,
+"major": false
+},
+{
+"name": "Yucaipa",
+"state": "CA",
+"population": 52536,
+"lat": 34.033625,
+"lon": -117.0430865,
+"major": false
+},
+{
+"name": "Pittsburgh",
+"state": "PA",
+"population": 305841,
+"lat": 40.440624799999995,
+"lon": -79.9958864,
+"major": false
+},
+{
+"name": "Downey",
+"state": "CA",
+"population": 113242,
+"lat": 33.9401088,
+"lon": -118.13315929999999,
+"major": false
+},
+{
+"name": "Cicero",
+"state": "IL",
+"population": 84103,
+"lat": 41.8455877,
+"lon": -87.7539448,
+"major": false
+},
+{
+"name": "South Gate",
+"state": "CA",
+"population": 95677,
+"lat": 33.954737,
+"lon": -118.21201609999999,
+"major": false
+},
+{
+"name": "Joplin",
+"state": "MO",
+"population": 50789,
+"lat": 37.0842271,
+"lon": -94.513281,
+"major": false
+},
+{
+"name": "League City",
+"state": "TX",
+"population": 90983,
+"lat": 29.5074538,
+"lon": -95.0949303,
+"major": false
+},
+{
+"name": "Salt Lake City",
+"state": "UT",
+"population": 191180,
+"lat": 40.760779299999996,
+"lon": -111.89104740000002,
+"major": false
+},
+{
+"name": "Phoenix",
+"state": "AZ",
+"population": 1513367,
+"lat": 33.4483771,
+"lon": -112.07403729999999,
+"major": true
+},
+{
+"name": "Corvallis",
+"state": "OR",
+"population": 55298,
+"lat": 44.5645659,
+"lon": -123.2620435,
+"major": false
+},
+{
+"name": "Chicopee",
+"state": "MA",
+"population": 55717,
+"lat": 42.14870429999999,
+"lon": -72.6078672,
+"major": false
+},
+{
+"name": "Ocala",
+"state": "FL",
+"population": 57468,
+"lat": 29.187198600000002,
+"lon": -82.14009229999999,
+"major": false
+},
+{
+"name": "Roswell",
+"state": "GA",
+"population": 94034,
+"lat": 34.0232431,
+"lon": -84.36155550000001,
+"major": false
+},
+{
+"name": "Huntington Beach",
+"state": "CA",
+"population": 197575,
+"lat": 33.660297,
+"lon": -117.99922649999999,
+"major": false
+},
+{
+"name": "Corpus Christi",
+"state": "TX",
+"population": 316381,
+"lat": 27.800582799999997,
+"lon": -97.396381,
+"major": false
+},
+{
+"name": "Haverhill",
+"state": "MA",
+"population": 62088,
+"lat": 42.7762015,
+"lon": -71.0772796,
+"major": false
+},
+{
+"name": "Cambridge",
+"state": "MA",
+"population": 107289,
+"lat": 42.373615799999996,
+"lon": -71.10973349999999,
+"major": false
+},
+{
+"name": "Glendale",
+"state": "AZ",
+"population": 234632,
+"lat": 33.538652299999995,
+"lon": -112.18598659999999,
+"major": false
+},
+{
+"name": "Davenport",
+"state": "IA",
+"population": 102157,
+"lat": 41.5236437,
+"lon": -90.57763670000001,
+"major": false
+},
+{
+"name": "Boca Raton",
+"state": "FL",
+"population": 89407,
+"lat": 26.3683064,
+"lon": -80.1289321,
+"major": false
+},
+{
+"name": "New Britain",
+"state": "CT",
+"population": 72939,
+"lat": 41.6612104,
+"lon": -72.77954190000001,
+"major": false
+},
+{
+"name": "Gresham",
+"state": "OR",
+"population": 109397,
+"lat": 45.5001357,
+"lon": -122.43020130000001,
+"major": false
+},
+{
+"name": "Lauderhill",
+"state": "FL",
+"population": 69813,
+"lat": 26.1403635,
+"lon": -80.2133808,
+"major": false
+},
+{
+"name": "Hendersonville",
+"state": "TN",
+"population": 54068,
+"lat": 36.304773499999996,
+"lon": -86.6199957,
+"major": false
+},
+{
+"name": "Santa Clara",
+"state": "CA",
+"population": 120245,
+"lat": 37.354107899999995,
+"lon": -121.9552356,
+"major": false
+},
+{
+"name": "Oceanside",
+"state": "CA",
+"population": 172794,
+"lat": 33.1958696,
+"lon": -117.3794834,
+"major": false
+},
+{
+"name": "Lake Forest",
+"state": "CA",
+"population": 79312,
+"lat": 33.6469661,
+"lon": -117.689218,
+"major": false
+},
+{
+"name": "Novi",
+"state": "MI",
+"population": 57960,
+"lat": 42.48059,
+"lon": -83.47549129999999,
+"major": false
+},
+{
+"name": "West New York",
+"state": "NJ",
+"population": 52122,
+"lat": 40.787878799999994,
+"lon": -74.0143064,
+"major": false
+},
+{
+"name": "Asheville",
+"state": "NC",
+"population": 87236,
+"lat": 35.5950581,
+"lon": -82.5514869,
+"major": false
+},
+{
+"name": "Compton",
+"state": "CA",
+"population": 97877,
+"lat": 33.8958492,
+"lon": -118.2200712,
+"major": false
+}
+]

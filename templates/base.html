@@ -154,6 +154,49 @@
     .form-header { text-align: center; margin-bottom: 0.5rem; }
     .form-header h1 { margin-top: 0.25rem; }
 
+    .hero-subtitle-muted {
+      text-align: center;
+      color: var(--color-muted);
+      max-width: 560px;
+      margin: 0 auto 1.5rem;
+      line-height: 1.6;
+    }
+
+    .service-summary {
+      background: var(--color-primary-light);
+      border: 1px solid var(--color-border);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+    .service-summary h2 { margin: 0 0 0.5rem; font-size: 1rem; color: var(--color-text); }
+    .service-summary p { margin: 0.2rem 0; font-size: 0.9rem; color: var(--color-muted); }
+
+    .state-picker-form { margin-bottom: 1.5rem; }
+
+    .county-checklist {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 0.6rem;
+      max-height: 420px;
+      overflow-y: auto;
+      padding: 1rem;
+      border: 1px solid var(--color-border);
+      border-radius: 10px;
+      margin: 1rem 0;
+    }
+
+    .county-check {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.9rem;
+      font-weight: 400;
+      margin: 0;
+      color: var(--color-text);
+    }
+    .county-check input { width: auto; margin: 0; }
+
     .errorlist { color: #c0362c; list-style: none; padding: 0; font-size: 0.9rem; }
 
     ul.messages { list-style: none; padding: 0; }
@@ -207,6 +250,8 @@
       box-shadow: 0 4px 14px rgba(22, 86, 214, 0.35);
       transform: translateY(-1px);
     }
+
+    .btn-inline { display: inline-block; width: auto; margin-top: 0.5rem; }
 
     p.helper-link { font-size: 0.9rem; color: var(--color-muted); }
     p.helper-link a { color: var(--color-primary); font-weight: 600; text-decoration: none; }

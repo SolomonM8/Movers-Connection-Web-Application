@@ -12,5 +12,6 @@ from accounts.views import LandingView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
+    path('coverage/', include('coverage.urls')),
     path('', LandingView.as_view(), name='landing'),
 ]
