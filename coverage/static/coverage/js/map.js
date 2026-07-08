@@ -14,6 +14,20 @@
   const backButton = document.getElementById("back-button");
   const statusEl = document.getElementById("map-status");
   const panel = document.getElementById("county-panel");
+  const panelContent = document.getElementById("county-panel-content");
+  const panelClose = document.getElementById("panel-close");
+
+  function openPanel() {
+    panel.classList.remove("hidden");
+    document.body.classList.add("panel-open");
+  }
+
+  function closePanel() {
+    panel.classList.add("hidden");
+    document.body.classList.remove("panel-open");
+  }
+
+  panelClose.addEventListener("click", closePanel);
 
   const width = mapContainer.clientWidth || 900;
   const height = 550;
@@ -53,7 +67,7 @@
 
   function drawNation() {
     backButton.classList.add("hidden");
-    panel.classList.add("hidden");
+    closePanel();
     statusEl.textContent = "Click a state to see its counties.";
 
     const projection = fitProjection(statesFC, true);
@@ -73,7 +87,7 @@
   }
 
   function drawState(abbr, stateFipsId) {
-    panel.classList.add("hidden");
+    closePanel();
     backButton.classList.remove("hidden");
     statusEl.textContent = `${STATE_NAMES[abbr] || abbr}: click a county to see labor groups serving that area.`;
 
@@ -93,7 +107,9 @@
       .join("path")
       .attr("class", "region county")
       .attr("d", path)
-      .on("click", (event, d) => {
+      .on("click", function (event, d) {
+        regionLayer.selectAll("path.region.county").classed("selected", false);
+        d3.select(this).classed("selected", true);
         const fips = String(d.id).padStart(5, "0");
         showCountyLaborers(fips);
       });
@@ -133,15 +149,15 @@
   }
 
   function showCountyLaborers(fips) {
-    panel.classList.remove("hidden");
-    panel.innerHTML = "<p>Loading&hellip;</p>";
+    openPanel();
+    panelContent.innerHTML = "<p>Loading&hellip;</p>";
     fetch(`/coverage/api/counties/${fips}/laborers/`)
       .then((response) => response.json())
       .then((data) => {
         const countyName = escapeHtml(data.county_name);
         const stateAbbr = escapeHtml(data.state);
         if (!data.laborers.length) {
-          panel.innerHTML = `<h3>${countyName}, ${stateAbbr}</h3><p>No labor groups have registered coverage for this county yet.</p>`;
+          panelContent.innerHTML = `<h3>${countyName}, ${stateAbbr}</h3><p>No labor groups have registered coverage for this county yet.</p>`;
           return;
         }
         const cards = data.laborers
@@ -159,10 +175,10 @@
             `;
           })
           .join("");
-        panel.innerHTML = `<h3>${countyName}, ${stateAbbr}</h3>${cards}`;
+        panelContent.innerHTML = `<h3>${countyName}, ${stateAbbr}</h3>${cards}`;
       })
       .catch(() => {
-        panel.innerHTML = "<p>Couldn't load labor groups for this county. Please try again.</p>";
+        panelContent.innerHTML = "<p>Couldn't load labor groups for this county. Please try again.</p>";
       });
   }
 

@@ -65,7 +65,7 @@
 
     nav .user-info { font-size: 0.9rem; opacity: 0.95; padding: 0.4rem 0.2rem; }
 
-    .nav-btn {
+    .nav-links .nav-btn {
       display: inline-flex;
       align-items: center;
       gap: 0.4rem;
@@ -75,30 +75,33 @@
       text-decoration: none;
       cursor: pointer;
       padding: 0.4rem 1rem;
+      margin: 0;
+      width: auto;
       border-radius: 999px;
       border: 2px solid transparent;
+      box-shadow: none;
       transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, color 0.15s ease;
     }
 
-    .nav-btn .icon-inline { width: 1.1rem; height: 1.1rem; }
+    .nav-links .nav-btn .icon-inline { width: 1.1rem; height: 1.1rem; }
 
-    .nav-btn--ghost {
+    .nav-links .nav-btn--ghost {
       background: rgba(255, 255, 255, 0.1);
       color: #fff;
       border-color: rgba(255, 255, 255, 0.75);
     }
-    .nav-btn--ghost:hover {
+    .nav-links .nav-btn--ghost:hover {
       background: rgba(255, 255, 255, 0.25);
       transform: translateY(-1px);
     }
 
-    .nav-btn--solid {
+    .nav-links .nav-btn--solid {
       background: #fff;
       color: var(--color-primary-dark);
       border-color: #fff;
       box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
     }
-    .nav-btn--solid:hover {
+    .nav-links .nav-btn--solid:hover {
       background: var(--color-primary-light);
       transform: translateY(-1px);
       box-shadow: 0 5px 14px rgba(0, 0, 0, 0.3);
@@ -199,7 +202,7 @@
 
     .hidden { display: none !important; }
 
-    .map-page { max-width: 1000px; }
+    main.wide-card.map-page { max-width: 1000px; }
 
     .map-toolbar {
       display: flex;
@@ -228,9 +231,11 @@
       transition: fill 0.15s ease;
     }
     .region.state { fill: var(--color-primary); }
-    .region.state:hover { fill: var(--color-primary-dark); }
+    .region.state:hover { fill: var(--color-text); }
     .region.county { fill: #ffffff; stroke: var(--color-primary); }
-    .region.county:hover { fill: var(--color-primary-light); }
+    .region.county:hover { fill: var(--color-primary-dark); }
+    .region.county.selected { fill: #000000; stroke: #000000; }
+    .region.county.selected:hover { fill: #1a1a1a; }
 
     .city-layer circle { fill: var(--color-primary-dark); }
     .city-layer text {
@@ -244,14 +249,44 @@
       pointer-events: none;
     }
 
-    .county-panel {
-      margin-top: 1.5rem;
-      border: 1px solid var(--color-border);
-      border-radius: 12px;
-      padding: 1.5rem;
-      background: #fff;
+    .map-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
     }
+
+    .county-panel {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      background: #fff;
+      padding: 4rem 1.5rem 1.5rem;
+      overflow-y: auto;
+    }
+
+    .panel-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 2.25rem;
+      height: 2.25rem;
+      border-radius: 50%;
+      border: 1px solid var(--color-border);
+      background: #fff;
+      color: var(--color-text);
+      font-size: 1.5rem;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+    .panel-close:hover { background: var(--color-primary-light); }
+
     .county-panel h3 { margin-top: 0; color: var(--color-text); }
+
+    body.panel-open { overflow: hidden; }
 
     .laborer-card {
       border: 1px solid var(--color-border);
@@ -260,6 +295,28 @@
       margin-bottom: 0.6rem;
     }
     .laborer-card p { margin: 0.15rem 0; color: var(--color-muted); font-size: 0.9rem; }
+
+    @media (min-width: 900px) {
+      .map-layout { flex-direction: row; align-items: flex-start; }
+      .map-container { flex: 1; min-width: 0; }
+
+      .county-panel {
+        position: static;
+        inset: auto;
+        z-index: auto;
+        width: 320px;
+        flex-shrink: 0;
+        max-height: 630px;
+        overflow-y: auto;
+        padding: 1.5rem;
+        border: 1px solid var(--color-border);
+        border-radius: 12px;
+        box-shadow: 0 6px 20px rgba(22, 86, 214, 0.10);
+      }
+
+      .panel-close { display: none; }
+      body.panel-open { overflow: auto; }
+    }
 
     .errorlist { color: #c0362c; list-style: none; padding: 0; font-size: 0.9rem; }
 

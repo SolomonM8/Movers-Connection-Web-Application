@@ -1,10 +1,8 @@
 import json
 
-from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse
+from django.shortcuts import get_object_or_404
 from django.views import View
 from django.views.generic import TemplateView
 
@@ -13,6 +11,22 @@ from accounts.models import LaborerProfile, User
 from accounts.views import RoleRequiredMixin
 
 from .models import County, ServiceArea
+
+MAX_SERVICE_COUNTIES = 6
+
+
+def _serialize_service_areas(profile):
+    served = (
+        ServiceArea.objects.filter(laborer_profile=profile)
+        .select_related("county")
+        .order_by("county__state", "county__name")
+    )
+    summary = {}
+    selected_fips = []
+    for service_area in served:
+        summary.setdefault(service_area.county.state, []).append(service_area.county.name)
+        selected_fips.append(service_area.county_id)
+    return summary, selected_fips
 
 
 class ServiceAreaView(RoleRequiredMixin, TemplateView):
@@ -24,40 +38,61 @@ class ServiceAreaView(RoleRequiredMixin, TemplateView):
         profile = self.request.user.laborer_profile
         selected_state = self.request.GET.get("state", "")
 
-        served = (
-            ServiceArea.objects.filter(laborer_profile=profile)
-            .select_related("county")
-            .order_by("county__state", "county__name")
-        )
-        summary = {}
-        for service_area in served:
-            summary.setdefault(service_area.county.state, []).append(service_area.county.name)
+        summary, selected_fips = _serialize_service_areas(profile)
 
         context["states"] = US_STATE_CHOICES
         context["selected_state"] = selected_state
         context["summary"] = summary
-        if selected_state:
-            context["counties"] = County.objects.filter(state=selected_state)
-            context["selected_fips"] = set(
-                served.filter(county__state=selected_state).values_list("county_id", flat=True)
-            )
+        context["total_count"] = len(selected_fips)
+        context["max_counties"] = MAX_SERVICE_COUNTIES
+        context["selected_fips_json"] = json.dumps(selected_fips)
         return context
 
-    def post(self, request, *args, **kwargs):
+
+class ToggleServiceAreaAPIView(RoleRequiredMixin, View):
+    allowed_roles = (User.Role.LABORER,)
+
+    def post(self, request, fips):
         profile = request.user.laborer_profile
-        state = request.POST.get("state", "")
-        checked_fips = request.POST.getlist("counties")
+        county = get_object_or_404(County, fips=fips)
+        existing = ServiceArea.objects.filter(laborer_profile=profile, county=county).first()
 
-        if state:
-            ServiceArea.objects.filter(laborer_profile=profile, county__state=state).delete()
-            counties = County.objects.filter(state=state, fips__in=checked_fips)
-            ServiceArea.objects.bulk_create(
-                ServiceArea(laborer_profile=profile, county=county) for county in counties
-            )
-            state_label = dict(US_STATE_CHOICES).get(state, state)
-            messages.success(request, f"Updated your service counties for {state_label}.")
+        if existing:
+            existing.delete()
+            status = "removed"
+        else:
+            current_count = ServiceArea.objects.filter(laborer_profile=profile).count()
+            if current_count >= MAX_SERVICE_COUNTIES:
+                summary, selected_fips = _serialize_service_areas(profile)
+                return JsonResponse(
+                    {
+                        "status": "limit_reached",
+                        "message": (
+                            f"You can only select up to {MAX_SERVICE_COUNTIES} counties. "
+                            "Remove one to add another."
+                        ),
+                        "total_count": len(selected_fips),
+                        "selected_fips": selected_fips,
+                        "summary": summary,
+                    },
+                    status=400,
+                )
+            ServiceArea.objects.create(laborer_profile=profile, county=county)
+            status = "added"
 
-        return redirect(f"{reverse('coverage:service_areas')}?state={state}")
+        summary, selected_fips = _serialize_service_areas(profile)
+        return JsonResponse(
+            {
+                "status": status,
+                "fips": fips,
+                "county_name": county.name,
+                "state": county.state,
+                "total_count": len(selected_fips),
+                "max_counties": MAX_SERVICE_COUNTIES,
+                "selected_fips": selected_fips,
+                "summary": summary,
+            }
+        )
 
 
 class MapView(LoginRequiredMixin, TemplateView):

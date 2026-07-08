@@ -1,27 +1,32 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}Manage Service Areas - Movers Connection{% endblock %}
 {% block main %}
-<main class="wide-card">
+<main class="wide-card map-page">
   <div class="form-header">
     <div class="icon-badge">{% include "includes/icon-hardhat.svg" %}</div>
     <h1>Manage Your Service Areas</h1>
   </div>
   <p class="hero-subtitle-muted">
-    Pick the counties where you're available to work. Drivers and companies use the
-    coverage map to find crews in a specific area.
+    Pick a state, then click up to {{ max_counties }} counties total where you're available to work.
+    Drivers and companies use the coverage map to find crews in a specific area.
   </p>
 
-  {% if summary %}
-    <div class="service-summary">
-      <h2>Currently serving</h2>
-      {% for state, counties in summary.items %}
-        <p><strong>{{ state }}:</strong> {{ counties|join:", " }}</p>
-      {% endfor %}
+  <div class="service-summary">
+    <h2>Currently serving (<span id="service-count">{{ total_count }}</span>/{{ max_counties }})</h2>
+    <div id="service-summary-list">
+      {% if summary %}
+        {% for state, counties in summary.items %}
+          <p><strong>{{ state }}:</strong> {{ counties|join:", " }}</p>
+        {% endfor %}
+      {% else %}
+        <p>You haven't selected any counties yet.</p>
+      {% endif %}
     </div>
-  {% endif %}
+  </div>
 
   <form method="get" class="state-picker-form">
-    <label for="state-select">Choose a state to add or update counties</label>
+    <label for="state-select">Choose a state</label>
     <select name="state" id="state-select" onchange="this.form.submit()">
       <option value="">Select a state&hellip;</option>
       {% for abbr, name in states %}
@@ -31,19 +36,20 @@
   </form>
 
   {% if selected_state %}
-    <form method="post">
-      {% csrf_token %}
-      <input type="hidden" name="state" value="{{ selected_state }}">
-      <div class="county-checklist">
-        {% for county in counties %}
-          <label class="county-check">
-            <input type="checkbox" name="counties" value="{{ county.fips }}" {% if county.fips in selected_fips %}checked{% endif %}>
-            {{ county.name }}
-          </label>
-        {% endfor %}
-      </div>
-      <button type="submit">Save Counties</button>
-    </form>
+    <p id="map-status" class="map-status">Click counties in {{ selected_state }} to add or remove them.</p>
+    <div id="map-container" class="map-container"></div>
   {% endif %}
 </main>
+
+{% if selected_state %}
+  <script>
+    const SELECTED_STATE = "{{ selected_state }}";
+    const SELECTED_FIPS = {{ selected_fips_json|safe }};
+    const MAX_COUNTIES = {{ max_counties }};
+    const CSRF_TOKEN = "{{ csrf_token }}";
+  </script>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://unpkg.com/topojson-client@3"></script>
+  <script src="{% static 'coverage/js/service_area_map.js' %}?v={% now 'U' %}"></script>
+{% endif %}
 {% endblock %}

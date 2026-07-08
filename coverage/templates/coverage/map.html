@@ -18,9 +18,14 @@
     <span id="map-status" class="map-status">Loading map&hellip;</span>
   </div>
 
-  <div id="map-container" class="map-container"></div>
+  <div class="map-layout">
+    <div id="map-container" class="map-container"></div>
 
-  <div id="county-panel" class="county-panel hidden"></div>
+    <div id="county-panel" class="county-panel hidden">
+      <button type="button" id="panel-close" class="panel-close" aria-label="Close">&times;</button>
+      <div id="county-panel-content"></div>
+    </div>
+  </div>
 </main>
 
 <script>
@@ -28,5 +33,5 @@
 </script>
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <script src="https://unpkg.com/topojson-client@3"></script>
-<script src="{% static 'coverage/js/map.js' %}"></script>
+<script src="{% static 'coverage/js/map.js' %}?v={% now 'U' %}"></script>
 {% endblock %}
