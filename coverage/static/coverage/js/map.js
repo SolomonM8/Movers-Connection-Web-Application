@@ -152,10 +152,7 @@
         showCountyLaborers(fips, d, abbr);
       });
 
-    drawCities(
-      allCities.filter((c) => c.state === abbr && c.population >= 50000),
-      projection
-    );
+    drawCities(computeCountyCityLabels(stateCounties.features, abbr), projection);
 
     enableZoom();
   }
@@ -182,7 +179,7 @@
     merged.select("text").text((d) => d.name);
   }
 
-  function findRepresentativeCity(countyFeature, stateAbbr) {
+  function bestCityInCounty(countyFeature, stateAbbr) {
     if (!countyFeature || !allCities) return null;
     const candidates = allCities.filter((c) => c.state === stateAbbr && c.population >= 50000);
     let best = null;
@@ -191,7 +188,21 @@
         if (!best || city.population > best.population) best = city;
       }
     }
+    return best;
+  }
+
+  function findRepresentativeCity(countyFeature, stateAbbr) {
+    const best = bestCityInCounty(countyFeature, stateAbbr);
     return best ? best.name : null;
+  }
+
+  function computeCountyCityLabels(countyFeatures, stateAbbr) {
+    const labels = [];
+    for (const feature of countyFeatures) {
+      const best = bestCityInCounty(feature, stateAbbr);
+      if (best) labels.push(best);
+    }
+    return labels;
   }
 
   function escapeHtml(value) {
