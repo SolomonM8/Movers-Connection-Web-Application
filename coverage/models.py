@@ -22,9 +22,13 @@ class ServiceArea(models.Model):
         LaborerProfile, on_delete=models.CASCADE, related_name="service_areas"
     )
     county = models.ForeignKey(County, on_delete=models.CASCADE, related_name="service_areas")
+    is_primary = models.BooleanField(
+        default=False, help_text="The laborer's home/base county."
+    )
 
     class Meta:
         unique_together = ("laborer_profile", "county")
 
     def __str__(self):
-        return f"{self.laborer_profile} serves {self.county}"
+        base = " (home)" if self.is_primary else ""
+        return f"{self.laborer_profile} serves {self.county}{base}"

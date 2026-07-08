@@ -21,6 +21,8 @@
   const zoomControls = document.getElementById("zoom-controls");
   const zoomInBtn = document.getElementById("zoom-in-btn");
   const zoomOutBtn = document.getElementById("zoom-out-btn");
+  const addressInput = document.getElementById("address-search");
+  const suggestionsList = document.getElementById("address-suggestions");
 
   function openPanel() {
     panel.classList.remove("hidden");
@@ -262,8 +264,12 @@
             const city = escapeHtml(laborer.city);
             const state = escapeHtml(laborer.state);
             const phone = escapeHtml(laborer.phone_number);
+            const badge = laborer.is_primary
+              ? '<span class="county-slot-badge">BASED HERE</span>'
+              : '<span class="county-slot-badge county-slot-badge--muted">ALSO SERVES</span>';
             return `
               <div class="laborer-card">
+                <div>${badge}</div>
                 <strong>${name}</strong>
                 <p>${city ? city + ", " + state : ""}</p>
                 <p>${phone}</p>
@@ -279,4 +285,90 @@
   }
 
   backButton.addEventListener("click", drawNation);
+
+  let debounceTimer = null;
+
+  if (addressInput) {
+    addressInput.addEventListener("input", () => {
+      clearTimeout(debounceTimer);
+      const query = addressInput.value.trim();
+      if (query.length < 3) {
+        hideSuggestions();
+        return;
+      }
+      debounceTimer = setTimeout(() => fetchSuggestions(query), 350);
+    });
+
+    document.addEventListener("click", (event) => {
+      if (!addressInput.contains(event.target) && !suggestionsList.contains(event.target)) {
+        hideSuggestions();
+      }
+    });
+  }
+
+  function hideSuggestions() {
+    suggestionsList.classList.add("hidden");
+    suggestionsList.innerHTML = "";
+  }
+
+  function fetchSuggestions(query) {
+    const url =
+      "https://nominatim.openstreetmap.org/search?format=json&addressdetails=0&countrycodes=us&limit=6&q=" +
+      encodeURIComponent(query);
+    fetch(url)
+      .then((response) => response.json())
+      .then((results) => renderSuggestions(results))
+      .catch(() => hideSuggestions());
+  }
+
+  function renderSuggestions(results) {
+    if (!results || !results.length) {
+      hideSuggestions();
+      return;
+    }
+    suggestionsList.innerHTML = results
+      .map((result, index) => `<li class="address-suggestion" data-index="${index}">${escapeHtml(result.display_name)}</li>`)
+      .join("");
+    suggestionsList.classList.remove("hidden");
+    suggestionsList.querySelectorAll(".address-suggestion").forEach((li) => {
+      li.addEventListener("click", () => {
+        const result = results[Number(li.dataset.index)];
+        selectAddress(result);
+      });
+    });
+  }
+
+  function selectAddress(result) {
+    hideSuggestions();
+    addressInput.value = result.display_name;
+    const lat = parseFloat(result.lat);
+    const lon = parseFloat(result.lon);
+    if (Number.isNaN(lat) || Number.isNaN(lon)) return;
+    locateCounty(lat, lon);
+  }
+
+  function locateCounty(lat, lon) {
+    if (!countiesFC) return;
+    const point = [lon, lat];
+    const match = countiesFC.features.find((feature) => d3.geoContains(feature, point));
+    if (!match) {
+      statusEl.textContent = "Couldn't match that address to a county. Try a different search.";
+      return;
+    }
+    const fips = String(match.id).padStart(5, "0");
+    const stateFipsStr = fips.slice(0, 2);
+    const abbr = STATE_FIPS_TO_ABBR[stateFipsStr];
+    if (!abbr) return;
+
+    drawState(abbr, Number(stateFipsStr));
+
+    const el = Array.from(document.querySelectorAll(".region.county")).find(
+      (candidate) => candidate.__data__ && String(candidate.__data__.id).padStart(5, "0") === fips
+    );
+    if (el) {
+      regionLayer.selectAll("path.region.county").classed("selected", false);
+      d3.select(el).classed("selected", true);
+    }
+    showCountyLaborers(fips, match, abbr);
+  }
 })();

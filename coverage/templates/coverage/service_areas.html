@@ -10,6 +10,7 @@
 
   <div class="service-summary">
     <h2>Currently serving (<span id="service-count">{{ total_count }}</span>/{{ max_counties }})</h2>
+    <p class="service-summary-hint">Your first county becomes your <strong>HOME</strong> county. You can add up to {{ max_counties|add:"-1" }} more you also serve, and switch your home county anytime with the star.</p>
     <div id="county-slots" class="county-slots"></div>
   </div>
 

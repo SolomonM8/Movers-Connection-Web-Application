@@ -7,7 +7,7 @@ from django.views import View
 from django.views.generic import TemplateView
 
 from accounts.constants import US_STATE_CHOICES
-from accounts.models import LaborerProfile, User
+from accounts.models import User
 from accounts.views import RoleRequiredMixin
 
 from .models import County, ServiceArea
@@ -19,10 +19,16 @@ def _serialize_service_areas(profile):
     served = (
         ServiceArea.objects.filter(laborer_profile=profile)
         .select_related("county")
-        .order_by("county__state", "county__name")
+        .order_by("-is_primary", "county__state", "county__name")
     )
     return [
-        {"fips": sa.county_id, "name": sa.county.name, "state": sa.county.state} for sa in served
+        {
+            "fips": sa.county_id,
+            "name": sa.county.name,
+            "state": sa.county.state,
+            "is_primary": sa.is_primary,
+        }
+        for sa in served
     ]
 
 
@@ -55,7 +61,13 @@ class ToggleServiceAreaAPIView(RoleRequiredMixin, View):
         existing = ServiceArea.objects.filter(laborer_profile=profile, county=county).first()
 
         if existing:
+            was_primary = existing.is_primary
             existing.delete()
+            if was_primary:
+                promoted = ServiceArea.objects.filter(laborer_profile=profile).order_by("id").first()
+                if promoted:
+                    promoted.is_primary = True
+                    promoted.save(update_fields=["is_primary"])
             status = "removed"
         else:
             current_count = ServiceArea.objects.filter(laborer_profile=profile).count()
@@ -65,15 +77,17 @@ class ToggleServiceAreaAPIView(RoleRequiredMixin, View):
                     {
                         "status": "limit_reached",
                         "message": (
-                            f"You can only select up to {MAX_SERVICE_COUNTIES} counties. "
-                            "Remove one to add another."
+                            f"You can only select a home county plus up to "
+                            f"{MAX_SERVICE_COUNTIES - 1} more. Remove one to add another."
                         ),
                         "total_count": len(selected_counties),
                         "selected_counties": selected_counties,
                     },
                     status=400,
                 )
-            ServiceArea.objects.create(laborer_profile=profile, county=county)
+            ServiceArea.objects.create(
+                laborer_profile=profile, county=county, is_primary=current_count == 0
+            )
             status = "added"
 
         selected_counties = _serialize_service_areas(profile)
@@ -90,6 +104,20 @@ class ToggleServiceAreaAPIView(RoleRequiredMixin, View):
         )
 
 
+class SetPrimaryServiceAreaAPIView(RoleRequiredMixin, View):
+    allowed_roles = (User.Role.LABORER,)
+
+    def post(self, request, fips):
+        profile = request.user.laborer_profile
+        service_area = get_object_or_404(
+            ServiceArea, laborer_profile=profile, county_id=fips
+        )
+        ServiceArea.objects.filter(laborer_profile=profile).update(is_primary=False)
+        service_area.is_primary = True
+        service_area.save(update_fields=["is_primary"])
+        return JsonResponse({"selected_counties": _serialize_service_areas(profile)})
+
+
 class MapView(LoginRequiredMixin, TemplateView):
     template_name = "coverage/map.html"
 
@@ -102,18 +130,23 @@ class MapView(LoginRequiredMixin, TemplateView):
 class CountyLaborersAPIView(LoginRequiredMixin, View):
     def get(self, request, fips):
         county = get_object_or_404(County, fips=fips)
-        laborers = LaborerProfile.objects.filter(service_areas__county=county).distinct()
+        service_areas = (
+            ServiceArea.objects.filter(county=county)
+            .select_related("laborer_profile", "laborer_profile__user")
+            .order_by("-is_primary")
+        )
         data = {
             "county_name": county.name,
             "state": county.state,
             "laborers": [
                 {
-                    "display_name": laborer.display_name or laborer.user.email,
-                    "city": laborer.city,
-                    "state": laborer.state,
-                    "phone_number": laborer.phone_number,
+                    "display_name": sa.laborer_profile.display_name or sa.laborer_profile.user.email,
+                    "city": sa.laborer_profile.city,
+                    "state": sa.laborer_profile.state,
+                    "phone_number": sa.laborer_profile.phone_number,
+                    "is_primary": sa.is_primary,
                 }
-                for laborer in laborers
+                for sa in service_areas
             ],
         }
         return JsonResponse(data)

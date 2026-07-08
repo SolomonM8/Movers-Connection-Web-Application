@@ -116,10 +116,17 @@
         const feature = findCountyFeature(county.fips);
         const cityName = findRepresentativeCity(feature, county.state);
         const cityPart = cityName ? ` (${escapeHtml(cityName)})` : "";
+        const badge = county.is_primary ? '<span class="county-slot-badge">HOME</span>' : "";
+        const starBtn = county.is_primary
+          ? ""
+          : `<button type="button" class="county-slot-star" data-fips="${escapeHtml(county.fips)}" aria-label="Set ${escapeHtml(county.name)} as your home county">&#9733;</button>`;
         slots.push(`
-          <div class="county-slot filled">
-            <span class="county-slot-name">${escapeHtml(county.name)}${cityPart}, ${escapeHtml(county.state)}</span>
-            <button type="button" class="county-slot-remove" data-fips="${escapeHtml(county.fips)}" aria-label="Remove ${escapeHtml(county.name)}">&times;</button>
+          <div class="county-slot filled${county.is_primary ? " primary" : ""}">
+            <span class="county-slot-name">${badge}${escapeHtml(county.name)}${cityPart}, ${escapeHtml(county.state)}</span>
+            <div class="county-slot-actions">
+              ${starBtn}
+              <button type="button" class="county-slot-remove" data-fips="${escapeHtml(county.fips)}" aria-label="Remove ${escapeHtml(county.name)}">&times;</button>
+            </div>
           </div>
         `);
       } else {
@@ -130,6 +137,25 @@
     slotsContainer.querySelectorAll(".county-slot-remove").forEach((btn) => {
       btn.addEventListener("click", () => toggleCounty(btn.dataset.fips, null));
     });
+    slotsContainer.querySelectorAll(".county-slot-star").forEach((btn) => {
+      btn.addEventListener("click", () => setPrimaryCounty(btn.dataset.fips));
+    });
+  }
+
+  function setPrimaryCounty(fips) {
+    fetch(`/coverage/api/service-areas/${fips}/set-primary/`, {
+      method: "POST",
+      headers: { "X-CSRFToken": CSRF_TOKEN },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        selectedCounties = data.selected_counties;
+        renderSlots();
+        if (SELECTED_STATE) drawState(SELECTED_STATE);
+      })
+      .catch(() => {
+        if (statusEl) statusEl.textContent = "Couldn't update your home county. Please try again.";
+      });
   }
 
   function disableZoom() {
@@ -231,7 +257,7 @@
     const isSelected = selectedCounties.some((c) => c.fips === fips);
     if (!isSelected && selectedCounties.length >= MAX_COUNTIES) {
       if (statusEl) {
-        statusEl.textContent = `You can only select up to ${MAX_COUNTIES} counties. Remove one to add another.`;
+        statusEl.textContent = `You can only select a home county plus up to ${MAX_COUNTIES - 1} more. Remove one to add another.`;
       }
       return;
     }

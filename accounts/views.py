@@ -89,10 +89,15 @@ class LaborerDashboardView(RoleRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         profile = self.request.user.laborer_profile
-        context["profile"] = profile
-        context["service_areas"] = (
-            profile.service_areas.select_related("county").order_by("county__state", "county__name")
+        areas = list(
+            profile.service_areas.select_related("county").order_by(
+                "-is_primary", "county__state", "county__name"
+            )
         )
+        context["profile"] = profile
+        context["primary_area"] = next((area for area in areas if area.is_primary), None)
+        context["other_areas"] = [area for area in areas if not area.is_primary]
+        context["service_areas_count"] = len(areas)
         return context
 
 

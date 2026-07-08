@@ -17,17 +17,21 @@
 
 <section class="dashboard-section">
   <div class="dashboard-section-header">
-    <h2>Areas You Serve ({{ service_areas.count }}/6)</h2>
+    <h2>Areas You Serve ({{ service_areas_count }}/6)</h2>
     <a class="btn-primary btn-inline" href="{% url 'coverage:service_areas' %}">Manage &rarr;</a>
   </div>
-  {% if service_areas %}
-    <div class="county-slots">
-      {% for service_area in service_areas %}
-        <div class="county-slot filled">
-          <span class="county-slot-name">{{ service_area.county.name }}, {{ service_area.county.state }}</span>
-        </div>
-      {% endfor %}
-    </div>
+  {% if primary_area %}
+    <p class="base-county-line">Based out of <strong>{{ primary_area.county.name }}, {{ primary_area.county.state }}</strong></p>
+    {% if other_areas %}
+      <p class="service-summary-hint">Also serves:</p>
+      <div class="county-slots">
+        {% for service_area in other_areas %}
+          <div class="county-slot filled">
+            <span class="county-slot-name">{{ service_area.county.name }}, {{ service_area.county.state }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
   {% else %}
     <p>You haven't added any counties yet.</p>
   {% endif %}

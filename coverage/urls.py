@@ -11,6 +11,11 @@ urlpatterns = [
         views.ToggleServiceAreaAPIView.as_view(),
         name="toggle_service_area",
     ),
+    path(
+        "api/service-areas/<str:fips>/set-primary/",
+        views.SetPrimaryServiceAreaAPIView.as_view(),
+        name="set_primary_service_area",
+    ),
     path("map/", views.MapView.as_view(), name="map"),
     path(
         "api/counties/<str:fips>/laborers/",
