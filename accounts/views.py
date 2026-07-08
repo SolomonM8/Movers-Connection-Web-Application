@@ -1,11 +1,12 @@
+from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import LoginView
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, TemplateView
+from django.views.generic import CreateView, TemplateView, UpdateView
 
-from .forms import DriverSignUpForm, LaborerSignUpForm
+from .forms import DriverSignUpForm, LaborerProfileEditForm, LaborerSignUpForm
 from .models import User
 
 
@@ -84,6 +85,29 @@ class DriverDashboardView(RoleRequiredMixin, TemplateView):
 class LaborerDashboardView(RoleRequiredMixin, TemplateView):
     template_name = "accounts/laborer_dashboard.html"
     allowed_roles = (User.Role.LABORER,)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        profile = self.request.user.laborer_profile
+        context["profile"] = profile
+        context["service_areas"] = (
+            profile.service_areas.select_related("county").order_by("county__state", "county__name")
+        )
+        return context
+
+
+class LaborerProfileEditView(RoleRequiredMixin, UpdateView):
+    form_class = LaborerProfileEditForm
+    template_name = "accounts/laborer_profile_edit.html"
+    allowed_roles = (User.Role.LABORER,)
+    success_url = reverse_lazy("accounts:dashboard")
+
+    def get_object(self, queryset=None):
+        return self.request.user.laborer_profile
+
+    def form_valid(self, form):
+        messages.success(self.request, "Your account information has been updated.")
+        return super().form_valid(form)
 
 
 class AdminDashboardView(RoleRequiredMixin, TemplateView):

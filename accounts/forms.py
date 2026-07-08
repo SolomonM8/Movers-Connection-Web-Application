@@ -80,3 +80,35 @@ class LaborerSignUpForm(BaseSignUpForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["name"].label = "Your name or labor group name"
+
+
+class LaborerProfileEditForm(forms.ModelForm):
+    email = forms.EmailField()
+
+    class Meta:
+        model = LaborerProfile
+        fields = ("display_name", "phone_number", "city", "state")
+        labels = {"display_name": "Your name or labor group name"}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            self.fields["email"].initial = self.instance.user.email
+        self.order_fields(["email", "display_name", "phone_number", "city", "state"])
+
+    def clean_email(self):
+        email = self.cleaned_data["email"].lower()
+        qs = User.objects.filter(email__iexact=email)
+        if self.instance and self.instance.pk:
+            qs = qs.exclude(pk=self.instance.user_id)
+        if qs.exists():
+            raise forms.ValidationError("An account with this email already exists.")
+        return email
+
+    def save(self, commit=True):
+        profile = super().save(commit=commit)
+        if commit:
+            user = profile.user
+            user.email = self.cleaned_data["email"]
+            user.save(update_fields=["email"])
+        return profile

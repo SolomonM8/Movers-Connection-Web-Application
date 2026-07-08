@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Edit Account Information - Movers Connection{% endblock %}
+{% block content %}
+<div class="form-header">
+  <div class="icon-badge">{% include "includes/icon-hardhat.svg" %}</div>
+  <h1>Edit Your Account Information</h1>
+</div>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Save Changes</button>
+</form>
+<p class="helper-link"><a href="{% url 'accounts:dashboard' %}">&larr; Back to dashboard</a></p>
+{% endblock %}

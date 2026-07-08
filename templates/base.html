@@ -65,6 +65,47 @@
 
     nav .user-info { font-size: 0.9rem; opacity: 0.95; padding: 0.4rem 0.2rem; }
 
+    .nav-toggle {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+      width: 2.25rem;
+      height: 2.25rem;
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      border-radius: 8px;
+      cursor: pointer;
+      padding: 0;
+      flex-shrink: 0;
+    }
+    .nav-toggle span {
+      display: block;
+      width: 1.1rem;
+      height: 2px;
+      background: #fff;
+      border-radius: 1px;
+    }
+
+    @media (max-width: 700px) {
+      .nav-toggle { display: flex; }
+
+      nav .nav-links {
+        display: none;
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
+        gap: 0.5rem;
+        padding-top: 0.75rem;
+      }
+
+      nav .nav-links.open { display: flex; }
+
+      nav .user-info { order: -1; padding: 0.5rem 0.2rem; }
+    }
+
     .nav-links .nav-btn {
       display: inline-flex;
       align-items: center;
@@ -191,6 +232,7 @@
       border-radius: 8px;
       font-size: 0.85rem;
       min-height: 2.75rem;
+      min-width: 0;
     }
 
     .county-slot.filled {
@@ -212,6 +254,8 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      min-width: 0;
+      flex: 1;
     }
 
     .county-slot-remove {
@@ -402,6 +446,43 @@
       margin-bottom: 0.6rem;
     }
     .laborer-card p { margin: 0.15rem 0; color: var(--color-muted); font-size: 0.9rem; }
+
+    .dashboard-section {
+      padding: 1.25rem 0;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .dashboard-section:last-child { border-bottom: none; padding-bottom: 0; }
+    .dashboard-section:first-of-type { padding-top: 0; }
+
+    .dashboard-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.75rem;
+    }
+    .dashboard-section-header h2 { margin: 0; }
+    .dashboard-section h2 { font-size: 1.05rem; color: var(--color-text); }
+
+    .info-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+      margin: 0;
+    }
+    .info-list dt {
+      font-size: 0.8rem;
+      color: var(--color-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-bottom: 0.2rem;
+    }
+    .info-list dd {
+      margin: 0;
+      font-weight: 600;
+      color: var(--color-text);
+    }
 
     @media (min-width: 900px) {
       .map-layout { flex-direction: row; }
@@ -803,11 +884,14 @@
 </head>
 <body>
   <nav>
-    <a class="brand" href="{% url 'landing' %}">
+    <a class="brand" href="{% if user.is_authenticated %}{% url 'accounts:dashboard' %}{% else %}{% url 'landing' %}{% endif %}">
       {% include "includes/logo.svg" %}
       <span>Movers Connection</span>
     </a>
-    <div class="nav-links">
+    <button type="button" id="nav-toggle" class="nav-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="nav-links">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-links" id="nav-links">
       {% if user.is_authenticated %}
         <a href="{% url 'coverage:map' %}" class="nav-btn nav-btn--ghost">
           {% include "includes/icon-target.svg" %}
@@ -833,6 +917,18 @@
       {% endif %}
     </div>
   </nav>
+  <script>
+    (function () {
+      var toggle = document.getElementById("nav-toggle");
+      var links = document.getElementById("nav-links");
+      if (toggle && links) {
+        toggle.addEventListener("click", function () {
+          var isOpen = links.classList.toggle("open");
+          toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+        });
+      }
+    })();
+  </script>
   <div class="page-content">
     {% if messages %}
       <ul class="messages">

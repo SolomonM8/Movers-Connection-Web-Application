@@ -14,5 +14,6 @@ urlpatterns = [
     path("dashboard/", views.dashboard_redirect, name="dashboard"),
     path("dashboard/driver/", views.DriverDashboardView.as_view(), name="driver_dashboard"),
     path("dashboard/laborer/", views.LaborerDashboardView.as_view(), name="laborer_dashboard"),
+    path("dashboard/laborer/edit/", views.LaborerProfileEditView.as_view(), name="laborer_profile_edit"),
     path("dashboard/admin/", views.AdminDashboardView.as_view(), name="admin_dashboard"),
 ]

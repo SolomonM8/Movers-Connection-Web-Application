@@ -3,7 +3,10 @@
 {% block title %}Manage Service Areas - Movers Connection{% endblock %}
 {% block main %}
 <main class="wide-card map-page">
-  <h1 class="map-page-title">Manage Your Service Areas</h1>
+  <div class="map-toolbar">
+    <h1 class="map-page-title">Manage Your Service Areas</h1>
+    <a href="{% url 'accounts:dashboard' %}" class="btn-primary btn-inline">Save &amp; Return to Dashboard &rarr;</a>
+  </div>
 
   <div class="service-summary">
     <h2>Currently serving (<span id="service-count">{{ total_count }}</span>/{{ max_counties }})</h2>

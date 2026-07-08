@@ -2,7 +2,40 @@
 {% block title %}Laborer Dashboard - Movers Connection{% endblock %}
 {% block dashboard_title %}Laborer Dashboard{% endblock %}
 {% block dashboard_content %}
-<p>This is where you'll browse open day-labor jobs posted by drivers and moving companies, and see the reviews you've earned from past jobs.</p>
-<p><em>Job listings and reviews are coming in a future update.</em></p>
-<p><a class="btn-primary btn-inline" href="{% url 'coverage:service_areas' %}">Manage Your Service Areas &rarr;</a></p>
+<section class="dashboard-section">
+  <div class="dashboard-section-header">
+    <h2>Account Information</h2>
+    <a class="btn-primary btn-inline" href="{% url 'accounts:laborer_profile_edit' %}">Edit &rarr;</a>
+  </div>
+  <dl class="info-list">
+    <div><dt>Name</dt><dd>{{ profile.display_name|default:"Not set" }}</dd></div>
+    <div><dt>Email</dt><dd>{{ user.email }}</dd></div>
+    <div><dt>Phone</dt><dd>{{ profile.phone_number|default:"Not set" }}</dd></div>
+    <div><dt>Location</dt><dd>{% if profile.city %}{{ profile.city }}, {% endif %}{{ profile.get_state_display|default:"Not set" }}</dd></div>
+  </dl>
+</section>
+
+<section class="dashboard-section">
+  <div class="dashboard-section-header">
+    <h2>Areas You Serve ({{ service_areas.count }}/6)</h2>
+    <a class="btn-primary btn-inline" href="{% url 'coverage:service_areas' %}">Manage &rarr;</a>
+  </div>
+  {% if service_areas %}
+    <div class="county-slots">
+      {% for service_area in service_areas %}
+        <div class="county-slot filled">
+          <span class="county-slot-name">{{ service_area.county.name }}, {{ service_area.county.state }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>You haven't added any counties yet.</p>
+  {% endif %}
+</section>
+
+<section class="dashboard-section">
+  <h2>Jobs &amp; Reviews</h2>
+  <p>This is where you'll browse open day-labor jobs posted by drivers and moving companies, and see the reviews you've earned from past jobs.</p>
+  <p><em>Job listings and reviews are coming in a future update.</em></p>
+</section>
 {% endblock %}
