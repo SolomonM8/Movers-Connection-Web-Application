@@ -3,14 +3,7 @@
 {% block title %}Manage Service Areas - Movers Connection{% endblock %}
 {% block main %}
 <main class="wide-card map-page">
-  <div class="form-header">
-    <div class="icon-badge">{% include "includes/icon-hardhat.svg" %}</div>
-    <h1>Manage Your Service Areas</h1>
-  </div>
-  <p class="hero-subtitle-muted">
-    Pick a state, then click up to {{ max_counties }} counties total where you're available to work.
-    Drivers and companies use the coverage map to find crews in a specific area.
-  </p>
+  <h1 class="map-page-title">Manage Your Service Areas</h1>
 
   <div class="service-summary">
     <h2>Currently serving (<span id="service-count">{{ total_count }}</span>/{{ max_counties }})</h2>

@@ -3,17 +3,8 @@
 {% block title %}Coverage Map - Movers Connection{% endblock %}
 {% block main %}
 <main class="wide-card map-page">
-  <div class="form-header">
-    <div class="icon-badge">
-      {% include "includes/icon-target.svg" %}
-    </div>
-    <h1>Coverage Map</h1>
-  </div>
-  <p class="hero-subtitle-muted">
-    Browse the map by state, then click a county to see the labor groups that cover that area.
-  </p>
-
   <div class="map-toolbar">
+    <h1 class="map-page-title">Coverage Map</h1>
     <button type="button" id="back-button" class="btn-primary btn-inline hidden">&larr; Back to All States</button>
     <span id="map-status" class="map-status">Loading map&hellip;</span>
   </div>

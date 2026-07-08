@@ -30,7 +30,7 @@
       min-height: 100vh;
     }
 
-    .page-content { flex: 1 0 auto; }
+    .page-content { flex: 1 0 auto; display: flex; flex-direction: column; }
 
     nav {
       min-height: var(--nav-height);
@@ -169,10 +169,11 @@
       background: var(--color-primary-light);
       border: 1px solid var(--color-border);
       border-radius: 10px;
-      padding: 1rem 1.25rem;
-      margin-bottom: 1.5rem;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.75rem;
+      flex-shrink: 0;
     }
-    .service-summary h2 { margin: 0 0 0.75rem; font-size: 1rem; color: var(--color-text); }
+    .service-summary h2 { margin: 0 0 0.5rem; font-size: 0.95rem; color: var(--color-text); }
     .service-summary p { margin: 0.2rem 0; font-size: 0.9rem; color: var(--color-muted); }
 
     .county-slots {
@@ -235,7 +236,7 @@
       .county-slots { grid-template-columns: repeat(3, 1fr); }
     }
 
-    .state-picker-form { margin-bottom: 1.5rem; }
+    .state-picker-form { margin-bottom: 0.75rem; flex-shrink: 0; }
 
     .county-checklist {
       display: grid;
@@ -262,7 +263,18 @@
 
     .hidden { display: none !important; }
 
-    main.wide-card.map-page { max-width: 1140px; }
+    main.wide-card.map-page {
+      max-width: 1140px;
+      padding: 1.25rem;
+      margin: 1rem auto;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      width: 100%;
+    }
+
+    .map-page-title { font-size: 1.25rem; margin: 0; }
 
     .map-toolbar {
       display: flex;
@@ -277,8 +289,8 @@
     .map-container {
       position: relative;
       width: 100%;
-      height: 65vh;
-      min-height: 420px;
+      flex: 1;
+      min-height: 300px;
       border: 1px solid var(--color-border);
       border-radius: 12px;
       background: var(--color-primary-light);
@@ -318,6 +330,8 @@
       display: flex;
       flex-direction: column;
       gap: 1.5rem;
+      flex: 1;
+      min-height: 0;
     }
 
     .map-zoom-controls {
@@ -347,10 +361,6 @@
       justify-content: center;
     }
     .map-zoom-btn:hover { background: var(--color-primary-light); }
-
-    @media (min-width: 900px) {
-      .map-container { height: 700px; }
-    }
 
     .county-panel {
       position: fixed;
@@ -394,7 +404,7 @@
     .laborer-card p { margin: 0.15rem 0; color: var(--color-muted); font-size: 0.9rem; }
 
     @media (min-width: 900px) {
-      .map-layout { flex-direction: row; align-items: flex-start; }
+      .map-layout { flex-direction: row; }
       .map-container { flex: 1; min-width: 0; }
 
       .county-panel {

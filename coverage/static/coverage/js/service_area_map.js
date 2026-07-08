@@ -14,6 +14,8 @@
     ABBR_TO_STATE_FIPS[STATE_FIPS_TO_ABBR[fips]] = fips;
   });
 
+  const FIT_PADDING = 24;
+
   const mapContainer = document.getElementById("map-container");
   const statusEl = document.getElementById("map-status");
   const slotsContainer = document.getElementById("county-slots");
@@ -28,6 +30,7 @@
   let allCities = null;
   let zoom = null;
   let svg, regionLayer, cityLayer, path;
+  const cityLabelCache = {};
 
   if (mapContainer) {
     svg = d3.select(mapContainer).append("svg");
@@ -54,6 +57,12 @@
       }
       renderSlots();
     });
+
+  if (mapContainer) {
+    window.addEventListener("resize", () => {
+      if (countiesFC && SELECTED_STATE) drawState(SELECTED_STATE);
+    });
+  }
 
   function containerSize() {
     const rect = mapContainer.getBoundingClientRect();
@@ -82,12 +91,14 @@
     return best ? best.name : null;
   }
 
-  function computeCountyCityLabels(countyFeatures, stateAbbr) {
+  function getCountyCityLabels(stateAbbr, countyFeatures) {
+    if (cityLabelCache[stateAbbr]) return cityLabelCache[stateAbbr];
     const labels = [];
     for (const feature of countyFeatures) {
       const best = bestCityInCounty(feature, stateAbbr);
       if (best) labels.push(best);
     }
+    cityLabelCache[stateAbbr] = labels;
     return labels;
   }
 
@@ -131,10 +142,14 @@
     zoomControls.classList.add("hidden");
   }
 
-  function enableZoom() {
+  function enableZoom(size) {
     zoom = d3
       .zoom()
       .scaleExtent([1, 10])
+      .translateExtent([
+        [0, 0],
+        [size.width, size.height],
+      ])
       .on("zoom", (event) => {
         regionLayer.attr("transform", event.transform);
         cityLayer.attr("transform", event.transform);
@@ -168,7 +183,13 @@
 
     const size = containerSize();
     svg.attr("viewBox", `0 0 ${size.width} ${size.height}`);
-    const projection = d3.geoMercator().fitSize([size.width, size.height], stateCounties);
+    const projection = d3.geoMercator().fitExtent(
+      [
+        [FIT_PADDING, FIT_PADDING],
+        [size.width - FIT_PADDING, size.height - FIT_PADDING],
+      ],
+      stateCounties
+    );
     path.projection(projection);
 
     const selectedSet = new Set(selectedCounties.map((c) => c.fips));
@@ -187,9 +208,9 @@
         toggleCounty(fips, this);
       });
 
-    drawCities(computeCountyCityLabels(stateCounties.features, abbr), projection);
+    drawCities(getCountyCityLabels(abbr, stateCounties.features), projection);
 
-    enableZoom();
+    enableZoom(size);
   }
 
   function drawCities(cities, projection) {
