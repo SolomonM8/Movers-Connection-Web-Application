@@ -28,8 +28,9 @@
   let selectedCounties = SELECTED_COUNTIES.slice();
   let countiesFC = null;
   let allCities = null;
+  let countyInfo = null;
   let zoom = null;
-  let svg, regionLayer, cityLayer, path;
+  let svg, regionLayer, cityLayer, path, tooltip;
   const cityLabelCache = {};
 
   if (mapContainer) {
@@ -37,15 +38,43 @@
     regionLayer = svg.append("g").attr("class", "region-layer");
     cityLayer = svg.append("g").attr("class", "city-layer");
     path = d3.geoPath();
+    tooltip = document.createElement("div");
+    tooltip.className = "map-tooltip hidden";
+    mapContainer.appendChild(tooltip);
+  }
+
+  function moveTooltip(event) {
+    const rect = mapContainer.getBoundingClientRect();
+    tooltip.style.left = event.clientX - rect.left + "px";
+    tooltip.style.top = event.clientY - rect.top + "px";
+  }
+
+  function showCountyTooltip(event, feature, stateAbbr) {
+    const fips = String(feature.id).padStart(5, "0");
+    const info = countyInfo ? countyInfo[fips] : null;
+    const countyName = info ? info.name : "";
+    const cityName = findRepresentativeCity(feature, stateAbbr);
+    tooltip.textContent = cityName ? `${countyName} (${cityName})` : countyName;
+    tooltip.classList.remove("hidden");
+    moveTooltip(event);
+  }
+
+  function hideTooltip() {
+    if (tooltip) tooltip.classList.add("hidden");
   }
 
   Promise.all([
     d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/counties-10m.json"),
     d3.json("/static/coverage/data/cities.json"),
+    d3.json("/static/coverage/data/counties.json"),
   ])
-    .then(([us, cities]) => {
+    .then(([us, cities, counties]) => {
       countiesFC = topojson.feature(us, us.objects.counties);
       allCities = cities;
+      countyInfo = {};
+      counties.forEach((c) => {
+        countyInfo[c.fips] = c;
+      });
       renderSlots();
       if (SELECTED_STATE && mapContainer) {
         drawState(SELECTED_STATE);
@@ -199,6 +228,7 @@
 
   function drawState(abbr) {
     disableZoom();
+    hideTooltip();
     const stateFipsStr = ABBR_TO_STATE_FIPS[abbr];
     const stateCounties = {
       type: "FeatureCollection",
@@ -232,7 +262,10 @@
       .on("click", function (event, d) {
         const fips = String(d.id).padStart(5, "0");
         toggleCounty(fips, this);
-      });
+      })
+      .on("mouseenter", (event, d) => showCountyTooltip(event, d, abbr))
+      .on("mousemove", moveTooltip)
+      .on("mouseleave", hideTooltip);
 
     drawCities(getCountyCityLabels(abbr, stateCounties.features), projection);
 

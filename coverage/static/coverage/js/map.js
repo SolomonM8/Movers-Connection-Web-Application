@@ -39,11 +39,38 @@
   panelClose.addEventListener("click", closePanel);
 
   const svg = d3.select(mapContainer).append("svg");
+  const stateClipPath = svg.append("defs").append("clipPath").attr("id", "state-clip");
+  const stateClipShape = stateClipPath.append("path");
   const regionLayer = svg.append("g").attr("class", "region-layer");
   const roadLayer = svg.append("g").attr("class", "road-layer");
+  const roadClipGroup = roadLayer.append("g").attr("class", "road-clip");
   const stateLabelLayer = svg.append("g").attr("class", "state-label-layer");
   const cityLayer = svg.append("g").attr("class", "city-layer");
   const path = d3.geoPath();
+
+  const tooltip = document.createElement("div");
+  tooltip.className = "map-tooltip hidden";
+  mapContainer.appendChild(tooltip);
+
+  function moveTooltip(event) {
+    const rect = mapContainer.getBoundingClientRect();
+    tooltip.style.left = event.clientX - rect.left + "px";
+    tooltip.style.top = event.clientY - rect.top + "px";
+  }
+
+  function showCountyTooltip(event, feature, stateAbbr) {
+    const fips = String(feature.id).padStart(5, "0");
+    const info = countyInfo ? countyInfo[fips] : null;
+    const countyName = info ? info.name : "";
+    const cityName = findRepresentativeCity(feature, stateAbbr);
+    tooltip.textContent = cityName ? `${countyName} (${cityName})` : countyName;
+    tooltip.classList.remove("hidden");
+    moveTooltip(event);
+  }
+
+  function hideTooltip() {
+    tooltip.classList.add("hidden");
+  }
 
   let statesFC, countiesFC, allCities, countyInfo, interstatesFC;
   let zoom = null;
@@ -126,7 +153,7 @@
   }
 
   function drawRoads() {
-    roadLayer
+    roadClipGroup
       .selectAll("path.interstate")
       .data(interstatesFC ? interstatesFC.features : [])
       .join("path")
@@ -158,6 +185,7 @@
     backButton.classList.add("hidden");
     closePanel();
     disableZoom();
+    hideTooltip();
     statusEl.textContent = "Click a state to see its counties.";
 
     const size = containerSize();
@@ -175,6 +203,7 @@
         if (abbr) drawState(abbr, d.id);
       });
 
+    roadClipGroup.attr("clip-path", null);
     drawRoads();
     drawStateLabels(statesFC.features);
     drawCities(allCities.filter((c) => c.major), projection);
@@ -182,6 +211,7 @@
 
   function drawState(abbr, stateFipsId) {
     closePanel();
+    hideTooltip();
     backButton.classList.remove("hidden");
     statusEl.textContent = `${STATE_NAMES[abbr] || abbr}: click a county to see labor groups serving that area.`;
 
@@ -208,9 +238,20 @@
         d3.select(this).classed("selected", true);
         const fips = String(d.id).padStart(5, "0");
         showCountyLaborers(fips, d, abbr);
-      });
+      })
+      .on("mouseenter", (event, d) => showCountyTooltip(event, d, abbr))
+      .on("mousemove", moveTooltip)
+      .on("mouseleave", hideTooltip);
 
     stateLabelLayer.selectAll("text.state-abbr-label").remove();
+
+    const stateFeature = statesFC.features.find((f) => String(f.id).padStart(2, "0") === stateFipsStr);
+    if (stateFeature) {
+      stateClipShape.attr("d", path(stateFeature));
+      roadClipGroup.attr("clip-path", "url(#state-clip)");
+    } else {
+      roadClipGroup.attr("clip-path", null);
+    }
     drawRoads();
     drawCities(getCountyCityLabels(abbr, stateCounties.features), projection);
 

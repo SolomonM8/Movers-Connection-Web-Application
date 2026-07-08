@@ -579,6 +579,22 @@
     }
     .map-zoom-btn:hover { background: var(--color-primary-light); }
 
+    .map-tooltip {
+      position: absolute;
+      z-index: 10;
+      pointer-events: none;
+      background: var(--color-text);
+      color: #fff;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.35rem 0.6rem;
+      border-radius: 6px;
+      box-shadow: 0 4px 14px rgba(16, 32, 58, 0.3);
+      white-space: nowrap;
+      transform: translate(-50%, -100%);
+      margin-top: -10px;
+    }
+
     .county-panel {
       position: fixed;
       inset: 0;
