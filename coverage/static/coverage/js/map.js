@@ -96,6 +96,9 @@
         countyInfo[c.fips] = c;
       });
       interstatesFC = interstates;
+      interstatesFC.features.forEach((f) => {
+        f.bbox = d3.geoBounds(f);
+      });
       drawNation();
     })
     .catch(() => {
@@ -152,13 +155,28 @@
     zoomControls.classList.remove("hidden");
   }
 
-  function drawRoads() {
+  function drawRoads(features) {
     roadClipGroup
       .selectAll("path.interstate")
-      .data(interstatesFC ? interstatesFC.features : [])
+      .data(features || [])
       .join("path")
       .attr("class", "interstate")
       .attr("d", path);
+  }
+
+  const STATE_BBOX_PAD = 1.5;
+
+  function roadsNearState(stateFeature) {
+    if (!interstatesFC) return [];
+    const bounds = d3.geoBounds(stateFeature);
+    const minLon = bounds[0][0] - STATE_BBOX_PAD;
+    const minLat = bounds[0][1] - STATE_BBOX_PAD;
+    const maxLon = bounds[1][0] + STATE_BBOX_PAD;
+    const maxLat = bounds[1][1] + STATE_BBOX_PAD;
+    return interstatesFC.features.filter((f) => {
+      const b = f.bbox;
+      return !(b[1][0] < minLon || b[0][0] > maxLon || b[1][1] < minLat || b[0][1] > maxLat);
+    });
   }
 
   function drawStateLabels(features) {
@@ -204,7 +222,7 @@
       });
 
     roadClipGroup.attr("clip-path", null);
-    drawRoads();
+    roadClipGroup.selectAll("path.interstate").remove();
     drawStateLabels(statesFC.features);
     drawCities(allCities.filter((c) => c.major), projection);
   }
@@ -249,10 +267,11 @@
     if (stateFeature) {
       stateClipShape.attr("d", path(stateFeature));
       roadClipGroup.attr("clip-path", "url(#state-clip)");
+      drawRoads(roadsNearState(stateFeature));
     } else {
       roadClipGroup.attr("clip-path", null);
+      drawRoads([]);
     }
-    drawRoads();
     drawCities(getCountyCityLabels(abbr, stateCounties.features), projection);
 
     enableZoom(size);
