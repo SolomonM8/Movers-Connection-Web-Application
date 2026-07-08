@@ -11,8 +11,15 @@
 
   <div class="address-search-wrap">
     <label for="address-search" class="visually-hidden">Search by address, city, or ZIP</label>
-    <input type="text" id="address-search" class="address-search-input" placeholder="Search an address, city, or ZIP to jump to its county&hellip;" autocomplete="off">
+    <div class="address-search-box">
+      <span class="address-search-icon">{% include "includes/icon-search.svg" %}</span>
+      <input type="text" id="address-search" class="address-search-input" placeholder="Search an address, city, or ZIP to jump to its county&hellip;" autocomplete="off">
+    </div>
     <ul id="address-suggestions" class="address-suggestions hidden"></ul>
+    <div id="search-hint" class="search-hint hidden">
+      <span>&#128161; Try it: search an address to jump straight to its county and see who covers it.</span>
+      <button type="button" id="search-hint-close" aria-label="Dismiss">&times;</button>
+    </div>
   </div>
 
   <div class="map-layout">

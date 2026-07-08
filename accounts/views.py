@@ -39,6 +39,10 @@ class DriverSignUpView(CreateView):
     def form_valid(self, form):
         response = super().form_valid(form)
         login(self.request, self.object)
+        messages.info(
+            self.request,
+            "Welcome! Head to the Coverage Map and search an address to find labor groups near your next job.",
+        )
         return response
 
 
@@ -54,6 +58,10 @@ class LaborerSignUpView(CreateView):
     def form_valid(self, form):
         response = super().form_valid(form)
         login(self.request, self.object)
+        messages.info(
+            self.request,
+            "Welcome! Your next step is to select the counties you serve.",
+        )
         return response
 
 

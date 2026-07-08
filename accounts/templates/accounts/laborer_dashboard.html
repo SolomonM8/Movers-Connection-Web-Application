@@ -33,7 +33,10 @@
       </div>
     {% endif %}
   {% else %}
-    <p>You haven't added any counties yet.</p>
+    <div class="onboarding-callout">
+      <p><strong>Get started:</strong> select the counties you serve so drivers and moving companies can find you.</p>
+      <a class="btn-primary btn-inline" href="{% url 'coverage:service_areas' %}">Select Your Counties &rarr;</a>
+    </div>
   {% endif %}
 </section>
 

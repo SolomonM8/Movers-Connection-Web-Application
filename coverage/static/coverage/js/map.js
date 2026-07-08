@@ -23,6 +23,8 @@
   const zoomOutBtn = document.getElementById("zoom-out-btn");
   const addressInput = document.getElementById("address-search");
   const suggestionsList = document.getElementById("address-suggestions");
+  const searchHint = document.getElementById("search-hint");
+  const searchHintClose = document.getElementById("search-hint-close");
 
   function openPanel() {
     panel.classList.remove("hidden");
@@ -38,10 +40,12 @@
 
   const svg = d3.select(mapContainer).append("svg");
   const regionLayer = svg.append("g").attr("class", "region-layer");
+  const roadLayer = svg.append("g").attr("class", "road-layer");
+  const stateLabelLayer = svg.append("g").attr("class", "state-label-layer");
   const cityLayer = svg.append("g").attr("class", "city-layer");
   const path = d3.geoPath();
 
-  let statesFC, countiesFC, allCities, countyInfo;
+  let statesFC, countiesFC, allCities, countyInfo, interstatesFC;
   let zoom = null;
   const cityLabelCache = {};
 
@@ -54,8 +58,9 @@
     d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/counties-10m.json"),
     d3.json("/static/coverage/data/cities.json"),
     d3.json("/static/coverage/data/counties.json"),
+    d3.json("/static/coverage/data/interstates.json"),
   ])
-    .then(([us, cities, counties]) => {
+    .then(([us, cities, counties, interstates]) => {
       statesFC = topojson.feature(us, us.objects.states);
       countiesFC = topojson.feature(us, us.objects.counties);
       allCities = cities;
@@ -63,6 +68,7 @@
       counties.forEach((c) => {
         countyInfo[c.fips] = c;
       });
+      interstatesFC = interstates;
       drawNation();
     })
     .catch(() => {
@@ -95,6 +101,7 @@
       zoom = null;
     }
     regionLayer.attr("transform", null);
+    roadLayer.attr("transform", null);
     cityLayer.attr("transform", null);
     zoomControls.classList.add("hidden");
   }
@@ -109,12 +116,35 @@
       ])
       .on("zoom", (event) => {
         regionLayer.attr("transform", event.transform);
+        roadLayer.attr("transform", event.transform);
         cityLayer.attr("transform", event.transform);
         cityLayer.selectAll("circle").attr("r", 2.5 / event.transform.k);
         cityLayer.selectAll("text").style("font-size", 10 / event.transform.k + "px");
       });
     svg.call(zoom);
     zoomControls.classList.remove("hidden");
+  }
+
+  function drawRoads() {
+    roadLayer
+      .selectAll("path.interstate")
+      .data(interstatesFC ? interstatesFC.features : [])
+      .join("path")
+      .attr("class", "interstate")
+      .attr("d", path);
+  }
+
+  function drawStateLabels(features) {
+    stateLabelLayer
+      .selectAll("text.state-abbr-label")
+      .data(features, (d) => d.id)
+      .join("text")
+      .attr("class", "state-abbr-label")
+      .attr("transform", (d) => {
+        const c = path.centroid(d);
+        return `translate(${c[0]},${c[1]})`;
+      })
+      .text((d) => STATE_FIPS_TO_ABBR[String(d.id).padStart(2, "0")] || "");
   }
 
   zoomInBtn.addEventListener("click", () => {
@@ -145,6 +175,8 @@
         if (abbr) drawState(abbr, d.id);
       });
 
+    drawRoads();
+    drawStateLabels(statesFC.features);
     drawCities(allCities.filter((c) => c.major), projection);
   }
 
@@ -178,6 +210,8 @@
         showCountyLaborers(fips, d, abbr);
       });
 
+    stateLabelLayer.selectAll("text.state-abbr-label").remove();
+    drawRoads();
     drawCities(getCountyCityLabels(abbr, stateCounties.features), projection);
 
     enableZoom(size);
@@ -290,6 +324,7 @@
 
   if (addressInput) {
     addressInput.addEventListener("input", () => {
+      dismissSearchHint();
       clearTimeout(debounceTimer);
       const query = addressInput.value.trim();
       if (query.length < 3) {
@@ -299,11 +334,41 @@
       debounceTimer = setTimeout(() => fetchSuggestions(query), 350);
     });
 
+    addressInput.addEventListener("focus", dismissSearchHint);
+
     document.addEventListener("click", (event) => {
       if (!addressInput.contains(event.target) && !suggestionsList.contains(event.target)) {
         hideSuggestions();
       }
     });
+  }
+
+  const SEARCH_HINT_KEY = "mc_search_hint_seen";
+
+  function dismissSearchHint() {
+    if (!searchHint) return;
+    searchHint.classList.add("hidden");
+    try {
+      window.localStorage.setItem(SEARCH_HINT_KEY, "1");
+    } catch (e) {
+      /* localStorage unavailable; hint will just reappear next visit */
+    }
+  }
+
+  if (searchHint) {
+    let alreadySeen = false;
+    try {
+      alreadySeen = window.localStorage.getItem(SEARCH_HINT_KEY) === "1";
+    } catch (e) {
+      alreadySeen = false;
+    }
+    if (!alreadySeen) {
+      searchHint.classList.remove("hidden");
+    }
+  }
+
+  if (searchHintClose) {
+    searchHintClose.addEventListener("click", dismissSearchHint);
   }
 
   function hideSuggestions() {

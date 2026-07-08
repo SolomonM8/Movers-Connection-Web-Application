@@ -385,7 +385,75 @@
       flex-shrink: 0;
     }
 
-    .address-search-input { margin-top: 0; }
+    .address-search-box {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #fff;
+      border: 2px solid var(--color-primary);
+      border-radius: 999px;
+      padding: 0.2rem 0.9rem;
+      box-shadow: 0 4px 16px rgba(22, 86, 214, 0.18);
+    }
+    .address-search-box:focus-within {
+      border-color: var(--color-primary-dark);
+      box-shadow: 0 0 0 4px var(--color-primary-light), 0 4px 16px rgba(22, 86, 214, 0.25);
+    }
+
+    .address-search-icon {
+      flex-shrink: 0;
+      width: 1.2rem;
+      height: 1.2rem;
+      color: var(--color-primary);
+    }
+    .address-search-icon .icon-inline { width: 100%; height: 100%; }
+
+    .address-search-input {
+      margin-top: 0;
+      border: none;
+      box-shadow: none !important;
+      padding: 0.65rem 0;
+      font-size: 1rem;
+    }
+    .address-search-input:focus { outline: none; box-shadow: none !important; }
+
+    .search-hint {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0.5rem;
+      right: 0.5rem;
+      z-index: 15;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      background: var(--color-text);
+      color: #fff;
+      padding: 0.65rem 0.9rem;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      box-shadow: 0 8px 20px rgba(16, 32, 58, 0.3);
+    }
+    .search-hint::before {
+      content: "";
+      position: absolute;
+      top: -6px;
+      left: 1.5rem;
+      width: 12px;
+      height: 12px;
+      background: var(--color-text);
+      transform: rotate(45deg);
+    }
+    .search-hint button {
+      flex-shrink: 0;
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 1.2rem;
+      line-height: 1;
+      cursor: pointer;
+      padding: 0;
+    }
 
     .address-suggestions {
       position: absolute;
@@ -451,6 +519,28 @@
       stroke-width: 3px;
       stroke-linejoin: round;
       pointer-events: none;
+    }
+
+    .road-layer { pointer-events: none; }
+    .interstate {
+      fill: none;
+      stroke: #c2660f;
+      stroke-width: 1.1;
+      opacity: 0.6;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .state-label-layer { pointer-events: none; }
+    .state-abbr-label {
+      font-size: 11px;
+      font-weight: 700;
+      fill: #ffffff;
+      stroke: var(--color-text);
+      stroke-width: 2.2px;
+      stroke-linejoin: round;
+      paint-order: stroke;
+      text-anchor: middle;
+      dominant-baseline: middle;
     }
 
     .map-layout {
@@ -566,6 +656,20 @@
       font-weight: 600;
       color: var(--color-text);
     }
+
+    .onboarding-callout {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      padding: 1rem 1.25rem;
+      background: var(--color-primary-light);
+      border: 2px dashed var(--color-primary);
+      border-radius: 12px;
+    }
+    .onboarding-callout p { margin: 0; color: var(--color-text); font-size: 0.95rem; }
+    .onboarding-callout .btn-primary { flex-shrink: 0; }
 
     @media (min-width: 900px) {
       .map-layout { flex-direction: row; }
