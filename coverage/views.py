@@ -1,11 +1,15 @@
+import json
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import redirect
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
+from django.views import View
 from django.views.generic import TemplateView
 
 from accounts.constants import US_STATE_CHOICES
-from accounts.models import User
+from accounts.models import LaborerProfile, User
 from accounts.views import RoleRequiredMixin
 
 from .models import County, ServiceArea
@@ -54,3 +58,32 @@ class ServiceAreaView(RoleRequiredMixin, TemplateView):
             messages.success(request, f"Updated your service counties for {state_label}.")
 
         return redirect(f"{reverse('coverage:service_areas')}?state={state}")
+
+
+class MapView(LoginRequiredMixin, TemplateView):
+    template_name = "coverage/map.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["states_json"] = json.dumps(dict(US_STATE_CHOICES))
+        return context
+
+
+class CountyLaborersAPIView(LoginRequiredMixin, View):
+    def get(self, request, fips):
+        county = get_object_or_404(County, fips=fips)
+        laborers = LaborerProfile.objects.filter(service_areas__county=county).distinct()
+        data = {
+            "county_name": county.name,
+            "state": county.state,
+            "laborers": [
+                {
+                    "display_name": laborer.display_name or laborer.user.email,
+                    "city": laborer.city,
+                    "state": laborer.state,
+                    "phone_number": laborer.phone_number,
+                }
+                for laborer in laborers
+            ],
+        }
+        return JsonResponse(data)

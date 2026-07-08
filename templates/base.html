@@ -61,7 +61,7 @@
 
     .logo-mark { width: 2.1rem; height: 2.1rem; flex-shrink: 0; display: block; }
 
-    nav .nav-links { display: flex; align-items: center; gap: 0.6rem; }
+    nav .nav-links { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; justify-content: flex-end; }
 
     nav .user-info { font-size: 0.9rem; opacity: 0.95; padding: 0.4rem 0.2rem; }
 
@@ -196,6 +196,70 @@
       color: var(--color-text);
     }
     .county-check input { width: auto; margin: 0; }
+
+    .hidden { display: none !important; }
+
+    .map-page { max-width: 1000px; }
+
+    .map-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .map-status { color: var(--color-muted); font-size: 0.9rem; }
+
+    .map-container {
+      width: 100%;
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      background: var(--color-primary-light);
+      overflow: hidden;
+    }
+
+    .map-container svg { display: block; width: 100%; height: auto; }
+
+    .region {
+      cursor: pointer;
+      stroke: #ffffff;
+      stroke-width: 0.6;
+      transition: fill 0.15s ease;
+    }
+    .region.state { fill: var(--color-primary); }
+    .region.state:hover { fill: var(--color-primary-dark); }
+    .region.county { fill: #ffffff; stroke: var(--color-primary); }
+    .region.county:hover { fill: var(--color-primary-light); }
+
+    .city-layer circle { fill: var(--color-primary-dark); }
+    .city-layer text {
+      font-size: 9px;
+      fill: var(--color-text);
+      font-weight: 600;
+      paint-order: stroke;
+      stroke: #ffffff;
+      stroke-width: 3px;
+      stroke-linejoin: round;
+      pointer-events: none;
+    }
+
+    .county-panel {
+      margin-top: 1.5rem;
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      background: #fff;
+    }
+    .county-panel h3 { margin-top: 0; color: var(--color-text); }
+
+    .laborer-card {
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.6rem;
+    }
+    .laborer-card p { margin: 0.15rem 0; color: var(--color-muted); font-size: 0.9rem; }
 
     .errorlist { color: #c0362c; list-style: none; padding: 0; font-size: 0.9rem; }
 
@@ -545,7 +609,7 @@
     .about-section p:last-child { margin-bottom: 0; }
 
     @media (min-width: 700px) {
-      .features { grid-template-columns: repeat(3, 1fr); }
+      .features { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
     }
 
     footer {
@@ -581,6 +645,10 @@
     </a>
     <div class="nav-links">
       {% if user.is_authenticated %}
+        <a href="{% url 'coverage:map' %}" class="nav-btn nav-btn--ghost">
+          {% include "includes/icon-target.svg" %}
+          Coverage Map
+        </a>
         <span class="user-info">{{ user.email }} &middot; {{ user.get_role_display }}</span>
         <form action="{% url 'accounts:logout' %}" method="post">
           {% csrf_token %}
