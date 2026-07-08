@@ -636,6 +636,28 @@
     }
     .laborer-card p { margin: 0.15rem 0; color: var(--color-muted); font-size: 0.9rem; }
 
+    .job-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 0.75rem;
+    }
+    .job-card {
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+      background: #fff;
+    }
+    .job-card p { margin: 0.2rem 0; color: var(--color-muted); font-size: 0.85rem; }
+    .job-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-bottom: 0.3rem;
+    }
+    .job-card-header strong { color: var(--color-text); }
+    .job-card-date { font-size: 0.8rem; color: var(--color-primary-dark); font-weight: 600; }
+
     .dashboard-section {
       padding: 1.25rem 0;
       border-bottom: 1px solid var(--color-border);

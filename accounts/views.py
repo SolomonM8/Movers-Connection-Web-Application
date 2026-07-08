@@ -89,6 +89,13 @@ class DriverDashboardView(RoleRequiredMixin, TemplateView):
     template_name = "accounts/driver_dashboard.html"
     allowed_roles = (User.Role.DRIVER,)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        profile = self.request.user.driver_profile
+        context["profile"] = profile
+        context["jobs"] = profile.jobs.select_related("county")[:10]
+        return context
+
 
 class LaborerDashboardView(RoleRequiredMixin, TemplateView):
     template_name = "accounts/laborer_dashboard.html"

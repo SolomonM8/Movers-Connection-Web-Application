@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Post a Job - Movers Connection{% endblock %}
+{% block content %}
+<div class="form-header">
+  <div class="icon-badge">{% include "includes/icon-truck.svg" %}</div>
+  <h1>Post a New Job</h1>
+</div>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Post Job</button>
+</form>
+<p class="helper-link"><a href="{% url 'accounts:dashboard' %}">&larr; Back to dashboard</a></p>
+
+<script>
+  (function () {
+    var pricingSelect = document.getElementById("id_pricing_model");
+    var flatField = document.getElementById("id_flat_rate_per_worker");
+    var hourlyField = document.getElementById("id_hourly_rate");
+    if (!pricingSelect || !flatField || !hourlyField) return;
+
+    function updateVisibility() {
+      var isFlat = pricingSelect.value === "flat_rate";
+      flatField.closest("p").style.display = isFlat ? "" : "none";
+      hourlyField.closest("p").style.display = isFlat ? "none" : "";
+    }
+
+    pricingSelect.addEventListener("change", updateVisibility);
+    updateVisibility();
+  })();
+</script>
+{% endblock %}
