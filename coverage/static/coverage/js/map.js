@@ -16,6 +16,9 @@
   const panel = document.getElementById("county-panel");
   const panelContent = document.getElementById("county-panel-content");
   const panelClose = document.getElementById("panel-close");
+  const zoomControls = document.getElementById("zoom-controls");
+  const zoomInBtn = document.getElementById("zoom-in-btn");
+  const zoomOutBtn = document.getElementById("zoom-out-btn");
 
   function openPanel() {
     panel.classList.remove("hidden");
@@ -29,19 +32,18 @@
 
   panelClose.addEventListener("click", closePanel);
 
-  const width = mapContainer.clientWidth || 900;
-  const height = 550;
-
-  const svg = d3
-    .select(mapContainer)
-    .append("svg")
-    .attr("viewBox", `0 0 ${width} ${height}`);
-
+  const svg = d3.select(mapContainer).append("svg");
   const regionLayer = svg.append("g").attr("class", "region-layer");
   const cityLayer = svg.append("g").attr("class", "city-layer");
   const path = d3.geoPath();
 
   let statesFC, countiesFC, allCities;
+  let zoom = null;
+
+  function containerSize() {
+    const rect = mapContainer.getBoundingClientRect();
+    return { width: rect.width || 900, height: rect.height || 550 };
+  }
 
   Promise.all([
     d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/counties-10m.json"),
@@ -57,20 +59,54 @@
       statusEl.textContent = "Sorry, the map data couldn't be loaded. Please refresh to try again.";
     });
 
-  function fitProjection(featureCollection, useAlbersUsa) {
+  function fitProjection(featureCollection, useAlbersUsa, size) {
     const projection = useAlbersUsa
-      ? d3.geoAlbersUsa().fitSize([width, height], featureCollection)
-      : d3.geoMercator().fitSize([width, height], featureCollection);
+      ? d3.geoAlbersUsa().fitSize([size.width, size.height], featureCollection)
+      : d3.geoMercator().fitSize([size.width, size.height], featureCollection);
     path.projection(projection);
     return projection;
   }
 
+  function disableZoom() {
+    if (zoom) {
+      svg.on(".zoom", null);
+      zoom = null;
+    }
+    regionLayer.attr("transform", null);
+    cityLayer.attr("transform", null);
+    zoomControls.classList.add("hidden");
+  }
+
+  function enableZoom() {
+    zoom = d3
+      .zoom()
+      .scaleExtent([1, 10])
+      .on("zoom", (event) => {
+        regionLayer.attr("transform", event.transform);
+        cityLayer.attr("transform", event.transform);
+        cityLayer.selectAll("circle").attr("r", 2.5 / event.transform.k);
+        cityLayer.selectAll("text").style("font-size", 10 / event.transform.k + "px");
+      });
+    svg.call(zoom);
+    zoomControls.classList.remove("hidden");
+  }
+
+  zoomInBtn.addEventListener("click", () => {
+    if (zoom) svg.transition().duration(200).call(zoom.scaleBy, 1.6);
+  });
+  zoomOutBtn.addEventListener("click", () => {
+    if (zoom) svg.transition().duration(200).call(zoom.scaleBy, 1 / 1.6);
+  });
+
   function drawNation() {
     backButton.classList.add("hidden");
     closePanel();
+    disableZoom();
     statusEl.textContent = "Click a state to see its counties.";
 
-    const projection = fitProjection(statesFC, true);
+    const size = containerSize();
+    svg.attr("viewBox", `0 0 ${size.width} ${size.height}`);
+    const projection = fitProjection(statesFC, true, size);
 
     regionLayer
       .selectAll("path.region")
@@ -99,7 +135,9 @@
       ),
     };
 
-    const projection = fitProjection(stateCounties, false);
+    const size = containerSize();
+    svg.attr("viewBox", `0 0 ${size.width} ${size.height}`);
+    const projection = fitProjection(stateCounties, false, size);
 
     regionLayer
       .selectAll("path.region")
@@ -111,13 +149,15 @@
         regionLayer.selectAll("path.region.county").classed("selected", false);
         d3.select(this).classed("selected", true);
         const fips = String(d.id).padStart(5, "0");
-        showCountyLaborers(fips);
+        showCountyLaborers(fips, d, abbr);
       });
 
     drawCities(
       allCities.filter((c) => c.state === abbr && c.population >= 50000),
       projection
     );
+
+    enableZoom();
   }
 
   function drawCities(cities, projection) {
@@ -142,22 +182,37 @@
     merged.select("text").text((d) => d.name);
   }
 
+  function findRepresentativeCity(countyFeature, stateAbbr) {
+    if (!countyFeature || !allCities) return null;
+    const candidates = allCities.filter((c) => c.state === stateAbbr && c.population >= 50000);
+    let best = null;
+    for (const city of candidates) {
+      if (d3.geoContains(countyFeature, [city.lon, city.lat])) {
+        if (!best || city.population > best.population) best = city;
+      }
+    }
+    return best ? best.name : null;
+  }
+
   function escapeHtml(value) {
     const div = document.createElement("div");
     div.textContent = value == null ? "" : String(value);
     return div.innerHTML;
   }
 
-  function showCountyLaborers(fips) {
+  function showCountyLaborers(fips, feature, stateAbbr) {
     openPanel();
     panelContent.innerHTML = "<p>Loading&hellip;</p>";
+    const cityName = findRepresentativeCity(feature, stateAbbr);
+
     fetch(`/coverage/api/counties/${fips}/laborers/`)
       .then((response) => response.json())
       .then((data) => {
         const countyName = escapeHtml(data.county_name);
-        const stateAbbr = escapeHtml(data.state);
+        const stateAbbrEsc = escapeHtml(data.state);
+        const cityLabel = cityName ? ` (${escapeHtml(cityName)})` : "";
         if (!data.laborers.length) {
-          panelContent.innerHTML = `<h3>${countyName}, ${stateAbbr}</h3><p>No labor groups have registered coverage for this county yet.</p>`;
+          panelContent.innerHTML = `<h3>${countyName}${cityLabel}, ${stateAbbrEsc}</h3><p>No labor groups have registered coverage for this county yet.</p>`;
           return;
         }
         const cards = data.laborers
@@ -175,7 +230,7 @@
             `;
           })
           .join("");
-        panelContent.innerHTML = `<h3>${countyName}, ${stateAbbr}</h3>${cards}`;
+        panelContent.innerHTML = `<h3>${countyName}${cityLabel}, ${stateAbbrEsc}</h3>${cards}`;
       })
       .catch(() => {
         panelContent.innerHTML = "<p>Couldn't load labor groups for this county. Please try again.</p>";

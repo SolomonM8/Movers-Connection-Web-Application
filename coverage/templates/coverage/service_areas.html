@@ -14,15 +14,7 @@
 
   <div class="service-summary">
     <h2>Currently serving (<span id="service-count">{{ total_count }}</span>/{{ max_counties }})</h2>
-    <div id="service-summary-list">
-      {% if summary %}
-        {% for state, counties in summary.items %}
-          <p><strong>{{ state }}:</strong> {{ counties|join:", " }}</p>
-        {% endfor %}
-      {% else %}
-        <p>You haven't selected any counties yet.</p>
-      {% endif %}
-    </div>
+    <div id="county-slots" class="county-slots"></div>
   </div>
 
   <form method="get" class="state-picker-form">
@@ -37,19 +29,22 @@
 
   {% if selected_state %}
     <p id="map-status" class="map-status">Click counties in {{ selected_state }} to add or remove them.</p>
-    <div id="map-container" class="map-container"></div>
+    <div id="map-container" class="map-container">
+      <div id="zoom-controls" class="map-zoom-controls hidden">
+        <button type="button" id="zoom-in-btn" class="map-zoom-btn" aria-label="Zoom in">+</button>
+        <button type="button" id="zoom-out-btn" class="map-zoom-btn" aria-label="Zoom out">&minus;</button>
+      </div>
+    </div>
   {% endif %}
 </main>
 
-{% if selected_state %}
-  <script>
-    const SELECTED_STATE = "{{ selected_state }}";
-    const SELECTED_FIPS = {{ selected_fips_json|safe }};
-    const MAX_COUNTIES = {{ max_counties }};
-    const CSRF_TOKEN = "{{ csrf_token }}";
-  </script>
-  <script src="https://d3js.org/d3.v7.min.js"></script>
-  <script src="https://unpkg.com/topojson-client@3"></script>
-  <script src="{% static 'coverage/js/service_area_map.js' %}?v={% now 'U' %}"></script>
-{% endif %}
+<script>
+  const SELECTED_STATE = "{{ selected_state }}";
+  const SELECTED_COUNTIES = {{ selected_counties_json|safe }};
+  const MAX_COUNTIES = {{ max_counties }};
+  const CSRF_TOKEN = "{{ csrf_token }}";
+</script>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://unpkg.com/topojson-client@3"></script>
+<script src="{% static 'coverage/js/service_area_map.js' %}?v={% now 'U' %}"></script>
 {% endblock %}

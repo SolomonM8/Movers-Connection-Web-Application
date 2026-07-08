@@ -21,12 +21,9 @@ def _serialize_service_areas(profile):
         .select_related("county")
         .order_by("county__state", "county__name")
     )
-    summary = {}
-    selected_fips = []
-    for service_area in served:
-        summary.setdefault(service_area.county.state, []).append(service_area.county.name)
-        selected_fips.append(service_area.county_id)
-    return summary, selected_fips
+    return [
+        {"fips": sa.county_id, "name": sa.county.name, "state": sa.county.state} for sa in served
+    ]
 
 
 class ServiceAreaView(RoleRequiredMixin, TemplateView):
@@ -38,14 +35,14 @@ class ServiceAreaView(RoleRequiredMixin, TemplateView):
         profile = self.request.user.laborer_profile
         selected_state = self.request.GET.get("state", "")
 
-        summary, selected_fips = _serialize_service_areas(profile)
+        selected_counties = _serialize_service_areas(profile)
 
         context["states"] = US_STATE_CHOICES
         context["selected_state"] = selected_state
-        context["summary"] = summary
-        context["total_count"] = len(selected_fips)
+        context["total_count"] = len(selected_counties)
         context["max_counties"] = MAX_SERVICE_COUNTIES
-        context["selected_fips_json"] = json.dumps(selected_fips)
+        context["selected_counties_json"] = json.dumps(selected_counties)
+        context["selected_fips_json"] = json.dumps([c["fips"] for c in selected_counties])
         return context
 
 
@@ -63,7 +60,7 @@ class ToggleServiceAreaAPIView(RoleRequiredMixin, View):
         else:
             current_count = ServiceArea.objects.filter(laborer_profile=profile).count()
             if current_count >= MAX_SERVICE_COUNTIES:
-                summary, selected_fips = _serialize_service_areas(profile)
+                selected_counties = _serialize_service_areas(profile)
                 return JsonResponse(
                     {
                         "status": "limit_reached",
@@ -71,26 +68,24 @@ class ToggleServiceAreaAPIView(RoleRequiredMixin, View):
                             f"You can only select up to {MAX_SERVICE_COUNTIES} counties. "
                             "Remove one to add another."
                         ),
-                        "total_count": len(selected_fips),
-                        "selected_fips": selected_fips,
-                        "summary": summary,
+                        "total_count": len(selected_counties),
+                        "selected_counties": selected_counties,
                     },
                     status=400,
                 )
             ServiceArea.objects.create(laborer_profile=profile, county=county)
             status = "added"
 
-        summary, selected_fips = _serialize_service_areas(profile)
+        selected_counties = _serialize_service_areas(profile)
         return JsonResponse(
             {
                 "status": status,
                 "fips": fips,
                 "county_name": county.name,
                 "state": county.state,
-                "total_count": len(selected_fips),
+                "total_count": len(selected_counties),
                 "max_counties": MAX_SERVICE_COUNTIES,
-                "selected_fips": selected_fips,
-                "summary": summary,
+                "selected_counties": selected_counties,
             }
         )
 

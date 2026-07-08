@@ -172,8 +172,68 @@
       padding: 1rem 1.25rem;
       margin-bottom: 1.5rem;
     }
-    .service-summary h2 { margin: 0 0 0.5rem; font-size: 1rem; color: var(--color-text); }
+    .service-summary h2 { margin: 0 0 0.75rem; font-size: 1rem; color: var(--color-text); }
     .service-summary p { margin: 0.2rem 0; font-size: 0.9rem; color: var(--color-muted); }
+
+    .county-slots {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.6rem;
+    }
+
+    .county-slot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding: 0.6rem 0.7rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      min-height: 2.75rem;
+    }
+
+    .county-slot.filled {
+      background: #fff;
+      border: 1px solid var(--color-primary);
+      color: var(--color-text);
+      font-weight: 600;
+    }
+
+    .county-slot.empty {
+      background: transparent;
+      border: 2px dashed var(--color-border);
+      color: var(--color-muted);
+      justify-content: center;
+      font-weight: 400;
+    }
+
+    .county-slot-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .county-slot-remove {
+      flex-shrink: 0;
+      width: 1.5rem;
+      height: 1.5rem;
+      border-radius: 50%;
+      border: none;
+      background: var(--color-primary);
+      color: #fff;
+      font-size: 1rem;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+    .county-slot-remove:hover { background: var(--color-primary-dark); }
+
+    @media (min-width: 700px) {
+      .county-slots { grid-template-columns: repeat(3, 1fr); }
+    }
 
     .state-picker-form { margin-bottom: 1.5rem; }
 
@@ -202,7 +262,7 @@
 
     .hidden { display: none !important; }
 
-    main.wide-card.map-page { max-width: 1000px; }
+    main.wide-card.map-page { max-width: 1140px; }
 
     .map-toolbar {
       display: flex;
@@ -215,33 +275,38 @@
     .map-status { color: var(--color-muted); font-size: 0.9rem; }
 
     .map-container {
+      position: relative;
       width: 100%;
+      height: 65vh;
+      min-height: 420px;
       border: 1px solid var(--color-border);
       border-radius: 12px;
-      background: var(--color-primary-light);
+      background: #eef1f6;
       overflow: hidden;
+      touch-action: none;
     }
 
-    .map-container svg { display: block; width: 100%; height: auto; }
+    .map-container svg { display: block; width: 100%; height: 100%; }
 
     .region {
       cursor: pointer;
       stroke: #ffffff;
-      stroke-width: 0.6;
+      stroke-width: 1;
+      vector-effect: non-scaling-stroke;
       transition: fill 0.15s ease;
     }
     .region.state { fill: var(--color-primary); }
     .region.state:hover { fill: var(--color-text); }
-    .region.county { fill: #ffffff; stroke: var(--color-primary); }
-    .region.county:hover { fill: var(--color-primary-dark); }
+    .region.county { fill: #ffffff; stroke: var(--color-text); stroke-width: 1.1; }
+    .region.county:hover { fill: var(--color-primary-dark); stroke: var(--color-text); }
     .region.county.selected { fill: #000000; stroke: #000000; }
     .region.county.selected:hover { fill: #1a1a1a; }
 
-    .city-layer circle { fill: var(--color-primary-dark); }
+    .city-layer circle { fill: var(--color-primary-dark); stroke: #fff; stroke-width: 1; }
     .city-layer text {
-      font-size: 9px;
+      font-size: 10px;
       fill: var(--color-text);
-      font-weight: 600;
+      font-weight: 700;
       paint-order: stroke;
       stroke: #ffffff;
       stroke-width: 3px;
@@ -253,6 +318,38 @@
       display: flex;
       flex-direction: column;
       gap: 1.5rem;
+    }
+
+    .map-zoom-controls {
+      position: absolute;
+      bottom: 0.75rem;
+      right: 0.75rem;
+      z-index: 5;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .map-zoom-btn {
+      width: 2.4rem;
+      height: 2.4rem;
+      border-radius: 8px;
+      border: 1px solid var(--color-border);
+      background: #fff;
+      color: var(--color-primary-dark);
+      font-size: 1.3rem;
+      font-weight: 700;
+      line-height: 1;
+      cursor: pointer;
+      box-shadow: 0 3px 10px rgba(16, 32, 58, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .map-zoom-btn:hover { background: var(--color-primary-light); }
+
+    @media (min-width: 900px) {
+      .map-container { height: 700px; }
     }
 
     .county-panel {

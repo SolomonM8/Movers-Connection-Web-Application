@@ -19,7 +19,12 @@
   </div>
 
   <div class="map-layout">
-    <div id="map-container" class="map-container"></div>
+    <div id="map-container" class="map-container">
+      <div id="zoom-controls" class="map-zoom-controls hidden">
+        <button type="button" id="zoom-in-btn" class="map-zoom-btn" aria-label="Zoom in">+</button>
+        <button type="button" id="zoom-out-btn" class="map-zoom-btn" aria-label="Zoom out">&minus;</button>
+      </div>
+    </div>
 
     <div id="county-panel" class="county-panel hidden">
       <button type="button" id="panel-close" class="panel-close" aria-label="Close">&times;</button>
