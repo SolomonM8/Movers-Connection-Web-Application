@@ -12,8 +12,8 @@ class JobAdmin(admin.ModelAdmin):
 
 @admin.register(JobApplication)
 class JobApplicationAdmin(admin.ModelAdmin):
-    list_display = ("__str__", "job", "laborer_profile", "status", "applied_at")
-    list_filter = ("status",)
+    list_display = ("__str__", "job", "laborer_profile", "status", "source", "applied_at")
+    list_filter = ("status", "source")
     search_fields = ("laborer_profile__display_name", "job__county__name")
 
 

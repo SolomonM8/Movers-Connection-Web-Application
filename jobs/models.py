@@ -48,11 +48,16 @@ class JobApplication(models.Model):
         ACCEPTED = "accepted", "Accepted"
         DECLINED = "declined", "Declined"
 
+    class Source(models.TextChoices):
+        APPLIED = "applied", "Applied"
+        INVITED = "invited", "Invited"
+
     job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name="applications")
     laborer_profile = models.ForeignKey(
         LaborerProfile, on_delete=models.CASCADE, related_name="job_applications"
     )
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING)
+    source = models.CharField(max_length=20, choices=Source.choices, default=Source.APPLIED)
     applied_at = models.DateTimeField(auto_now_add=True)
     responded_at = models.DateTimeField(null=True, blank=True)
 

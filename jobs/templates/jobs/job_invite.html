@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Invite to Job - Movers Connection{% endblock %}
+{% block content %}
+<div class="form-header">
+  <div class="icon-badge">{% include "includes/icon-hardhat.svg" %}</div>
+  <h1>Invite {{ laborer_profile.display_name|default:laborer_profile.user.email }}</h1>
+</div>
+{% if jobs %}
+  <form method="post">
+    {% csrf_token %}
+    <label for="job-select">Choose one of your active jobs</label>
+    <select name="job" id="job-select">
+      {% for job in jobs %}
+        <option value="{{ job.pk }}">{{ job.get_job_type_display }} &mdash; {{ job.job_date|date:"M j, Y" }} &mdash; {{ job.county.name }}, {{ job.county.state }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit">Send Invite</button>
+  </form>
+{% else %}
+  <p>You don't have any active jobs to invite them to.</p>
+  <p><a class="btn-primary btn-inline" href="{% url 'jobs:create' %}">Post a Job &rarr;</a></p>
+{% endif %}
+<p class="helper-link"><a href="{% url 'accounts:friends' %}">&larr; Back to friends</a></p>
+{% endblock %}

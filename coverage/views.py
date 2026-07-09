@@ -7,7 +7,7 @@ from django.views import View
 from django.views.generic import TemplateView
 
 from accounts.constants import US_STATE_CHOICES
-from accounts.models import User
+from accounts.models import Connection, User
 from accounts.views import RoleRequiredMixin
 
 from .models import County, ServiceArea
@@ -124,6 +124,7 @@ class MapView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["states_json"] = json.dumps(dict(US_STATE_CHOICES))
+        context["is_driver"] = self.request.user.role == User.Role.DRIVER
         return context
 
 
@@ -135,16 +136,25 @@ class CountyLaborersAPIView(LoginRequiredMixin, View):
             .select_related("laborer_profile", "laborer_profile__user")
             .order_by("-is_primary")
         )
+        friend_ids = set()
+        if request.user.role == User.Role.DRIVER:
+            friend_ids = set(
+                Connection.objects.filter(driver_profile=request.user.driver_profile).values_list(
+                    "laborer_profile_id", flat=True
+                )
+            )
         data = {
             "county_name": county.name,
             "state": county.state,
             "laborers": [
                 {
+                    "laborer_id": sa.laborer_profile_id,
                     "display_name": sa.laborer_profile.display_name or sa.laborer_profile.user.email,
                     "city": sa.laborer_profile.city,
                     "state": sa.laborer_profile.state,
                     "phone_number": sa.laborer_profile.phone_number,
                     "is_primary": sa.is_primary,
+                    "is_friend": sa.laborer_profile_id in friend_ids,
                 }
                 for sa in service_areas
             ],

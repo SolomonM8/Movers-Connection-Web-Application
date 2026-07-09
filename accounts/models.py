@@ -109,3 +109,18 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"{self.recipient}: {self.message}"
+
+
+class Connection(models.Model):
+    driver_profile = models.ForeignKey(DriverProfile, on_delete=models.CASCADE, related_name="connections")
+    laborer_profile = models.ForeignKey(
+        LaborerProfile, on_delete=models.CASCADE, related_name="connections"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("driver_profile", "laborer_profile")
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.driver_profile} <-> {self.laborer_profile}"

@@ -361,21 +361,52 @@
             const badge = laborer.is_primary
               ? '<span class="county-slot-badge">BASED HERE</span>'
               : '<span class="county-slot-badge county-slot-badge--muted">ALSO SERVES</span>';
+            const actions = IS_DRIVER
+              ? `
+                <div class="job-actions">
+                  ${
+                    laborer.is_friend
+                      ? '<span class="county-slot-badge">FRIEND</span>'
+                      : `<button type="button" class="inline-friend-btn" data-add-friend="${laborer.laborer_id}">+ Add Friend</button>`
+                  }
+                  <a class="btn-primary btn-inline" href="/jobs/invite/${laborer.laborer_id}/">Invite to Job &rarr;</a>
+                </div>
+              `
+              : "";
             return `
               <div class="laborer-card">
                 <div>${badge}</div>
                 <strong>${name}</strong>
                 <p>${city ? city + ", " + state : ""}</p>
                 <p>${phone}</p>
+                ${actions}
               </div>
             `;
           })
           .join("");
         panelContent.innerHTML = `${header}${cards}`;
+        if (IS_DRIVER) bindAddFriendButtons();
       })
       .catch(() => {
         panelContent.innerHTML = `${header}<p>Couldn't load labor groups for this county. Please try again.</p>`;
       });
+  }
+
+  function bindAddFriendButtons() {
+    const csrfInput = document.querySelector('input[name="csrfmiddlewaretoken"]');
+    panelContent.querySelectorAll("[data-add-friend]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const laborerId = btn.dataset.addFriend;
+        fetch(`/accounts/friends/add/laborer/${laborerId}/`, {
+          method: "POST",
+          headers: csrfInput ? { "X-CSRFToken": csrfInput.value } : {},
+        })
+          .then(() => {
+            btn.outerHTML = '<span class="county-slot-badge">FRIEND</span>';
+          })
+          .catch(() => {});
+      });
+    });
   }
 
   backButton.addEventListener("click", drawNation);

@@ -8,6 +8,7 @@ urlpatterns = [
     path("create/", views.JobCreateView.as_view(), name="create"),
     path("past/", views.DriverPastJobListView.as_view(), name="past"),
     path("browse/", views.LaborerJobListView.as_view(), name="browse"),
+    path("invite/<int:laborer_pk>/", views.JobInviteView.as_view(), name="invite"),
     path("<int:pk>/", views.JobDetailView.as_view(), name="detail"),
     path("<int:pk>/edit/", views.JobUpdateView.as_view(), name="edit"),
     path("<int:pk>/delete/", views.JobDeleteView.as_view(), name="delete"),
@@ -19,4 +20,9 @@ urlpatterns = [
         name="application_respond",
     ),
     path("applications/<int:app_pk>/messages/", views.MessageThreadView.as_view(), name="messages"),
+    path(
+        "applications/<int:app_pk>/respond-invite/",
+        views.InvitationRespondView.as_view(),
+        name="invitation_respond",
+    ),
 ]

@@ -1,7 +1,15 @@
 {% extends "base.html" %}
 {% block title %}Notifications - Movers Connection{% endblock %}
 {% block content %}
-<h1>Notifications</h1>
+<div class="dashboard-section-header">
+  <h1>Notifications</h1>
+  {% if notification_list %}
+    <form method="post" action="{% url 'accounts:notifications_clear' %}">
+      {% csrf_token %}
+      <button type="submit" class="btn-danger btn-inline">Clear All</button>
+    </form>
+  {% endif %}
+</div>
 {% if notification_list %}
   <div class="notification-list">
     {% for notification in notification_list %}

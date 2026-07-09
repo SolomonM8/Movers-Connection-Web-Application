@@ -22,4 +22,17 @@ urlpatterns = [
         views.NotificationMarkReadView.as_view(),
         name="notifications_mark_read",
     ),
+    path("notifications/clear/", views.NotificationClearView.as_view(), name="notifications_clear"),
+    path("friends/", views.FriendsListView.as_view(), name="friends"),
+    path(
+        "friends/add/laborer/<int:laborer_pk>/",
+        views.AddLaborerFriendView.as_view(),
+        name="add_laborer_friend",
+    ),
+    path(
+        "friends/add/driver/<int:driver_pk>/",
+        views.AddDriverFriendView.as_view(),
+        name="add_driver_friend",
+    ),
+    path("friends/remove/<int:connection_pk>/", views.RemoveFriendView.as_view(), name="remove_friend"),
 ]

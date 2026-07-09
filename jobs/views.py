@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.views import View
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
-from accounts.models import DriverProfile, Notification, User
+from accounts.models import Connection, DriverProfile, LaborerProfile, Notification, User
 from accounts.views import RoleRequiredMixin
 
 from .forms import JobForm, MessageForm
@@ -75,6 +75,7 @@ class JobDetailView(DriverJobOwnerMixin, DetailView):
         context["applications"] = self.object.applications.select_related(
             "laborer_profile", "laborer_profile__user"
         )
+        context["can_mark_complete"] = self.object.job_date <= timezone.now().date()
         return context
 
 
@@ -120,6 +121,8 @@ class JobMarkCompleteView(DriverJobOwnerMixin, View):
         job = get_object_or_404(Job, pk=pk, driver_profile=request.user.driver_profile)
         if job.status != Job.Status.OPEN:
             messages.info(request, "This job is already marked completed.")
+        elif job.job_date > timezone.now().date():
+            messages.error(request, "You can't mark a job completed before its date arrives.")
         else:
             job.status = Job.Status.COMPLETED
             job.save(update_fields=["status"])
@@ -133,7 +136,9 @@ class JobMarkCompleteView(DriverJobOwnerMixin, View):
 class ApplicationRespondView(DriverJobOwnerMixin, View):
     def post(self, request, pk, app_pk):
         job = get_object_or_404(Job, pk=pk, driver_profile=request.user.driver_profile)
-        application = get_object_or_404(JobApplication, pk=app_pk, job=job)
+        application = get_object_or_404(
+            JobApplication, pk=app_pk, job=job, source=JobApplication.Source.APPLIED
+        )
         action = request.POST.get("action")
         if action == "accept":
             application.status = JobApplication.Status.ACCEPTED
@@ -194,7 +199,58 @@ class LaborerJobListView(RoleRequiredMixin, ListView):
         for job in jobs:
             job.my_application = application_by_job.get(job.id)
         context["jobs"] = jobs
+        context["my_friend_driver_ids"] = set(
+            Connection.objects.filter(laborer_profile=profile).values_list(
+                "driver_profile_id", flat=True
+            )
+        )
+        context["invitations"] = JobApplication.objects.filter(
+            laborer_profile=profile,
+            source=JobApplication.Source.INVITED,
+            status=JobApplication.Status.PENDING,
+        ).select_related("job", "job__county", "job__driver_profile", "job__driver_profile__user")
         return context
+
+
+class InvitationRespondView(RoleRequiredMixin, View):
+    allowed_roles = (User.Role.LABORER,)
+
+    def post(self, request, app_pk):
+        application = get_object_or_404(
+            JobApplication,
+            pk=app_pk,
+            laborer_profile=request.user.laborer_profile,
+            source=JobApplication.Source.INVITED,
+        )
+        job = application.job
+        action = request.POST.get("action")
+        if action == "accept":
+            application.status = JobApplication.Status.ACCEPTED
+            application.responded_at = timezone.now()
+            application.save(update_fields=["status", "responded_at"])
+            Notification.objects.create(
+                recipient=job.driver_profile.user,
+                message=(
+                    f"{application.laborer_profile} accepted your invite for the "
+                    f"{job.get_job_type_display()} job on {job.job_date} in {job.county}."
+                ),
+                url=reverse("jobs:messages", args=[application.pk]),
+            )
+            messages.success(request, "Invitation accepted!")
+        elif action == "decline":
+            application.status = JobApplication.Status.DECLINED
+            application.responded_at = timezone.now()
+            application.save(update_fields=["status", "responded_at"])
+            Notification.objects.create(
+                recipient=job.driver_profile.user,
+                message=(
+                    f"{application.laborer_profile} declined your invite for the "
+                    f"{job.get_job_type_display()} job on {job.job_date} in {job.county}."
+                ),
+                url=reverse("jobs:detail", args=[job.pk]),
+            )
+            messages.success(request, "Invitation declined.")
+        return redirect("jobs:browse")
 
 
 class JobApplyView(RoleRequiredMixin, View):
@@ -217,6 +273,50 @@ class JobApplyView(RoleRequiredMixin, View):
         else:
             messages.info(request, "You've already applied to this job.")
         return redirect("jobs:browse")
+
+
+class JobInviteView(RoleRequiredMixin, View):
+    allowed_roles = (User.Role.DRIVER,)
+    template_name = "jobs/job_invite.html"
+
+    def get_active_jobs(self, request):
+        today = timezone.now().date()
+        return Job.objects.filter(
+            driver_profile=request.user.driver_profile, status=Job.Status.OPEN, job_date__gte=today
+        ).select_related("county")
+
+    def get(self, request, laborer_pk):
+        laborer_profile = get_object_or_404(LaborerProfile, pk=laborer_pk)
+        jobs = self.get_active_jobs(request)
+        return render(
+            request, self.template_name, {"laborer_profile": laborer_profile, "jobs": jobs}
+        )
+
+    def post(self, request, laborer_pk):
+        laborer_profile = get_object_or_404(LaborerProfile, pk=laborer_pk)
+        jobs = self.get_active_jobs(request)
+        job = jobs.filter(pk=request.POST.get("job")).first()
+        if not job:
+            messages.error(request, "Please select a valid job to invite this laborer to.")
+            return redirect("jobs:invite", laborer_pk=laborer_pk)
+        application, created = JobApplication.objects.get_or_create(
+            job=job,
+            laborer_profile=laborer_profile,
+            defaults={"source": JobApplication.Source.INVITED},
+        )
+        if created:
+            Notification.objects.create(
+                recipient=laborer_profile.user,
+                message=(
+                    f"You were invited to a {job.get_job_type_display()} job on "
+                    f"{job.job_date} in {job.county} by {request.user.driver_profile}."
+                ),
+                url=reverse("jobs:browse"),
+            )
+            messages.success(request, f"Invited {laborer_profile} to the job.")
+        else:
+            messages.info(request, f"{laborer_profile} already has a pending application for that job.")
+        return redirect("jobs:detail", pk=job.pk)
 
 
 class MessageThreadView(LoginRequiredMixin, View):

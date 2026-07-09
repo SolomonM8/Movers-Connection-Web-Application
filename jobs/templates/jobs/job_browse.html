@@ -2,6 +2,37 @@
 {% block title %}Browse Jobs - Movers Connection{% endblock %}
 {% block main %}
 <main class="wide-card">
+  {% if invitations %}
+    <section class="dashboard-section">
+      <h2>Invitations ({{ invitations|length }})</h2>
+      <div class="job-list">
+        {% for invitation in invitations %}
+          <div class="job-card">
+            <div class="job-card-header">
+              <strong>{{ invitation.job.get_job_type_display }}</strong>
+              <span class="job-card-date">{{ invitation.job.job_date|date:"M j, Y" }}</span>
+            </div>
+            <p>{{ invitation.job.county.name }}, {{ invitation.job.county.state }}</p>
+            <p>Invited by {{ invitation.job.driver_profile.company_name|default:invitation.job.driver_profile.user.email }}</p>
+            <p>
+              {{ invitation.job.workers_needed }} worker{{ invitation.job.workers_needed|pluralize }} needed &middot;
+              {% if invitation.job.pricing_model == "flat_rate" %}${{ invitation.job.flat_rate_per_worker }} per worker{% else %}${{ invitation.job.hourly_rate }}/hr per worker{% endif %}
+            </p>
+            <div class="job-actions">
+              <form method="post" action="{% url 'jobs:invitation_respond' invitation.pk %}">
+                {% csrf_token %}
+                <button type="submit" name="action" value="accept" class="btn-primary btn-inline">Accept</button>
+              </form>
+              <form method="post" action="{% url 'jobs:invitation_respond' invitation.pk %}">
+                {% csrf_token %}
+                <button type="submit" name="action" value="decline" class="btn-danger btn-inline">Decline</button>
+              </form>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
   <h1>Jobs in Your Service Areas</h1>
   {% if jobs %}
     <div class="job-list">
@@ -12,7 +43,17 @@
             <span class="job-card-date">{{ job.job_date|date:"M j, Y" }}</span>
           </div>
           <p>{{ job.county.name }}, {{ job.county.state }}{% if job.city %} &middot; {{ job.city }}{% endif %}</p>
-          <p>{{ job.driver_profile.company_name|default:job.driver_profile.user.email }}</p>
+          <p>
+            {{ job.driver_profile.company_name|default:job.driver_profile.user.email }}
+            {% if job.driver_profile.pk in my_friend_driver_ids %}
+              <span class="county-slot-badge">FRIEND</span>
+            {% else %}
+              <form method="post" action="{% url 'accounts:add_driver_friend' job.driver_profile.pk %}" class="inline-friend-form">
+                {% csrf_token %}
+                <button type="submit" class="inline-friend-btn">+ Add Friend</button>
+              </form>
+            {% endif %}
+          </p>
           <p>
             {{ job.workers_needed }} worker{{ job.workers_needed|pluralize }} needed &middot;
             {% if job.pricing_model == "flat_rate" %}${{ job.flat_rate_per_worker }} per worker{% else %}${{ job.hourly_rate }}/hr per worker{% endif %}

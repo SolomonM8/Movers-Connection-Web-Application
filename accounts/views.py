@@ -3,14 +3,14 @@ from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import LoginView
 from django.http import JsonResponse
-from django.shortcuts import redirect
-from django.urls import reverse_lazy
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views import View
 from django.views.generic import CreateView, ListView, TemplateView, UpdateView
 
 from .forms import DriverSignUpForm, LaborerProfileEditForm, LaborerSignUpForm
-from .models import Notification, User
+from .models import Connection, DriverProfile, LaborerProfile, Notification, User
 
 
 class LandingView(TemplateView):
@@ -165,3 +165,80 @@ class NotificationMarkReadView(LoginRequiredMixin, View):
     def post(self, request):
         Notification.objects.filter(recipient=request.user, is_read=False).update(is_read=True)
         return JsonResponse({"status": "ok"})
+
+
+class NotificationClearView(LoginRequiredMixin, View):
+    def post(self, request):
+        Notification.objects.filter(recipient=request.user).delete()
+        if request.headers.get("X-Requested-With") == "fetch":
+            return JsonResponse({"status": "ok"})
+        messages.success(request, "Notifications cleared.")
+        return redirect("accounts:notifications")
+
+
+class FriendsListView(RoleRequiredMixin, TemplateView):
+    template_name = "accounts/friends.html"
+    allowed_roles = (User.Role.DRIVER, User.Role.LABORER)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        is_driver = user.role == User.Role.DRIVER
+        context["is_driver"] = is_driver
+        if is_driver:
+            context["connections"] = Connection.objects.filter(
+                driver_profile=user.driver_profile
+            ).select_related("laborer_profile", "laborer_profile__user")
+        else:
+            context["connections"] = Connection.objects.filter(
+                laborer_profile=user.laborer_profile
+            ).select_related("driver_profile", "driver_profile__user")
+        return context
+
+
+class AddLaborerFriendView(RoleRequiredMixin, View):
+    allowed_roles = (User.Role.DRIVER,)
+
+    def post(self, request, laborer_pk):
+        laborer_profile = get_object_or_404(LaborerProfile, pk=laborer_pk)
+        _, created = Connection.objects.get_or_create(
+            driver_profile=request.user.driver_profile, laborer_profile=laborer_profile
+        )
+        if created:
+            messages.success(request, f"Added {laborer_profile} to your friends.")
+        else:
+            messages.info(request, f"{laborer_profile} is already in your friends.")
+        return redirect(request.META.get("HTTP_REFERER") or reverse("accounts:friends"))
+
+
+class AddDriverFriendView(RoleRequiredMixin, View):
+    allowed_roles = (User.Role.LABORER,)
+
+    def post(self, request, driver_pk):
+        driver_profile = get_object_or_404(DriverProfile, pk=driver_pk)
+        _, created = Connection.objects.get_or_create(
+            driver_profile=driver_profile, laborer_profile=request.user.laborer_profile
+        )
+        if created:
+            messages.success(request, f"Added {driver_profile} to your friends.")
+        else:
+            messages.info(request, f"{driver_profile} is already in your friends.")
+        return redirect(request.META.get("HTTP_REFERER") or reverse("accounts:friends"))
+
+
+class RemoveFriendView(RoleRequiredMixin, View):
+    allowed_roles = (User.Role.DRIVER, User.Role.LABORER)
+
+    def post(self, request, connection_pk):
+        user = request.user
+        if user.role == User.Role.DRIVER:
+            connection = get_object_or_404(
+                Connection, pk=connection_pk, driver_profile=user.driver_profile
+            )
+        else:
+            connection = get_object_or_404(
+                Connection, pk=connection_pk, laborer_profile=user.laborer_profile
+            )
+        connection.delete()
+        messages.success(request, "Removed from friends.")
+        return redirect("accounts:friends")

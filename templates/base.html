@@ -205,18 +205,31 @@
     .notification-dropdown .notification-list { max-height: 320px; overflow-y: auto; gap: 0.4rem; }
     .notification-dropdown .notification-item { font-size: 0.85rem; padding: 0.6rem 0.75rem; }
     .notification-dropdown-empty { margin: 0.5rem; color: var(--color-muted); font-size: 0.85rem; text-align: center; }
-    .notification-dropdown-viewall {
-      display: block;
-      text-align: center;
+    .notification-dropdown-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
       margin-top: 0.5rem;
+    }
+    .notification-dropdown-viewall,
+    .notification-dropdown-clear {
+      flex: 1;
+      text-align: center;
       padding: 0.5rem;
       font-size: 0.85rem;
       font-weight: 600;
-      color: var(--color-primary);
       text-decoration: none;
       border-radius: 6px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-family: inherit;
     }
+    .notification-dropdown-viewall { color: var(--color-primary); }
     .notification-dropdown-viewall:hover { background: var(--color-primary-light); }
+    .notification-dropdown-clear { color: #c0362c; }
+    .notification-dropdown-clear:hover { background: #fbe8e6; }
 
     @media (max-width: 700px) {
       .notification-dropdown { right: auto; left: 0; width: 100%; }
@@ -790,6 +803,20 @@
     .job-actions .btn-primary,
     .job-actions .btn-danger { margin-top: 0; }
 
+    .inline-friend-form { display: inline-block; margin: 0.2rem 0 0; }
+    .inline-friend-btn {
+      background: transparent;
+      border: 1px solid var(--color-primary);
+      color: var(--color-primary);
+      border-radius: 999px;
+      padding: 0.15rem 0.6rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .inline-friend-btn:hover { background: var(--color-primary-light); }
+
     .btn-danger {
       display: inline-block;
       padding: 0.75rem 1.5rem;
@@ -1318,7 +1345,10 @@
                   </a>
                 {% endfor %}
               </div>
-              <a class="notification-dropdown-viewall" href="{% url 'accounts:notifications' %}">View all &rarr;</a>
+              <div class="notification-dropdown-footer">
+                <button type="button" id="notification-clear" class="notification-dropdown-clear">Clear all</button>
+                <a class="notification-dropdown-viewall" href="{% url 'accounts:notifications' %}">View all &rarr;</a>
+              </div>
             {% else %}
               <p class="notification-dropdown-empty">No notifications yet.</p>
             {% endif %}
@@ -1383,6 +1413,29 @@
             notifToggle.setAttribute("aria-expanded", "false");
           }
         });
+
+        var clearBtn = document.getElementById("notification-clear");
+        if (clearBtn && csrfInput) {
+          clearBtn.addEventListener("click", function (event) {
+            event.stopPropagation();
+            fetch("{% url 'accounts:notifications_clear' %}", {
+              method: "POST",
+              headers: { "X-CSRFToken": csrfInput.value, "X-Requested-With": "fetch" },
+            })
+              .then(function () {
+                if (badge) badge.remove();
+                var list = notifDropdown.querySelector(".notification-list");
+                var footer = notifDropdown.querySelector(".notification-dropdown-footer");
+                if (list) list.remove();
+                if (footer) footer.remove();
+                var empty = document.createElement("p");
+                empty.className = "notification-dropdown-empty";
+                empty.textContent = "No notifications yet.";
+                notifDropdown.appendChild(empty);
+              })
+              .catch(function () {});
+          });
+        }
       }
     })();
   </script>

@@ -21,7 +21,7 @@
 
   <div class="job-actions">
     <a class="btn-primary btn-inline" href="{% url 'jobs:edit' job.pk %}">Edit Job</a>
-    {% if job.status == "open" %}
+    {% if job.status == "open" and can_mark_complete %}
       <form method="post" action="{% url 'jobs:mark_complete' job.pk %}">
         {% csrf_token %}
         <button type="submit" class="btn-primary btn-inline">Mark Completed</button>
@@ -34,6 +34,9 @@
       </form>
     {% endif %}
   </div>
+  {% if job.status == "open" and not can_mark_complete %}
+    <p class="helper-link">You can mark this job completed once {{ job.job_date|date:"F j, Y" }} arrives.</p>
+  {% endif %}
 
   <section class="dashboard-section">
     <h2>Applicants ({{ applications.count }})</h2>
@@ -45,10 +48,13 @@
               <strong>{{ application.laborer_profile.display_name|default:application.laborer_profile.user.email }}</strong>
               <span class="county-slot-badge{% if application.status != "accepted" %} county-slot-badge--muted{% endif %}">{{ application.get_status_display|upper }}</span>
             </div>
+            <p>
+              <span class="county-slot-badge county-slot-badge--muted">{{ application.get_source_display|upper }}</span>
+            </p>
             <p>{{ application.laborer_profile.city }}{% if application.laborer_profile.city %}, {% endif %}{{ application.laborer_profile.state }}</p>
             <p>{{ application.laborer_profile.phone_number }}</p>
             <p>Applied {{ application.applied_at|date:"M j, Y" }}</p>
-            {% if application.status == "pending" %}
+            {% if application.status == "pending" and application.source == "applied" %}
               <div class="job-actions">
                 <form method="post" action="{% url 'jobs:application_respond' job.pk application.pk %}">
                   {% csrf_token %}
@@ -59,6 +65,8 @@
                   <button type="submit" name="action" value="decline" class="btn-danger btn-inline">Decline</button>
                 </form>
               </div>
+            {% elif application.status == "pending" and application.source == "invited" %}
+              <p class="helper-link">Waiting for them to respond to your invite.</p>
             {% elif application.status == "accepted" %}
               <div class="job-actions">
                 <a class="btn-primary btn-inline" href="{% url 'jobs:messages' application.pk %}">Message &rarr;</a>
