@@ -2,9 +2,11 @@ from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import LoginView
+from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
+from django.views import View
 from django.views.generic import CreateView, ListView, TemplateView, UpdateView
 
 from .forms import DriverSignUpForm, LaborerProfileEditForm, LaborerSignUpForm
@@ -103,14 +105,8 @@ class DriverDashboardView(RoleRequiredMixin, TemplateView):
             .select_related("county")
             .annotate(application_count=Count("applications"))
         )
-        past_jobs_count = (
-            profile.jobs.filter(job_date__lt=today).exclude(status=Job.Status.COMPLETED).count()
-        )
         context["profile"] = profile
         context["active_jobs"] = active_jobs
-        context["active_jobs_count"] = active_jobs.count()
-        context["max_active_jobs"] = Job.MAX_ACTIVE_PER_DRIVER
-        context["past_jobs_count"] = past_jobs_count
         return context
 
 
@@ -163,3 +159,9 @@ class NotificationListView(LoginRequiredMixin, ListView):
         response = super().get(request, *args, **kwargs)
         Notification.objects.filter(recipient=request.user, is_read=False).update(is_read=True)
         return response
+
+
+class NotificationMarkReadView(LoginRequiredMixin, View):
+    def post(self, request):
+        Notification.objects.filter(recipient=request.user, is_read=False).update(is_read=True)
+        return JsonResponse({"status": "ok"})

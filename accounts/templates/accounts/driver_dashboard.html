@@ -3,26 +3,19 @@
 {% block dashboard_title %}Driver / Moving Company Dashboard{% endblock %}
 {% block dashboard_content %}
 <section class="dashboard-section">
-  <div class="stat-row">
-    <div class="stat-box">
-      <span class="stat-number">{{ active_jobs_count }}</span>
-      <span class="stat-label">Active Jobs</span>
-    </div>
-    <a class="stat-box stat-box-link" href="{% url 'jobs:past' %}">
-      <span class="stat-number">{{ past_jobs_count }}</span>
-      <span class="stat-label">Past Jobs</span>
-    </a>
-    <div class="stat-box">
-      <span class="stat-number">{{ profile.jobs_completed_count }}</span>
-      <span class="stat-label">Jobs Completed</span>
-    </div>
+  <div class="stat-highlight">
+    <span class="stat-highlight-number">{{ profile.jobs_completed_count }}</span>
+    <span class="stat-highlight-label">Total Jobs Completed</span>
   </div>
 </section>
 
 <section class="dashboard-section">
   <div class="dashboard-section-header">
-    <h2>Active Jobs ({{ active_jobs_count }}/{{ max_active_jobs }})</h2>
-    <a class="btn-primary btn-inline" href="{% url 'jobs:create' %}">+ Post a Job</a>
+    <h2>Active Jobs</h2>
+    <div class="dashboard-section-actions">
+      <a class="btn-secondary btn-inline" href="{% url 'jobs:past' %}">View Past Jobs &rarr;</a>
+      <a class="btn-primary btn-inline" href="{% url 'jobs:create' %}">+ Post a Job</a>
+    </div>
   </div>
   {% if active_jobs %}
     <div class="job-list">

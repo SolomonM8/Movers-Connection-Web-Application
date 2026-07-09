@@ -187,6 +187,41 @@
     }
     .notification-item-date { flex-shrink: 0; font-size: 0.75rem; color: var(--color-muted); font-weight: 400; }
 
+    .notification-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      z-index: 30;
+      width: 320px;
+      max-width: 90vw;
+      background: #fff;
+      border: 1px solid var(--color-border);
+      border-radius: 10px;
+      box-shadow: 0 12px 30px rgba(16, 32, 58, 0.2);
+      padding: 0.6rem;
+    }
+    .notification-dropdown.open { display: block; }
+    .notification-dropdown .notification-list { max-height: 320px; overflow-y: auto; gap: 0.4rem; }
+    .notification-dropdown .notification-item { font-size: 0.85rem; padding: 0.6rem 0.75rem; }
+    .notification-dropdown-empty { margin: 0.5rem; color: var(--color-muted); font-size: 0.85rem; text-align: center; }
+    .notification-dropdown-viewall {
+      display: block;
+      text-align: center;
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--color-primary);
+      text-decoration: none;
+      border-radius: 6px;
+    }
+    .notification-dropdown-viewall:hover { background: var(--color-primary-light); }
+
+    @media (max-width: 700px) {
+      .notification-dropdown { right: auto; left: 0; width: 100%; }
+    }
+
     main.card {
       max-width: 480px;
       margin: 2rem auto;
@@ -706,39 +741,43 @@
       transform: translateY(-2px);
     }
 
-    .stat-row {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.75rem;
-    }
-    .stat-box {
-      background: var(--color-primary-light);
-      border: 1px solid var(--color-border);
-      border-radius: 10px;
-      padding: 0.9rem 0.5rem;
+    .stat-highlight {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+      color: #fff;
+      border-radius: 12px;
+      padding: 1.1rem 1.25rem;
       text-align: center;
     }
-    .stat-number {
-      display: block;
-      font-size: 1.6rem;
-      font-weight: 800;
-      color: var(--color-primary-dark);
-      line-height: 1.1;
-    }
-    .stat-label {
-      display: block;
-      font-size: 0.72rem;
-      color: var(--color-muted);
+    .stat-highlight-number { font-size: 2rem; font-weight: 800; line-height: 1; }
+    .stat-highlight-label {
+      font-size: 0.85rem;
+      font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.03em;
-      margin-top: 0.25rem;
+      opacity: 0.9;
     }
 
-    a.stat-box-link {
+    .dashboard-section-actions { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+
+    .btn-secondary {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background: transparent;
+      color: var(--color-primary-dark);
+      border: 2px solid var(--color-primary);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      text-align: center;
       text-decoration: none;
       transition: background 0.15s ease, transform 0.15s ease;
     }
-    a.stat-box-link:hover { background: #dfe9ff; transform: translateY(-1px); }
+    .btn-secondary:hover { background: var(--color-primary-light); transform: translateY(-1px); }
 
     .job-actions {
       display: flex;
@@ -1263,11 +1302,28 @@
           {% include "includes/icon-target.svg" %}
           Coverage Map
         </a>
-        <a href="{% url 'accounts:notifications' %}" class="nav-btn nav-btn--ghost notification-bell">
-          {% include "includes/icon-bell.svg" %}
-          Notifications
-          {% if unread_notification_count %}<span class="notification-badge">{{ unread_notification_count }}</span>{% endif %}
-        </a>
+        <div class="notification-bell">
+          <button type="button" id="notification-toggle" class="nav-btn nav-btn--ghost" aria-haspopup="true" aria-expanded="false">
+            {% include "includes/icon-bell.svg" %}
+            Notifications
+            {% if unread_notification_count %}<span class="notification-badge">{{ unread_notification_count }}</span>{% endif %}
+          </button>
+          <div id="notification-dropdown" class="notification-dropdown">
+            {% if recent_notifications %}
+              <div class="notification-list">
+                {% for notification in recent_notifications %}
+                  <a class="notification-item{% if not notification.is_read %} notification-item--unread{% endif %}" href="{{ notification.url|default:'#' }}">
+                    <span>{{ notification.message }}</span>
+                    <span class="notification-item-date">{{ notification.created_at|date:"M j" }}</span>
+                  </a>
+                {% endfor %}
+              </div>
+              <a class="notification-dropdown-viewall" href="{% url 'accounts:notifications' %}">View all &rarr;</a>
+            {% else %}
+              <p class="notification-dropdown-empty">No notifications yet.</p>
+            {% endif %}
+          </div>
+        </div>
         <span class="user-info">{{ user.email }} &middot; {{ user.get_role_display }}</span>
         <form action="{% url 'accounts:logout' %}" method="post">
           {% csrf_token %}
@@ -1296,6 +1352,36 @@
         toggle.addEventListener("click", function () {
           var isOpen = links.classList.toggle("open");
           toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+        });
+      }
+
+      var notifToggle = document.getElementById("notification-toggle");
+      var notifDropdown = document.getElementById("notification-dropdown");
+      if (notifToggle && notifDropdown) {
+        var badge = notifToggle.querySelector(".notification-badge");
+        var csrfInput = document.querySelector('input[name="csrfmiddlewaretoken"]');
+
+        notifToggle.addEventListener("click", function (event) {
+          event.stopPropagation();
+          var isOpen = notifDropdown.classList.toggle("open");
+          notifToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+          if (isOpen && badge && csrfInput) {
+            fetch("{% url 'accounts:notifications_mark_read' %}", {
+              method: "POST",
+              headers: { "X-CSRFToken": csrfInput.value },
+            })
+              .then(function () {
+                badge.remove();
+              })
+              .catch(function () {});
+          }
+        });
+
+        document.addEventListener("click", function (event) {
+          if (!notifDropdown.contains(event.target) && !notifToggle.contains(event.target)) {
+            notifDropdown.classList.remove("open");
+            notifToggle.setAttribute("aria-expanded", "false");
+          }
         });
       }
     })();
