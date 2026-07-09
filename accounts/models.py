@@ -81,7 +81,6 @@ class DriverProfile(ProfileBase):
     company_name = models.CharField(max_length=255, blank=True)
     dot_number = models.CharField(max_length=50, blank=True, verbose_name="USDOT number")
     jobs_created_count = models.PositiveIntegerField(default=0)
-    jobs_completed_count = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.company_name or self.user.email

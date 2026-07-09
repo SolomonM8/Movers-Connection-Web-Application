@@ -110,8 +110,8 @@ class DriverPastJobListView(DriverJobOwnerMixin, ListView):
     def get_queryset(self):
         today = timezone.now().date()
         return (
-            Job.objects.filter(driver_profile=self.request.user.driver_profile, job_date__lt=today)
-            .exclude(status=Job.Status.COMPLETED)
+            Job.objects.filter(driver_profile=self.request.user.driver_profile)
+            .filter(Q(job_date__lt=today) | Q(status=Job.Status.COMPLETED))
             .select_related("county")
         )
 
@@ -126,9 +126,6 @@ class JobMarkCompleteView(DriverJobOwnerMixin, View):
         else:
             job.status = Job.Status.COMPLETED
             job.save(update_fields=["status"])
-            DriverProfile.objects.filter(pk=request.user.driver_profile.pk).update(
-                jobs_completed_count=F("jobs_completed_count") + 1
-            )
             messages.success(request, "Job marked as completed.")
         return redirect("jobs:detail", pk=pk)
 

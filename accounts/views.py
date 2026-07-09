@@ -107,6 +107,7 @@ class DriverDashboardView(RoleRequiredMixin, TemplateView):
         )
         context["profile"] = profile
         context["active_jobs"] = active_jobs
+        context["completed_jobs_count"] = profile.jobs.filter(status=Job.Status.COMPLETED).count()
         return context
 
 
