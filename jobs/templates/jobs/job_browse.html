@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Browse Jobs - Movers Connection{% endblock %}
+{% block main %}
+<main class="wide-card">
+  <h1>Jobs in Your Service Areas</h1>
+  {% if jobs %}
+    <div class="job-list">
+      {% for job in jobs %}
+        <div class="job-card">
+          <div class="job-card-header">
+            <strong>{{ job.get_job_type_display }}</strong>
+            <span class="job-card-date">{{ job.job_date|date:"M j, Y" }}</span>
+          </div>
+          <p>{{ job.county.name }}, {{ job.county.state }}{% if job.city %} &middot; {{ job.city }}{% endif %}</p>
+          <p>{{ job.driver_profile.company_name|default:job.driver_profile.user.email }}</p>
+          <p>
+            {{ job.workers_needed }} worker{{ job.workers_needed|pluralize }} needed &middot;
+            {% if job.pricing_model == "flat_rate" %}${{ job.flat_rate_per_worker }} per worker{% else %}${{ job.hourly_rate }}/hr per worker{% endif %}
+          </p>
+          {% if job.weight_lbs %}<p>Approx. {{ job.weight_lbs }} lbs</p>{% endif %}
+          {% if job.my_application %}
+            <span class="county-slot-badge county-slot-badge--muted">{{ job.my_application.get_status_display|upper }}</span>
+            {% if job.my_application.status == "accepted" %}
+              <div class="job-actions">
+                <a class="btn-primary btn-inline" href="{% url 'jobs:messages' job.my_application.pk %}">Message &rarr;</a>
+              </div>
+            {% endif %}
+          {% else %}
+            <form method="post" action="{% url 'jobs:apply' job.pk %}">
+              {% csrf_token %}
+              <button type="submit" class="btn-primary btn-inline">Apply</button>
+            </form>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>No open jobs in your service areas right now.</p>
+  {% endif %}
+  <p class="helper-link"><a href="{% url 'accounts:dashboard' %}">&larr; Back to dashboard</a></p>
+</main>
+{% endblock %}

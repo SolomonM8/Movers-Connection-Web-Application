@@ -4,6 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import LoginView
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.views.generic import CreateView, TemplateView, UpdateView
 
 from .forms import DriverSignUpForm, LaborerProfileEditForm, LaborerSignUpForm
@@ -92,8 +93,12 @@ class DriverDashboardView(RoleRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         profile = self.request.user.driver_profile
+        today = timezone.now().date()
+        jobs_qs = profile.jobs.select_related("county")
         context["profile"] = profile
-        context["jobs"] = profile.jobs.select_related("county")[:10]
+        context["active_jobs_count"] = jobs_qs.filter(job_date__gte=today).count()
+        context["past_jobs_count"] = jobs_qs.filter(job_date__lt=today).count()
+        context["jobs"] = jobs_qs[:10]
         return context
 
 

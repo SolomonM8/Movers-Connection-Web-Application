@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}{{ job.get_job_type_display }} Job - Movers Connection{% endblock %}
+{% block main %}
+<main class="wide-card">
+  <div class="dashboard-section-header">
+    <h1>{{ job.get_job_type_display }} Job &mdash; {{ job.county.name }}, {{ job.county.state }}</h1>
+    {% if job.status == "open" %}
+      <span class="county-slot-badge">OPEN</span>
+    {% else %}
+      <span class="county-slot-badge county-slot-badge--muted">COMPLETED</span>
+    {% endif %}
+  </div>
+
+  <dl class="info-list">
+    <div><dt>Date</dt><dd>{{ job.job_date|date:"F j, Y" }}</dd></div>
+    <div><dt>Location</dt><dd>{{ job.county.name }}, {{ job.county.state }}{% if job.city %} ({{ job.city }}){% endif %}</dd></div>
+    <div><dt>Workers Needed</dt><dd>{{ job.workers_needed }}</dd></div>
+    <div><dt>Pay</dt><dd>{% if job.pricing_model == "flat_rate" %}${{ job.flat_rate_per_worker }} per worker{% else %}${{ job.hourly_rate }}/hr per worker{% endif %}</dd></div>
+    {% if job.weight_lbs %}<div><dt>Weight</dt><dd>{{ job.weight_lbs }} lbs</dd></div>{% endif %}
+  </dl>
+
+  <div class="job-actions">
+    <a class="btn-primary btn-inline" href="{% url 'jobs:edit' job.pk %}">Edit Job</a>
+    {% if job.status == "open" %}
+      <form method="post" action="{% url 'jobs:mark_complete' job.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="btn-primary btn-inline">Mark Completed</button>
+      </form>
+    {% endif %}
+    <form method="post" action="{% url 'jobs:delete' job.pk %}" onsubmit="return confirm('Delete this job? This cannot be undone.');">
+      {% csrf_token %}
+      <button type="submit" class="btn-danger btn-inline">Delete Job</button>
+    </form>
+  </div>
+
+  <section class="dashboard-section">
+    <h2>Applicants ({{ applications.count }})</h2>
+    {% if applications %}
+      <div class="job-list">
+        {% for application in applications %}
+          <div class="job-card">
+            <div class="job-card-header">
+              <strong>{{ application.laborer_profile.display_name|default:application.laborer_profile.user.email }}</strong>
+              <span class="county-slot-badge{% if application.status != "accepted" %} county-slot-badge--muted{% endif %}">{{ application.get_status_display|upper }}</span>
+            </div>
+            <p>{{ application.laborer_profile.city }}{% if application.laborer_profile.city %}, {% endif %}{{ application.laborer_profile.state }}</p>
+            <p>{{ application.laborer_profile.phone_number }}</p>
+            <p>Applied {{ application.applied_at|date:"M j, Y" }}</p>
+            {% if application.status == "pending" %}
+              <div class="job-actions">
+                <form method="post" action="{% url 'jobs:application_respond' job.pk application.pk %}">
+                  {% csrf_token %}
+                  <button type="submit" name="action" value="accept" class="btn-primary btn-inline">Accept</button>
+                </form>
+                <form method="post" action="{% url 'jobs:application_respond' job.pk application.pk %}">
+                  {% csrf_token %}
+                  <button type="submit" name="action" value="decline" class="btn-danger btn-inline">Decline</button>
+                </form>
+              </div>
+            {% elif application.status == "accepted" %}
+              <div class="job-actions">
+                <a class="btn-primary btn-inline" href="{% url 'jobs:messages' application.pk %}">Message &rarr;</a>
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>No one has applied to this job yet.</p>
+    {% endif %}
+  </section>
+
+  <p class="helper-link"><a href="{% url 'accounts:dashboard' %}">&larr; Back to dashboard</a></p>
+</main>
+{% endblock %}

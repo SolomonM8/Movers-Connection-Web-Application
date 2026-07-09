@@ -2,7 +2,7 @@ from django import forms
 
 from coverage.models import County
 
-from .models import Job
+from .models import Job, Message
 
 
 class JobForm(forms.ModelForm):
@@ -41,3 +41,11 @@ class JobForm(forms.ModelForm):
         if pricing_model == Job.PricingModel.HOURLY and not cleaned_data.get("hourly_rate"):
             self.add_error("hourly_rate", "Enter an hourly rate.")
         return cleaned_data
+
+
+class MessageForm(forms.ModelForm):
+    class Meta:
+        model = Message
+        fields = ["body"]
+        widgets = {"body": forms.Textarea(attrs={"rows": 3, "placeholder": "Write a message…"})}
+        labels = {"body": ""}

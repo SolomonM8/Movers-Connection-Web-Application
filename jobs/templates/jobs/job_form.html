@@ -1,14 +1,14 @@
 {% extends "base.html" %}
-{% block title %}Post a Job - Movers Connection{% endblock %}
+{% block title %}{% if form.instance.pk %}Edit Job{% else %}Post a Job{% endif %} - Movers Connection{% endblock %}
 {% block content %}
 <div class="form-header">
   <div class="icon-badge">{% include "includes/icon-truck.svg" %}</div>
-  <h1>Post a New Job</h1>
+  <h1>{% if form.instance.pk %}Edit Job{% else %}Post a New Job{% endif %}</h1>
 </div>
 <form method="post">
   {% csrf_token %}
   {{ form.as_p }}
-  <button type="submit">Post Job</button>
+  <button type="submit">{% if form.instance.pk %}Save Changes{% else %}Post Job{% endif %}</button>
 </form>
 <p class="helper-link"><a href="{% url 'accounts:dashboard' %}">&larr; Back to dashboard</a></p>
 

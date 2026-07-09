@@ -3,6 +3,23 @@
 {% block dashboard_title %}Driver / Moving Company Dashboard{% endblock %}
 {% block dashboard_content %}
 <section class="dashboard-section">
+  <div class="stat-row">
+    <div class="stat-box">
+      <span class="stat-number">{{ active_jobs_count }}</span>
+      <span class="stat-label">Active Jobs</span>
+    </div>
+    <div class="stat-box">
+      <span class="stat-number">{{ past_jobs_count }}</span>
+      <span class="stat-label">Past Jobs</span>
+    </div>
+    <div class="stat-box">
+      <span class="stat-number">{{ profile.jobs_completed_count }}</span>
+      <span class="stat-label">Jobs Completed</span>
+    </div>
+  </div>
+</section>
+
+<section class="dashboard-section">
   <div class="dashboard-section-header">
     <h2>Job Postings ({{ profile.jobs_created_count }} posted)</h2>
     <a class="btn-primary btn-inline" href="{% url 'jobs:create' %}">+ Post a Job</a>
@@ -10,7 +27,7 @@
   {% if jobs %}
     <div class="job-list">
       {% for job in jobs %}
-        <div class="job-card">
+        <a class="job-card job-card-link" href="{% url 'jobs:detail' job.pk %}">
           <div class="job-card-header">
             <strong>{{ job.get_job_type_display }}</strong>
             <span class="job-card-date">{{ job.job_date|date:"M j, Y" }}</span>
@@ -21,13 +38,13 @@
             {% if job.pricing_model == "flat_rate" %}${{ job.flat_rate_per_worker }} per worker{% else %}${{ job.hourly_rate }}/hr per worker{% endif %}
           </p>
           {% if job.weight_lbs %}<p>Approx. {{ job.weight_lbs }} lbs</p>{% endif %}
-        </div>
+          {% if job.status == "completed" %}<span class="county-slot-badge county-slot-badge--muted">COMPLETED</span>{% endif %}
+        </a>
       {% endfor %}
     </div>
   {% else %}
     <p>You haven't posted any jobs yet.</p>
   {% endif %}
-  <p><em>Laborer notifications and applications are coming in a future update.</em></p>
 </section>
 
 <section class="dashboard-section">

@@ -41,8 +41,15 @@
 </section>
 
 <section class="dashboard-section">
-  <h2>Jobs &amp; Reviews</h2>
-  <p>This is where you'll browse open day-labor jobs posted by drivers and moving companies, and see the reviews you've earned from past jobs.</p>
-  <p><em>Job listings and reviews are coming in a future update.</em></p>
+  <div class="onboarding-callout">
+    <p><strong>Looking for work?</strong> See jobs posted in the counties you serve and apply.</p>
+    <a class="btn-primary btn-inline" href="{% url 'jobs:browse' %}">Browse Jobs &rarr;</a>
+  </div>
+</section>
+
+<section class="dashboard-section">
+  <h2>Reviews</h2>
+  <p>This is where you'll see the reviews you've earned from past jobs.</p>
+  <p><em>Reviews are coming in a future update.</em></p>
 </section>
 {% endblock %}
