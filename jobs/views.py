@@ -316,6 +316,52 @@ class JobInviteView(RoleRequiredMixin, View):
         return redirect("jobs:detail", pk=job.pk)
 
 
+class MessageInboxView(LoginRequiredMixin, View):
+    template_name = "jobs/message_inbox.html"
+
+    def get(self, request):
+        user = request.user
+        if user.role == User.Role.DRIVER and hasattr(user, "driver_profile"):
+            applications = JobApplication.objects.filter(
+                job__driver_profile=user.driver_profile, status=JobApplication.Status.ACCEPTED
+            ).select_related("job", "job__county", "laborer_profile", "laborer_profile__user")
+        elif user.role == User.Role.LABORER and hasattr(user, "laborer_profile"):
+            applications = JobApplication.objects.filter(
+                laborer_profile=user.laborer_profile, status=JobApplication.Status.ACCEPTED
+            ).select_related(
+                "job", "job__county", "job__driver_profile", "job__driver_profile__user"
+            )
+        else:
+            applications = JobApplication.objects.none()
+
+        conversations = []
+        for application in applications:
+            last_message = application.messages.order_by("-created_at").first()
+            if user.role == User.Role.DRIVER:
+                other_name = (
+                    application.laborer_profile.display_name
+                    or application.laborer_profile.user.email
+                )
+                other_pk = application.laborer_profile.pk
+            else:
+                other_name = (
+                    application.job.driver_profile.company_name
+                    or application.job.driver_profile.user.email
+                )
+                other_pk = application.job.driver_profile.pk
+            conversations.append(
+                {
+                    "application": application,
+                    "other_name": other_name,
+                    "other_pk": other_pk,
+                    "last_message": last_message,
+                    "sort_key": last_message.created_at if last_message else application.responded_at,
+                }
+            )
+        conversations.sort(key=lambda c: c["sort_key"], reverse=True)
+        return render(request, self.template_name, {"conversations": conversations})
+
+
 class MessageThreadView(LoginRequiredMixin, View):
     template_name = "jobs/message_thread.html"
 

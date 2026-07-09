@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load avatar_tags %}
+{% block title %}Messages - Movers Connection{% endblock %}
+{% block main %}
+<main class="wide-card">
+  <h1>Messages</h1>
+  {% if conversations %}
+    <div class="friend-list">
+      {% for convo in conversations %}
+        <a class="friend-row" href="{% url 'jobs:messages' convo.application.pk %}">
+          <span class="friend-avatar" style="background: {{ convo.other_pk|avatar_color }}">{{ convo.other_name|avatar_initial }}</span>
+          <div class="friend-info">
+            <strong>{{ convo.other_name }}</strong>
+            <span class="friend-meta">{{ convo.application.job.get_job_type_display }} &middot; {{ convo.application.job.county.name }}, {{ convo.application.job.county.state }}</span>
+            {% if convo.last_message %}
+              <span class="message-preview">{{ convo.last_message.body|truncatechars:60 }}</span>
+            {% else %}
+              <span class="message-preview message-preview--empty">No messages yet</span>
+            {% endif %}
+          </div>
+          {% if convo.last_message %}
+            <span class="message-time">{{ convo.last_message.created_at|date:"M j" }}</span>
+          {% endif %}
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>No conversations yet. Messages unlock once a job application is accepted.</p>
+  {% endif %}
+  <p class="helper-link"><a href="{% url 'accounts:dashboard' %}">&larr; Back to dashboard</a></p>
+</main>
+{% endblock %}

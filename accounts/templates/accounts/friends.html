@@ -1,38 +1,51 @@
 {% extends "base.html" %}
+{% load avatar_tags %}
 {% block title %}Friends - Movers Connection{% endblock %}
-{% block content %}
-<h1>Friends</h1>
-{% if connections %}
-  <div class="job-list">
-    {% for connection in connections %}
-      <div class="job-card">
+{% block main %}
+<main class="wide-card">
+  <h1>Friends</h1>
+  {% if connections %}
+    <div class="friend-list">
+      {% for connection in connections %}
         {% if is_driver %}
-          <strong>{{ connection.laborer_profile.display_name|default:connection.laborer_profile.user.email }}</strong>
-          <p>{{ connection.laborer_profile.city }}{% if connection.laborer_profile.city %}, {% endif %}{{ connection.laborer_profile.state }}</p>
-          <p>{{ connection.laborer_profile.phone_number }}</p>
-          <div class="job-actions">
-            <a class="btn-primary btn-inline" href="{% url 'jobs:invite' connection.laborer_profile.pk %}">Invite to Job &rarr;</a>
-            <form method="post" action="{% url 'accounts:remove_friend' connection.pk %}">
-              {% csrf_token %}
-              <button type="submit" class="btn-danger btn-inline">Remove</button>
-            </form>
-          </div>
+          {% with profile=connection.laborer_profile %}
+            <div class="friend-row">
+              <span class="friend-avatar" style="background: {{ profile.pk|avatar_color }}">{{ profile.display_name|default:profile.user.email|avatar_initial }}</span>
+              <div class="friend-info">
+                <strong>{{ profile.display_name|default:profile.user.email }}</strong>
+                <span class="friend-meta">{{ profile.city }}{% if profile.city %}, {% endif %}{{ profile.state }} &middot; {{ profile.phone_number }}</span>
+              </div>
+              <div class="friend-actions">
+                <a class="btn-primary btn-inline" href="{% url 'jobs:invite' profile.pk %}">Invite to Job &rarr;</a>
+                <form method="post" action="{% url 'accounts:remove_friend' connection.pk %}">
+                  {% csrf_token %}
+                  <button type="submit" class="btn-danger btn-inline">Remove</button>
+                </form>
+              </div>
+            </div>
+          {% endwith %}
         {% else %}
-          <strong>{{ connection.driver_profile.company_name|default:connection.driver_profile.user.email }}</strong>
-          <p>{{ connection.driver_profile.city }}{% if connection.driver_profile.city %}, {% endif %}{{ connection.driver_profile.state }}</p>
-          <p>{{ connection.driver_profile.phone_number }}</p>
-          <div class="job-actions">
-            <form method="post" action="{% url 'accounts:remove_friend' connection.pk %}">
-              {% csrf_token %}
-              <button type="submit" class="btn-danger btn-inline">Remove</button>
-            </form>
-          </div>
+          {% with profile=connection.driver_profile %}
+            <div class="friend-row">
+              <span class="friend-avatar" style="background: {{ profile.pk|avatar_color }}">{{ profile.company_name|default:profile.user.email|avatar_initial }}</span>
+              <div class="friend-info">
+                <strong>{{ profile.company_name|default:profile.user.email }}</strong>
+                <span class="friend-meta">{{ profile.city }}{% if profile.city %}, {% endif %}{{ profile.state }} &middot; {{ profile.phone_number }}</span>
+              </div>
+              <div class="friend-actions">
+                <form method="post" action="{% url 'accounts:remove_friend' connection.pk %}">
+                  {% csrf_token %}
+                  <button type="submit" class="btn-danger btn-inline">Remove</button>
+                </form>
+              </div>
+            </div>
+          {% endwith %}
         {% endif %}
-      </div>
-    {% endfor %}
-  </div>
-{% else %}
-  <p>You haven't added any friends yet. {% if is_driver %}Add laborers from the Coverage Map.{% else %}Add drivers from jobs you see in Browse Jobs.{% endif %}</p>
-{% endif %}
-<p class="helper-link"><a href="{% url 'accounts:dashboard' %}">&larr; Back to dashboard</a></p>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>You haven't added any friends yet. {% if is_driver %}Add laborers from the Coverage Map.{% else %}Add drivers from jobs you see in Browse Jobs.{% endif %}</p>
+  {% endif %}
+  <p class="helper-link"><a href="{% url 'accounts:dashboard' %}">&larr; Back to dashboard</a></p>
+</main>
 {% endblock %}

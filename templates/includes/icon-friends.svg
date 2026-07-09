@@ -1,0 +1,6 @@
+<svg class="icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <circle cx="9" cy="8" r="3.2" stroke="currentColor" stroke-width="1.6"/>
+  <path d="M3.5 19c0-3 2.5-5.2 5.5-5.2s5.5 2.2 5.5 5.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+  <circle cx="16.5" cy="8.5" r="2.6" stroke="currentColor" stroke-width="1.6"/>
+  <path d="M14.8 13.9c2.6-.3 5.7 1.5 5.7 5.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+</svg>

@@ -9,6 +9,7 @@ urlpatterns = [
     path("past/", views.DriverPastJobListView.as_view(), name="past"),
     path("browse/", views.LaborerJobListView.as_view(), name="browse"),
     path("invite/<int:laborer_pk>/", views.JobInviteView.as_view(), name="invite"),
+    path("messages/", views.MessageInboxView.as_view(), name="message_inbox"),
     path("<int:pk>/", views.JobDetailView.as_view(), name="detail"),
     path("<int:pk>/edit/", views.JobUpdateView.as_view(), name="edit"),
     path("<int:pk>/delete/", views.JobDeleteView.as_view(), name="delete"),
