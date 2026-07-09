@@ -6,6 +6,8 @@ from coverage.models import County
 
 
 class Job(models.Model):
+    MAX_ACTIVE_PER_DRIVER = 3
+
     class JobType(models.TextChoices):
         LOAD = "load", "Load"
         UNLOAD = "unload", "Unload"

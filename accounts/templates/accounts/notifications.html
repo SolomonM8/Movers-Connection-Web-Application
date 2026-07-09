@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Notifications - Movers Connection{% endblock %}
+{% block content %}
+<h1>Notifications</h1>
+{% if notification_list %}
+  <div class="notification-list">
+    {% for notification in notification_list %}
+      <a class="notification-item{% if not notification.is_read %} notification-item--unread{% endif %}" href="{{ notification.url|default:'#' }}">
+        <span>{{ notification.message }}</span>
+        <span class="notification-item-date">{{ notification.created_at|date:"M j, g:i A" }}</span>
+      </a>
+    {% endfor %}
+  </div>
+{% else %}
+  <p>You don't have any notifications yet.</p>
+{% endif %}
+<p class="helper-link"><a href="{% url 'accounts:dashboard' %}">&larr; Back to dashboard</a></p>
+{% endblock %}

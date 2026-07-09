@@ -16,4 +16,5 @@ urlpatterns = [
     path("dashboard/laborer/", views.LaborerDashboardView.as_view(), name="laborer_dashboard"),
     path("dashboard/laborer/edit/", views.LaborerProfileEditView.as_view(), name="laborer_profile_edit"),
     path("dashboard/admin/", views.AdminDashboardView.as_view(), name="admin_dashboard"),
+    path("notifications/", views.NotificationListView.as_view(), name="notifications"),
 ]

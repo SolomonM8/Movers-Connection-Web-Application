@@ -8,10 +8,10 @@
       <span class="stat-number">{{ active_jobs_count }}</span>
       <span class="stat-label">Active Jobs</span>
     </div>
-    <div class="stat-box">
+    <a class="stat-box stat-box-link" href="{% url 'jobs:past' %}">
       <span class="stat-number">{{ past_jobs_count }}</span>
       <span class="stat-label">Past Jobs</span>
-    </div>
+    </a>
     <div class="stat-box">
       <span class="stat-number">{{ profile.jobs_completed_count }}</span>
       <span class="stat-label">Jobs Completed</span>
@@ -21,12 +21,12 @@
 
 <section class="dashboard-section">
   <div class="dashboard-section-header">
-    <h2>Job Postings ({{ profile.jobs_created_count }} posted)</h2>
+    <h2>Active Jobs ({{ active_jobs_count }}/{{ max_active_jobs }})</h2>
     <a class="btn-primary btn-inline" href="{% url 'jobs:create' %}">+ Post a Job</a>
   </div>
-  {% if jobs %}
+  {% if active_jobs %}
     <div class="job-list">
-      {% for job in jobs %}
+      {% for job in active_jobs %}
         <a class="job-card job-card-link" href="{% url 'jobs:detail' job.pk %}">
           <div class="job-card-header">
             <strong>{{ job.get_job_type_display }}</strong>
@@ -38,12 +38,12 @@
             {% if job.pricing_model == "flat_rate" %}${{ job.flat_rate_per_worker }} per worker{% else %}${{ job.hourly_rate }}/hr per worker{% endif %}
           </p>
           {% if job.weight_lbs %}<p>Approx. {{ job.weight_lbs }} lbs</p>{% endif %}
-          {% if job.status == "completed" %}<span class="county-slot-badge county-slot-badge--muted">COMPLETED</span>{% endif %}
+          <span class="county-slot-badge{% if not job.application_count %} county-slot-badge--muted{% endif %}">{{ job.application_count }} APPLICANT{{ job.application_count|pluralize }}</span>
         </a>
       {% endfor %}
     </div>
   {% else %}
-    <p>You haven't posted any jobs yet.</p>
+    <p>You don't have any active jobs right now.</p>
   {% endif %}
 </section>
 

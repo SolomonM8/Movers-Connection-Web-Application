@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Past Jobs - Movers Connection{% endblock %}
+{% block main %}
+<main class="wide-card">
+  <h1>Past Jobs</h1>
+  <p class="hero-subtitle-muted" style="margin:0 0 1.25rem;text-align:left;">Open jobs whose date has already passed. Mark them completed or delete them to clean up your dashboard.</p>
+  {% if jobs %}
+    <div class="job-list">
+      {% for job in jobs %}
+        <a class="job-card job-card-link" href="{% url 'jobs:detail' job.pk %}">
+          <div class="job-card-header">
+            <strong>{{ job.get_job_type_display }}</strong>
+            <span class="job-card-date">{{ job.job_date|date:"M j, Y" }}</span>
+          </div>
+          <p>{{ job.county.name }}, {{ job.county.state }}{% if job.city %} &middot; {{ job.city }}{% endif %}</p>
+          <p>
+            {{ job.workers_needed }} worker{{ job.workers_needed|pluralize }} needed &middot;
+            {% if job.pricing_model == "flat_rate" %}${{ job.flat_rate_per_worker }} per worker{% else %}${{ job.hourly_rate }}/hr per worker{% endif %}
+          </p>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>No past jobs to show.</p>
+  {% endif %}
+  <p class="helper-link"><a href="{% url 'accounts:dashboard' %}">&larr; Back to dashboard</a></p>
+</main>
+{% endblock %}

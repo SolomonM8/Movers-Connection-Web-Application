@@ -27,10 +27,12 @@
         <button type="submit" class="btn-primary btn-inline">Mark Completed</button>
       </form>
     {% endif %}
-    <form method="post" action="{% url 'jobs:delete' job.pk %}" onsubmit="return confirm('Delete this job? This cannot be undone.');">
-      {% csrf_token %}
-      <button type="submit" class="btn-danger btn-inline">Delete Job</button>
-    </form>
+    {% if job.status == "open" %}
+      <form method="post" action="{% url 'jobs:delete' job.pk %}" onsubmit="return confirm('Delete this job? This cannot be undone.');">
+        {% csrf_token %}
+        <button type="submit" class="btn-danger btn-inline">Delete Job</button>
+      </form>
+    {% endif %}
   </div>
 
   <section class="dashboard-section">

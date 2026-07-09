@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.views import View
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
-from accounts.models import DriverProfile, User
+from accounts.models import DriverProfile, Notification, User
 from accounts.views import RoleRequiredMixin
 
 from .forms import JobForm, MessageForm
@@ -20,6 +20,33 @@ class JobCreateView(RoleRequiredMixin, CreateView):
     template_name = "jobs/job_form.html"
     allowed_roles = (User.Role.DRIVER,)
     success_url = reverse_lazy("accounts:dashboard")
+
+    def _active_job_count(self):
+        profile = self.request.user.driver_profile
+        today = timezone.now().date()
+        return Job.objects.filter(
+            driver_profile=profile, status=Job.Status.OPEN, job_date__gte=today
+        ).count()
+
+    def get(self, request, *args, **kwargs):
+        if self._active_job_count() >= Job.MAX_ACTIVE_PER_DRIVER:
+            messages.error(
+                request,
+                f"You can only have {Job.MAX_ACTIVE_PER_DRIVER} active jobs at a time. "
+                "Complete or delete one before posting another.",
+            )
+            return redirect("accounts:dashboard")
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        if self._active_job_count() >= Job.MAX_ACTIVE_PER_DRIVER:
+            messages.error(
+                request,
+                f"You can only have {Job.MAX_ACTIVE_PER_DRIVER} active jobs at a time. "
+                "Complete or delete one before posting another.",
+            )
+            return redirect("accounts:dashboard")
+        return super().post(request, *args, **kwargs)
 
     def form_valid(self, form):
         form.instance.driver_profile = self.request.user.driver_profile
@@ -67,9 +94,25 @@ class JobUpdateView(DriverJobOwnerMixin, UpdateView):
 class JobDeleteView(DriverJobOwnerMixin, View):
     def post(self, request, pk):
         job = get_object_or_404(Job, pk=pk, driver_profile=request.user.driver_profile)
+        if job.status == Job.Status.COMPLETED:
+            messages.error(request, "Completed jobs can't be deleted.")
+            return redirect("jobs:detail", pk=pk)
         job.delete()
         messages.success(request, "Job deleted.")
         return redirect("accounts:dashboard")
+
+
+class DriverPastJobListView(DriverJobOwnerMixin, ListView):
+    template_name = "jobs/job_past.html"
+    context_object_name = "jobs"
+
+    def get_queryset(self):
+        today = timezone.now().date()
+        return (
+            Job.objects.filter(driver_profile=self.request.user.driver_profile, job_date__lt=today)
+            .exclude(status=Job.Status.COMPLETED)
+            .select_related("county")
+        )
 
 
 class JobMarkCompleteView(DriverJobOwnerMixin, View):
@@ -96,11 +139,27 @@ class ApplicationRespondView(DriverJobOwnerMixin, View):
             application.status = JobApplication.Status.ACCEPTED
             application.responded_at = timezone.now()
             application.save(update_fields=["status", "responded_at"])
+            Notification.objects.create(
+                recipient=application.laborer_profile.user,
+                message=(
+                    f"You were accepted for the {job.get_job_type_display()} job on "
+                    f"{job.job_date} in {job.county}."
+                ),
+                url=reverse("jobs:messages", args=[application.pk]),
+            )
             messages.success(request, f"Accepted {application.laborer_profile}.")
         elif action == "decline":
             application.status = JobApplication.Status.DECLINED
             application.responded_at = timezone.now()
             application.save(update_fields=["status", "responded_at"])
+            Notification.objects.create(
+                recipient=application.laborer_profile.user,
+                message=(
+                    f"Your application for the {job.get_job_type_display()} job on "
+                    f"{job.job_date} in {job.county} was declined."
+                ),
+                url=reverse("jobs:browse"),
+            )
             messages.success(request, f"Declined {application.laborer_profile}.")
         return redirect("jobs:detail", pk=pk)
 
@@ -146,6 +205,14 @@ class JobApplyView(RoleRequiredMixin, View):
         profile = request.user.laborer_profile
         _, created = JobApplication.objects.get_or_create(job=job, laborer_profile=profile)
         if created:
+            Notification.objects.create(
+                recipient=job.driver_profile.user,
+                message=(
+                    f"{profile} applied to your {job.get_job_type_display()} job on "
+                    f"{job.job_date} in {job.county}."
+                ),
+                url=reverse("jobs:detail", args=[job.pk]),
+            )
             messages.success(request, "Application submitted.")
         else:
             messages.info(request, "You've already applied to this job.")

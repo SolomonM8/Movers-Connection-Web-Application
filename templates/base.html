@@ -150,6 +150,43 @@
 
     .icon-flip { display: inline-flex; transform: scaleX(-1); }
 
+    .notification-bell { position: relative; }
+    .notification-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 1.1rem;
+      height: 1.1rem;
+      padding: 0 0.3rem;
+      border-radius: 999px;
+      background: #e0483a;
+      color: #fff;
+      font-size: 0.68rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .notification-list { display: flex; flex-direction: column; gap: 0.5rem; }
+    .notification-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      text-decoration: none;
+      color: var(--color-text);
+      font-size: 0.9rem;
+    }
+    .notification-item:hover { background: var(--color-primary-light); }
+    .notification-item--unread {
+      border-color: var(--color-primary);
+      background: var(--color-primary-light);
+      font-weight: 600;
+    }
+    .notification-item-date { flex-shrink: 0; font-size: 0.75rem; color: var(--color-muted); font-weight: 400; }
+
     main.card {
       max-width: 480px;
       margin: 2rem auto;
@@ -697,6 +734,12 @@
       margin-top: 0.25rem;
     }
 
+    a.stat-box-link {
+      text-decoration: none;
+      transition: background 0.15s ease, transform 0.15s ease;
+    }
+    a.stat-box-link:hover { background: #dfe9ff; transform: translateY(-1px); }
+
     .job-actions {
       display: flex;
       align-items: center;
@@ -1219,6 +1262,11 @@
         <a href="{% url 'coverage:map' %}" class="nav-btn nav-btn--ghost">
           {% include "includes/icon-target.svg" %}
           Coverage Map
+        </a>
+        <a href="{% url 'accounts:notifications' %}" class="nav-btn nav-btn--ghost notification-bell">
+          {% include "includes/icon-bell.svg" %}
+          Notifications
+          {% if unread_notification_count %}<span class="notification-badge">{{ unread_notification_count }}</span>{% endif %}
         </a>
         <span class="user-info">{{ user.email }} &middot; {{ user.get_role_display }}</span>
         <form action="{% url 'accounts:logout' %}" method="post">

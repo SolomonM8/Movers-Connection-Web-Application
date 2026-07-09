@@ -5,10 +5,10 @@ from django.contrib.auth.views import LoginView
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
-from django.views.generic import CreateView, TemplateView, UpdateView
+from django.views.generic import CreateView, ListView, TemplateView, UpdateView
 
 from .forms import DriverSignUpForm, LaborerProfileEditForm, LaborerSignUpForm
-from .models import User
+from .models import Notification, User
 
 
 class LandingView(TemplateView):
@@ -91,14 +91,26 @@ class DriverDashboardView(RoleRequiredMixin, TemplateView):
     allowed_roles = (User.Role.DRIVER,)
 
     def get_context_data(self, **kwargs):
+        from django.db.models import Count
+
+        from jobs.models import Job
+
         context = super().get_context_data(**kwargs)
         profile = self.request.user.driver_profile
         today = timezone.now().date()
-        jobs_qs = profile.jobs.select_related("county")
+        active_jobs = (
+            profile.jobs.filter(status=Job.Status.OPEN, job_date__gte=today)
+            .select_related("county")
+            .annotate(application_count=Count("applications"))
+        )
+        past_jobs_count = (
+            profile.jobs.filter(job_date__lt=today).exclude(status=Job.Status.COMPLETED).count()
+        )
         context["profile"] = profile
-        context["active_jobs_count"] = jobs_qs.filter(job_date__gte=today).count()
-        context["past_jobs_count"] = jobs_qs.filter(job_date__lt=today).count()
-        context["jobs"] = jobs_qs[:10]
+        context["active_jobs"] = active_jobs
+        context["active_jobs_count"] = active_jobs.count()
+        context["max_active_jobs"] = Job.MAX_ACTIVE_PER_DRIVER
+        context["past_jobs_count"] = past_jobs_count
         return context
 
 
@@ -138,3 +150,16 @@ class LaborerProfileEditView(RoleRequiredMixin, UpdateView):
 class AdminDashboardView(RoleRequiredMixin, TemplateView):
     template_name = "accounts/admin_dashboard.html"
     allowed_roles = (User.Role.ADMIN,)
+
+
+class NotificationListView(LoginRequiredMixin, ListView):
+    template_name = "accounts/notifications.html"
+    context_object_name = "notification_list"
+
+    def get_queryset(self):
+        return Notification.objects.filter(recipient=self.request.user)[:30]
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        Notification.objects.filter(recipient=request.user, is_read=False).update(is_read=True)
+        return response

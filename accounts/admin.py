@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 
-from .models import DriverProfile, LaborerProfile, User
+from .models import DriverProfile, LaborerProfile, Notification, User
 
 
 class UserAdmin(DjangoUserAdmin):
@@ -26,3 +26,4 @@ class UserAdmin(DjangoUserAdmin):
 admin.site.register(User, UserAdmin)
 admin.site.register(DriverProfile)
 admin.site.register(LaborerProfile)
+admin.site.register(Notification)
