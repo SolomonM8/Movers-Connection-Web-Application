@@ -1,3 +1,5 @@
+import json
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import F, Q
@@ -8,6 +10,7 @@ from django.utils import timezone
 from django.views import View
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
+from accounts.constants import US_STATE_CHOICES
 from accounts.models import Connection, DriverProfile, LaborerProfile, Notification, User
 from accounts.views import RoleRequiredMixin
 
@@ -15,7 +18,21 @@ from .forms import JobForm, MessageForm
 from .models import Job, JobApplication
 
 
-class JobCreateView(RoleRequiredMixin, CreateView):
+class JobFormContextMixin:
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["states_json"] = json.dumps(US_STATE_CHOICES)
+        job = getattr(self, "object", None)
+        if job and job.county_id:
+            context["initial_county_json"] = json.dumps(
+                {"fips": job.county_id, "name": job.county.name, "state": job.county.state}
+            )
+        else:
+            context["initial_county_json"] = "null"
+        return context
+
+
+class JobCreateView(JobFormContextMixin, RoleRequiredMixin, CreateView):
     form_class = JobForm
     template_name = "jobs/job_form.html"
     allowed_roles = (User.Role.DRIVER,)
@@ -79,7 +96,7 @@ class JobDetailView(DriverJobOwnerMixin, DetailView):
         return context
 
 
-class JobUpdateView(DriverJobOwnerMixin, UpdateView):
+class JobUpdateView(JobFormContextMixin, DriverJobOwnerMixin, UpdateView):
     model = Job
     form_class = JobForm
     template_name = "jobs/job_form.html"

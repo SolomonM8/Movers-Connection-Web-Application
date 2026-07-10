@@ -1,32 +1,119 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}{% if form.instance.pk %}Edit Job{% else %}Post a Job{% endif %} - Movers Connection{% endblock %}
-{% block content %}
-<div class="form-header">
-  <div class="icon-badge">{% include "includes/icon-truck.svg" %}</div>
-  <h1>{% if form.instance.pk %}Edit Job{% else %}Post a New Job{% endif %}</h1>
-</div>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">{% if form.instance.pk %}Save Changes{% else %}Post Job{% endif %}</button>
-</form>
-<p class="helper-link"><a href="{% url 'accounts:dashboard' %}">&larr; Back to dashboard</a></p>
+{% block main %}
+<main class="wide-card">
+  <div class="form-header">
+    <div class="icon-badge">{% include "includes/icon-truck.svg" %}</div>
+    <h1>{% if form.instance.pk %}Edit Job{% else %}Post a New Job{% endif %}</h1>
+  </div>
+
+  {% if form.non_field_errors %}{{ form.non_field_errors }}{% endif %}
+
+  <form method="post" id="job-form">
+    {% csrf_token %}
+    {{ form.county }}
+
+    <section class="form-section">
+      <h2>Location</h2>
+      <div class="location-tabs">
+        <button type="button" class="location-tab-btn active" data-tab="address">Enter an Address</button>
+        <button type="button" class="location-tab-btn" data-tab="state-county">Select State &amp; County</button>
+        <button type="button" class="location-tab-btn" data-tab="state-city">Select State &amp; City</button>
+      </div>
+
+      <div class="location-tab-panel" data-panel="address">
+        <label for="job-address-search">Address</label>
+        <div class="address-search-wrap">
+          <div class="address-search-box">
+            <span class="address-search-icon">{% include "includes/icon-search.svg" %}</span>
+            <input type="text" id="job-address-search" class="address-search-input" placeholder="Start typing an address…" autocomplete="off">
+          </div>
+          <ul id="job-address-suggestions" class="address-suggestions hidden"></ul>
+        </div>
+      </div>
+
+      <div class="location-tab-panel hidden" data-panel="state-county">
+        <label for="job-state-select-1">State</label>
+        <select id="job-state-select-1">
+          <option value="">Select a state…</option>
+        </select>
+        <label for="job-county-select">County</label>
+        <select id="job-county-select" disabled>
+          <option value="">Select a state first…</option>
+        </select>
+      </div>
+
+      <div class="location-tab-panel hidden" data-panel="state-city">
+        <label for="job-state-select-2">State</label>
+        <select id="job-state-select-2">
+          <option value="">Select a state…</option>
+        </select>
+        <label for="job-city-search">City</label>
+        <div class="address-search-wrap">
+          <div class="address-search-box">
+            <span class="address-search-icon">{% include "includes/icon-search.svg" %}</span>
+            <input type="text" id="job-city-search" class="address-search-input" placeholder="Select a state, then type a city…" autocomplete="off" disabled>
+          </div>
+          <ul id="job-city-suggestions" class="address-suggestions hidden"></ul>
+        </div>
+      </div>
+
+      <p id="job-location-readout" class="location-readout hidden"></p>
+      {% if form.county.errors %}<p class="field-error">{{ form.county.errors|striptags }}</p>{% endif %}
+
+      <label for="{{ form.city.id_for_label }}">{{ form.city.label }}</label>
+      {{ form.city }}
+      {{ form.city.errors }}
+    </section>
+
+    <section class="form-section">
+      <h2>Job Details</h2>
+      <label for="{{ form.job_date.id_for_label }}">Job date</label>
+      {{ form.job_date }}
+      {{ form.job_date.errors }}
+
+      <label for="{{ form.job_type.id_for_label }}">Job type</label>
+      {{ form.job_type }}
+      {{ form.job_type.errors }}
+
+      <label for="{{ form.workers_needed.id_for_label }}">Workers needed</label>
+      {{ form.workers_needed }}
+      {{ form.workers_needed.errors }}
+
+      <label for="{{ form.weight_lbs.id_for_label }}">{{ form.weight_lbs.label }}</label>
+      {{ form.weight_lbs }}
+      {{ form.weight_lbs.errors }}
+    </section>
+
+    <section class="form-section">
+      <h2>Pricing</h2>
+      <label for="{{ form.pricing_model.id_for_label }}">Pricing model</label>
+      {{ form.pricing_model }}
+      {{ form.pricing_model.errors }}
+
+      <p data-pricing-field="flat_rate">
+        <label for="{{ form.flat_rate_per_worker.id_for_label }}">Flat rate per worker</label>
+        {{ form.flat_rate_per_worker }}
+        {{ form.flat_rate_per_worker.errors }}
+      </p>
+      <p data-pricing-field="hourly">
+        <label for="{{ form.hourly_rate.id_for_label }}">Hourly rate</label>
+        {{ form.hourly_rate }}
+        {{ form.hourly_rate.errors }}
+      </p>
+    </section>
+
+    <button type="submit">{% if form.instance.pk %}Save Changes{% else %}Post Job{% endif %}</button>
+  </form>
+  <p class="helper-link"><a href="{% url 'accounts:dashboard' %}">&larr; Back to dashboard</a></p>
+</main>
 
 <script>
-  (function () {
-    var pricingSelect = document.getElementById("id_pricing_model");
-    var flatField = document.getElementById("id_flat_rate_per_worker");
-    var hourlyField = document.getElementById("id_hourly_rate");
-    if (!pricingSelect || !flatField || !hourlyField) return;
-
-    function updateVisibility() {
-      var isFlat = pricingSelect.value === "flat_rate";
-      flatField.closest("p").style.display = isFlat ? "" : "none";
-      hourlyField.closest("p").style.display = isFlat ? "none" : "";
-    }
-
-    pricingSelect.addEventListener("change", updateVisibility);
-    updateVisibility();
-  })();
+  const STATES = {{ states_json|safe }};
+  const INITIAL_COUNTY = {{ initial_county_json|safe }};
 </script>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://unpkg.com/topojson-client@3"></script>
+<script src="{% static 'jobs/js/job_location.js' %}?v={% now 'U' %}"></script>
 {% endblock %}

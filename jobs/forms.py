@@ -1,7 +1,5 @@
 from django import forms
 
-from coverage.models import County
-
 from .models import Job, Message
 
 
@@ -14,24 +12,17 @@ class JobForm(forms.ModelForm):
             "job_date",
             "job_type",
             "workers_needed",
+            "weight_lbs",
             "pricing_model",
             "flat_rate_per_worker",
             "hourly_rate",
-            "weight_lbs",
         ]
-        widgets = {"job_date": forms.DateInput(attrs={"type": "date"})}
-        labels = {"city": "City / meeting point (optional)"}
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["county"].choices = self._grouped_county_choices()
-
-    @staticmethod
-    def _grouped_county_choices():
-        groups = {}
-        for county in County.objects.order_by("state", "name"):
-            groups.setdefault(county.get_state_display(), []).append((county.pk, county.name))
-        return [("", "Select a county…")] + list(groups.items())
+        widgets = {
+            "county": forms.HiddenInput(),
+            "job_date": forms.DateInput(attrs={"type": "date"}),
+        }
+        labels = {"city": "Meeting point / city (optional)"}
+        error_messages = {"county": {"required": "Choose a location for this job above."}}
 
     def clean(self):
         cleaned_data = super().clean()
