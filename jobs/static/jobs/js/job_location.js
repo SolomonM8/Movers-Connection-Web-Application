@@ -9,10 +9,12 @@
   const addressInput = document.getElementById("job-address-search");
   const addressSuggestions = document.getElementById("job-address-suggestions");
 
-  const stateSelect1 = document.getElementById("job-state-select-1");
+  const stateSearch1 = document.getElementById("job-state-search-1");
+  const stateSuggestions1 = document.getElementById("job-state-suggestions-1");
   const countySelect = document.getElementById("job-county-select");
 
-  const stateSelect2 = document.getElementById("job-state-select-2");
+  const stateSearch2 = document.getElementById("job-state-search-2");
+  const stateSuggestions2 = document.getElementById("job-state-suggestions-2");
   const citySearch = document.getElementById("job-city-search");
   const citySuggestions = document.getElementById("job-city-suggestions");
 
@@ -29,14 +31,96 @@
     return div.innerHTML;
   }
 
-  tabButtons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const tab = btn.dataset.tab;
-      tabButtons.forEach((b) => b.classList.toggle("active", b === btn));
-      tabPanels.forEach((p) => p.classList.toggle("hidden", p.dataset.panel !== tab));
-    });
-  });
+  function hideSuggestions(list) {
+    list.classList.add("hidden");
+    list.innerHTML = "";
+  }
 
+  function renderSuggestions(list, results, labelFor, onSelect) {
+    if (!results || !results.length) {
+      hideSuggestions(list);
+      return;
+    }
+    list.innerHTML = results
+      .map((result, index) => `<li class="address-suggestion" data-index="${index}">${escapeHtml(labelFor(result))}</li>`)
+      .join("");
+    list.classList.remove("hidden");
+    list.querySelectorAll(".address-suggestion").forEach((li) => {
+      li.addEventListener("click", () => {
+        hideSuggestions(list);
+        onSelect(results[Number(li.dataset.index)]);
+      });
+    });
+  }
+
+  // ---- Lazy-loaded geocoding libraries + data (only fetched once actually needed) ----
+  // The "Select State & County" tab never needs any of this: it only needs the
+  // small counties.json list. Only the address tab and the "type a city" tab need
+  // the full county topology + d3/topojson, so those are deferred until first use
+  // instead of being loaded unconditionally on every job-form page view.
+  const loadedScripts = {};
+  function loadScript(src) {
+    if (loadedScripts[src]) return loadedScripts[src];
+    loadedScripts[src] = new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = src;
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+    return loadedScripts[src];
+  }
+
+  function ensureGeoLibs() {
+    return Promise.all([
+      loadScript("https://d3js.org/d3.v7.min.js"),
+      loadScript("https://unpkg.com/topojson-client@3"),
+    ]);
+  }
+
+  let countiesListPromise = null;
+  function loadCountiesList() {
+    if (!countiesListPromise) {
+      countiesListPromise = fetch("/static/coverage/data/counties.json")
+        .then((response) => response.json())
+        .then((counties) => {
+          const countyByFips = {};
+          counties.forEach((c) => {
+            countyByFips[c.fips] = c;
+          });
+          return { countiesList: counties, countyByFips };
+        });
+    }
+    return countiesListPromise;
+  }
+
+  let topologyPromise = null;
+  function loadCountyTopology() {
+    if (!topologyPromise) {
+      topologyPromise = ensureGeoLibs().then(() =>
+        fetch("https://cdn.jsdelivr.net/npm/us-atlas@3/counties-10m.json")
+          .then((response) => response.json())
+          .then((us) => topojson.feature(us, us.objects.counties))
+      );
+    }
+    return topologyPromise;
+  }
+
+  function resolveCountyFromPoint(lat, lon) {
+    Promise.all([loadCountyTopology(), loadCountiesList()]).then(([countiesFC, { countyByFips }]) => {
+      const point = [lon, lat];
+      const match = countiesFC.features.find((feature) => d3.geoContains(feature, point));
+      const fips = match ? String(match.id).padStart(5, "0") : null;
+      const info = fips ? countyByFips[fips] : null;
+      if (!info) {
+        showLocationError("Couldn't match that location to a county. Try a different search.");
+        return;
+      }
+      setLocation(fips, info.name, info.state);
+    });
+  }
+
+  // ---- Shared location state ----
   function setLocation(fips, name, state) {
     countyInput.value = fips;
     readout.textContent = `This job will be posted for ${name}, ${state}.`;
@@ -49,83 +133,88 @@
     readout.classList.add("is-error");
   }
 
+  function clearLocation() {
+    countyInput.value = "";
+    readout.textContent = "";
+    readout.classList.add("hidden");
+    readout.classList.remove("is-error");
+  }
+
   if (INITIAL_COUNTY) {
     setLocation(INITIAL_COUNTY.fips, INITIAL_COUNTY.name, INITIAL_COUNTY.state);
   }
 
-  // ---- Populate state selects ----
-  function populateStateSelect(select) {
-    if (!select) return;
-    (STATES || []).forEach(([abbr, name]) => {
-      const option = document.createElement("option");
-      option.value = abbr;
-      option.textContent = name;
-      select.appendChild(option);
-    });
+  // ---- Tabs: switching sections discards whatever was picked in the old one ----
+  function resetAddressPanel() {
+    if (!addressInput) return;
+    addressInput.value = "";
+    hideSuggestions(addressSuggestions);
   }
-  populateStateSelect(stateSelect1);
-  populateStateSelect(stateSelect2);
 
-  // ---- Shared county topology + county reference data (lazy-loaded once) ----
-  let countyDataPromise = null;
-  function loadCountyData() {
-    if (countyDataPromise) return countyDataPromise;
-    countyDataPromise = Promise.all([
-      d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/counties-10m.json"),
-      d3.json("/static/coverage/data/counties.json"),
-    ]).then(([us, counties]) => {
-      const countiesFC = topojson.feature(us, us.objects.counties);
-      const countyByFips = {};
-      counties.forEach((c) => {
-        countyByFips[c.fips] = c;
+  function resetStateCountyPanel() {
+    if (!stateSearch1) return;
+    stateSearch1.value = "";
+    stateSearch1.dataset.value = "";
+    hideSuggestions(stateSuggestions1);
+    countySelect.innerHTML = '<option value="">Select a state first…</option>';
+    countySelect.disabled = true;
+  }
+
+  function resetStateCityPanel() {
+    if (!stateSearch2) return;
+    stateSearch2.value = "";
+    stateSearch2.dataset.value = "";
+    hideSuggestions(stateSuggestions2);
+    citySearch.value = "";
+    citySearch.disabled = true;
+    citySearch.placeholder = "Select a state, then type a city…";
+    hideSuggestions(citySuggestions);
+  }
+
+  function resetAllPanels() {
+    resetAddressPanel();
+    resetStateCountyPanel();
+    resetStateCityPanel();
+    clearLocation();
+  }
+
+  tabButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (btn.classList.contains("active")) return;
+      tabButtons.forEach((b) => b.classList.toggle("active", b === btn));
+      tabPanels.forEach((p) => p.classList.toggle("hidden", p.dataset.panel !== btn.dataset.tab));
+      resetAllPanels();
+    });
+  });
+
+  // ---- State autocomplete (local filter, no network — instant) ----
+  function setupStateAutocomplete(input, suggestions, onSelect) {
+    if (!input) return;
+    input.addEventListener("input", () => {
+      input.dataset.value = "";
+      const query = input.value.trim().toLowerCase();
+      if (!query) {
+        hideSuggestions(suggestions);
+        return;
+      }
+      const matches = (STATES || [])
+        .filter(([abbr, name]) => name.toLowerCase().includes(query) || abbr.toLowerCase() === query)
+        .slice(0, 8);
+      renderSuggestions(suggestions, matches, ([, name]) => name, ([abbr, name]) => {
+        input.value = name;
+        input.dataset.value = abbr;
+        onSelect(abbr, name);
       });
-      return { countiesFC, countyByFips, countiesList: counties };
     });
-    return countyDataPromise;
-  }
-
-  function resolveCountyFromPoint(lat, lon) {
-    loadCountyData().then(({ countiesFC, countyByFips }) => {
-      const point = [lon, lat];
-      const match = countiesFC.features.find((feature) => d3.geoContains(feature, point));
-      if (!match) {
-        showLocationError("Couldn't match that location to a county. Try a different search.");
-        return;
+    document.addEventListener("click", (event) => {
+      if (!input.contains(event.target) && !suggestions.contains(event.target)) {
+        hideSuggestions(suggestions);
       }
-      const fips = String(match.id).padStart(5, "0");
-      const info = countyByFips[fips];
-      if (!info) {
-        showLocationError("Couldn't match that location to a county. Try a different search.");
-        return;
-      }
-      setLocation(fips, info.name, info.state);
     });
   }
 
   // ---- Tab 1: free-form address search ----
   let addressDebounce = null;
-
-  function hideSuggestions(list) {
-    list.classList.add("hidden");
-    list.innerHTML = "";
-  }
-
-  function renderSuggestions(list, results, onSelect) {
-    if (!results || !results.length) {
-      hideSuggestions(list);
-      return;
-    }
-    list.innerHTML = results
-      .map((result, index) => `<li class="address-suggestion" data-index="${index}">${escapeHtml(result.display_name)}</li>`)
-      .join("");
-    list.classList.remove("hidden");
-    list.querySelectorAll(".address-suggestion").forEach((li) => {
-      li.addEventListener("click", () => {
-        hideSuggestions(list);
-        onSelect(results[Number(li.dataset.index)]);
-      });
-    });
-  }
 
   if (addressInput) {
     addressInput.addEventListener("input", () => {
@@ -142,7 +231,7 @@
         fetch(url)
           .then((response) => response.json())
           .then((results) =>
-            renderSuggestions(addressSuggestions, results, (result) => {
+            renderSuggestions(addressSuggestions, results, (r) => r.display_name, (result) => {
               addressInput.value = result.display_name;
               const lat = parseFloat(result.lat);
               const lon = parseFloat(result.lon);
@@ -161,48 +250,30 @@
     });
   }
 
-  // ---- Tab 2: state -> county dropdown ----
-  if (stateSelect1 && countySelect) {
-    stateSelect1.addEventListener("change", () => {
-      const abbr = stateSelect1.value;
-      countySelect.innerHTML = "";
-      if (!abbr) {
+  // ---- Tab 2: state -> county dropdown (no d3/topojson/topology needed at all) ----
+  setupStateAutocomplete(stateSearch1, stateSuggestions1, (abbr) => {
+    countySelect.innerHTML = '<option value="">Loading counties…</option>';
+    countySelect.disabled = true;
+    loadCountiesList().then(({ countiesList }) => {
+      const inState = countiesList
+        .filter((c) => c.state === abbr)
+        .sort((a, b) => a.name.localeCompare(b.name));
+      countySelect.innerHTML = '<option value="">Select a county…</option>';
+      inState.forEach((c) => {
         const option = document.createElement("option");
-        option.value = "";
-        option.textContent = "Select a state first…";
+        option.value = c.fips;
+        option.textContent = c.name;
         countySelect.appendChild(option);
-        countySelect.disabled = true;
-        return;
-      }
-      const placeholder = document.createElement("option");
-      placeholder.value = "";
-      placeholder.textContent = "Loading counties…";
-      countySelect.appendChild(placeholder);
-      countySelect.disabled = true;
-
-      loadCountyData().then(({ countiesList }) => {
-        const inState = countiesList
-          .filter((c) => c.state === abbr)
-          .sort((a, b) => a.name.localeCompare(b.name));
-        countySelect.innerHTML = "";
-        const empty = document.createElement("option");
-        empty.value = "";
-        empty.textContent = "Select a county…";
-        countySelect.appendChild(empty);
-        inState.forEach((c) => {
-          const option = document.createElement("option");
-          option.value = c.fips;
-          option.textContent = c.name;
-          countySelect.appendChild(option);
-        });
-        countySelect.disabled = false;
       });
+      countySelect.disabled = false;
     });
+  });
 
+  if (countySelect) {
     countySelect.addEventListener("change", () => {
       const fips = countySelect.value;
       if (!fips) return;
-      loadCountyData().then(({ countyByFips }) => {
+      loadCountiesList().then(({ countyByFips }) => {
         const info = countyByFips[fips];
         if (info) setLocation(fips, info.name, info.state);
       });
@@ -212,19 +283,18 @@
   // ---- Tab 3: state -> typed city, resolved via geocoding ----
   let cityDebounce = null;
 
-  if (stateSelect2 && citySearch) {
-    stateSelect2.addEventListener("change", () => {
-      const abbr = stateSelect2.value;
-      citySearch.disabled = !abbr;
-      citySearch.value = "";
-      citySearch.placeholder = abbr ? "Start typing a city…" : "Select a state, then type a city…";
-      hideSuggestions(citySuggestions);
-    });
+  setupStateAutocomplete(stateSearch2, stateSuggestions2, (abbr) => {
+    citySearch.disabled = false;
+    citySearch.value = "";
+    citySearch.placeholder = "Start typing a city…";
+    hideSuggestions(citySuggestions);
+  });
 
+  if (citySearch) {
     citySearch.addEventListener("input", () => {
       clearTimeout(cityDebounce);
       const query = citySearch.value.trim();
-      const abbr = stateSelect2.value;
+      const abbr = stateSearch2.dataset.value;
       if (!abbr || query.length < 2) {
         hideSuggestions(citySuggestions);
         return;
@@ -239,7 +309,7 @@
         fetch(url)
           .then((response) => response.json())
           .then((results) =>
-            renderSuggestions(citySuggestions, results, (result) => {
+            renderSuggestions(citySuggestions, results, (r) => r.display_name, (result) => {
               citySearch.value = result.display_name;
               const lat = parseFloat(result.lat);
               const lon = parseFloat(result.lon);

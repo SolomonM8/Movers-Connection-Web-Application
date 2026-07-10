@@ -34,10 +34,14 @@
       </div>
 
       <div class="location-tab-panel hidden" data-panel="state-county">
-        <label for="job-state-select-1">State</label>
-        <select id="job-state-select-1">
-          <option value="">Select a state…</option>
-        </select>
+        <label for="job-state-search-1">State</label>
+        <div class="address-search-wrap">
+          <div class="address-search-box">
+            <span class="address-search-icon">{% include "includes/icon-search.svg" %}</span>
+            <input type="text" id="job-state-search-1" class="address-search-input" placeholder="Start typing a state…" autocomplete="off">
+          </div>
+          <ul id="job-state-suggestions-1" class="address-suggestions hidden"></ul>
+        </div>
         <label for="job-county-select">County</label>
         <select id="job-county-select" disabled>
           <option value="">Select a state first…</option>
@@ -45,10 +49,14 @@
       </div>
 
       <div class="location-tab-panel hidden" data-panel="state-city">
-        <label for="job-state-select-2">State</label>
-        <select id="job-state-select-2">
-          <option value="">Select a state…</option>
-        </select>
+        <label for="job-state-search-2">State</label>
+        <div class="address-search-wrap">
+          <div class="address-search-box">
+            <span class="address-search-icon">{% include "includes/icon-search.svg" %}</span>
+            <input type="text" id="job-state-search-2" class="address-search-input" placeholder="Start typing a state…" autocomplete="off">
+          </div>
+          <ul id="job-state-suggestions-2" class="address-suggestions hidden"></ul>
+        </div>
         <label for="job-city-search">City</label>
         <div class="address-search-wrap">
           <div class="address-search-box">
@@ -113,7 +121,5 @@
   const STATES = {{ states_json|safe }};
   const INITIAL_COUNTY = {{ initial_county_json|safe }};
 </script>
-<script src="https://d3js.org/d3.v7.min.js"></script>
-<script src="https://unpkg.com/topojson-client@3"></script>
 <script src="{% static 'jobs/js/job_location.js' %}?v={% now 'U' %}"></script>
 {% endblock %}
