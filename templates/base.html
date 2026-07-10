@@ -102,7 +102,7 @@
       border: 2px solid var(--color-primary-dark);
     }
 
-    @media (max-width: 960px) {
+    @media (max-width: 1200px) {
       .nav-toggle { display: flex; }
       nav .nav-links { display: none; }
     }
@@ -125,6 +125,28 @@
     }
     .nav-icon-btn .icon-inline { width: 1.2rem; height: 1.2rem; }
     .nav-icon-btn:hover { background: rgba(255, 255, 255, 0.25); transform: translateY(-1px); }
+
+    .nav-link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.4rem 0.75rem;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(255, 255, 255, 0.75);
+      color: #fff;
+      cursor: pointer;
+      text-decoration: none;
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 700;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+    .nav-link-btn .icon-inline { width: 1.05rem; height: 1.05rem; flex-shrink: 0; }
+    .nav-link-btn:hover { background: rgba(255, 255, 255, 0.25); transform: translateY(-1px); }
+    .nav-link-btn.active { background: #fff; color: var(--color-primary-dark); border-color: #fff; }
 
     .nav-logout-form { margin: 0; }
 
@@ -1536,13 +1558,14 @@
     </a>
     <div class="nav-links" id="nav-links">
       {% if user.is_authenticated %}
-        <a href="{% url 'accounts:dashboard' %}" class="nav-icon-btn" title="Dashboard" aria-label="Dashboard">{% include "includes/icon-dashboard.svg" %}</a>
-        <a href="{% url 'coverage:map' %}" class="nav-icon-btn" title="Coverage Map" aria-label="Coverage Map">{% include "includes/icon-target.svg" %}</a>
-        <a href="{% url 'accounts:friends' %}" class="nav-icon-btn" title="Friends" aria-label="Friends">{% include "includes/icon-friends.svg" %}</a>
-        <a href="{% url 'jobs:message_inbox' %}" class="nav-icon-btn" title="Messages" aria-label="Messages">{% include "includes/icon-message.svg" %}</a>
+        {% with url_name=request.resolver_match.url_name %}
+        <a href="{% url 'accounts:dashboard' %}" class="nav-link-btn{% if url_name == 'driver_dashboard' or url_name == 'laborer_dashboard' or url_name == 'admin_dashboard' %} active{% endif %}" aria-label="Dashboard">{% include "includes/icon-dashboard.svg" %}<span>Dashboard</span></a>
+        <a href="{% url 'coverage:map' %}" class="nav-link-btn{% if url_name == 'map' %} active{% endif %}" aria-label="Coverage Map">{% include "includes/icon-target.svg" %}<span>Coverage Map</span></a>
+        <a href="{% url 'accounts:friends' %}" class="nav-link-btn{% if url_name == 'friends' %} active{% endif %}" aria-label="Friends">{% include "includes/icon-friends.svg" %}<span>Friends</span></a>
+        <a href="{% url 'jobs:message_inbox' %}" class="nav-link-btn{% if url_name == 'message_inbox' or url_name == 'messages' %} active{% endif %}" aria-label="Messages">{% include "includes/icon-message.svg" %}<span>Messages</span></a>
         <div class="notification-bell">
-          <button type="button" id="notification-toggle" class="nav-icon-btn" aria-haspopup="true" aria-expanded="false" title="Notifications" aria-label="Notifications">
-            {% include "includes/icon-bell.svg" %}
+          <button type="button" id="notification-toggle" class="nav-link-btn{% if url_name == 'notifications' %} active{% endif %}" aria-haspopup="true" aria-expanded="false" aria-label="Notifications">
+            {% include "includes/icon-bell.svg" %}<span>Notifications</span>
             {% if unread_notification_count %}<span class="notification-badge">{{ unread_notification_count }}</span>{% endif %}
           </button>
           <div id="notification-dropdown" class="notification-dropdown">
@@ -1564,6 +1587,7 @@
             {% endif %}
           </div>
         </div>
+        {% endwith %}
         <a href="{% url 'accounts:dashboard' %}" class="nav-identity" title="{{ user.email }}">
           <span class="nav-identity-avatar" style="background: {{ user.pk|avatar_color }}">{{ nav_display_name|avatar_initial }}</span>
           {% if nav_role_icon %}<span class="nav-identity-role">{% include nav_role_icon %}</span>{% endif %}
@@ -1571,8 +1595,8 @@
         </a>
         <form action="{% url 'accounts:logout' %}" method="post" class="nav-logout-form">
           {% csrf_token %}
-          <button type="submit" class="nav-icon-btn" title="Log out" aria-label="Log out">
-            <span class="icon-flip">{% include "includes/icon-login.svg" %}</span>
+          <button type="submit" class="nav-link-btn" aria-label="Log out">
+            <span class="icon-flip">{% include "includes/icon-login.svg" %}</span><span>Log out</span>
           </button>
         </form>
       {% else %}
