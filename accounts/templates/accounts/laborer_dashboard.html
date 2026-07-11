@@ -1,4 +1,5 @@
 {% extends "accounts/dashboard_base.html" %}
+{% load avatar_tags %}
 {% block title %}Laborer Dashboard - Movers Connection{% endblock %}
 {% block dashboard_title %}Laborer Dashboard{% endblock %}
 {% block dashboard_content %}
@@ -6,6 +7,10 @@
   <div class="dashboard-section-header">
     <h2>Account Information</h2>
     <a class="btn-primary btn-inline" href="{% url 'accounts:laborer_profile_edit' %}">Edit &rarr;</a>
+  </div>
+  {% if profile.banner_image %}<img class="profile-banner" src="{{ profile.banner_image.url }}" alt="">{% endif %}
+  <div class="profile-header">
+    {% avatar profile "xl" %}
   </div>
   <dl class="info-list">
     <div><dt>Name</dt><dd>{{ profile.display_name|default:"Not set" }}</dd></div>

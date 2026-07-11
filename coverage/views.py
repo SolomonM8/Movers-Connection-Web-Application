@@ -8,6 +8,7 @@ from django.views.generic import TemplateView
 
 from accounts.constants import US_STATE_CHOICES
 from accounts.models import Connection, User
+from accounts.templatetags.avatar_tags import compute_avatar_color, compute_avatar_initial
 from accounts.views import RoleRequiredMixin
 
 from .models import County, ServiceArea
@@ -155,6 +156,15 @@ class CountyLaborersAPIView(LoginRequiredMixin, View):
                     "phone_number": sa.laborer_profile.phone_number,
                     "is_primary": sa.is_primary,
                     "is_friend": sa.laborer_profile_id in friend_ids,
+                    "avatar_url": (
+                        sa.laborer_profile.profile_picture.url
+                        if sa.laborer_profile.profile_picture
+                        else None
+                    ),
+                    "avatar_color": compute_avatar_color(sa.laborer_profile_id),
+                    "avatar_initial": compute_avatar_initial(
+                        sa.laborer_profile.display_name or sa.laborer_profile.user.email
+                    ),
                 }
                 for sa in service_areas
             ],

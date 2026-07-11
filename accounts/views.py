@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.views import View
 from django.views.generic import CreateView, ListView, TemplateView, UpdateView
 
-from .forms import DriverSignUpForm, LaborerProfileEditForm, LaborerSignUpForm
+from .forms import DriverProfileEditForm, DriverSignUpForm, LaborerProfileEditForm, LaborerSignUpForm
 from .models import Connection, DriverProfile, LaborerProfile, Notification, User
 
 
@@ -138,6 +138,20 @@ class LaborerProfileEditView(RoleRequiredMixin, UpdateView):
 
     def get_object(self, queryset=None):
         return self.request.user.laborer_profile
+
+    def form_valid(self, form):
+        messages.success(self.request, "Your account information has been updated.")
+        return super().form_valid(form)
+
+
+class DriverProfileEditView(RoleRequiredMixin, UpdateView):
+    form_class = DriverProfileEditForm
+    template_name = "accounts/driver_profile_edit.html"
+    allowed_roles = (User.Role.DRIVER,)
+    success_url = reverse_lazy("accounts:dashboard")
+
+    def get_object(self, queryset=None):
+        return self.request.user.driver_profile
 
     def form_valid(self, form):
         messages.success(self.request, "Your account information has been updated.")

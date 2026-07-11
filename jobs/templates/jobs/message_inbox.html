@@ -8,7 +8,7 @@
     <div class="friend-list">
       {% for convo in conversations %}
         <a class="friend-row" href="{% url 'jobs:messages' convo.application.pk %}">
-          <span class="friend-avatar" style="background: {{ convo.other_pk|avatar_color }}">{{ convo.other_name|avatar_initial }}</span>
+          {% avatar convo.other_profile "lg" %}
           <div class="friend-info">
             <strong>{{ convo.other_name }}</strong>
             <span class="friend-meta">{{ convo.application.job.get_job_type_display }} &middot; {{ convo.application.job.county.name }}, {{ convo.application.job.county.state }}</span>

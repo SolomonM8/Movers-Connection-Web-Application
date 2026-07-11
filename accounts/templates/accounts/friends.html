@@ -10,7 +10,7 @@
         {% if is_driver %}
           {% with profile=connection.laborer_profile %}
             <div class="friend-row">
-              <span class="friend-avatar" style="background: {{ profile.pk|avatar_color }}">{{ profile.display_name|default:profile.user.email|avatar_initial }}</span>
+              {% avatar profile "lg" %}
               <div class="friend-info">
                 <strong>{{ profile.display_name|default:profile.user.email }}</strong>
                 <span class="friend-meta">{{ profile.city }}{% if profile.city %}, {% endif %}{{ profile.state }} &middot; {{ profile.phone_number }}</span>
@@ -27,7 +27,7 @@
         {% else %}
           {% with profile=connection.driver_profile %}
             <div class="friend-row">
-              <span class="friend-avatar" style="background: {{ profile.pk|avatar_color }}">{{ profile.company_name|default:profile.user.email|avatar_initial }}</span>
+              {% avatar profile "lg" %}
               <div class="friend-info">
                 <strong>{{ profile.company_name|default:profile.user.email }}</strong>
                 <span class="friend-meta">{{ profile.city }}{% if profile.city %}, {% endif %}{{ profile.state }} &middot; {{ profile.phone_number }}</span>

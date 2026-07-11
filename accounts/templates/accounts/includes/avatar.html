@@ -1,0 +1,5 @@
+{% if picture_url %}
+<img class="avatar-circle avatar-circle--{{ size }}" src="{{ picture_url }}" alt="">
+{% else %}
+<span class="avatar-circle avatar-circle--{{ size }}" style="background: {{ color }}">{{ initial }}</span>
+{% endif %}

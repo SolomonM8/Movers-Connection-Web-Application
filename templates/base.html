@@ -218,19 +218,30 @@
       width: 100%;
     }
 
-    .nav-identity-avatar {
-      width: 1.9rem;
-      height: 1.9rem;
+    .avatar-circle {
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       color: #fff;
       font-weight: 700;
-      font-size: 0.85rem;
       flex-shrink: 0;
+      object-fit: cover;
     }
-    .nav-identity-avatar--lg { width: 2.75rem; height: 2.75rem; font-size: 1.1rem; }
+    .avatar-circle--sm { width: 1.9rem; height: 1.9rem; font-size: 0.85rem; }
+    .avatar-circle--md { width: 2.2rem; height: 2.2rem; font-size: 0.95rem; }
+    .avatar-circle--lg { width: 2.75rem; height: 2.75rem; font-size: 1.1rem; }
+    .avatar-circle--xl { width: 4.5rem; height: 4.5rem; font-size: 1.7rem; }
+
+    .profile-banner {
+      width: 100%;
+      max-height: 180px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin-bottom: 1rem;
+      display: block;
+    }
+    .profile-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
 
     .nav-identity-role { width: 1rem; height: 1rem; flex-shrink: 0; display: flex; }
     .nav-identity-role .icon-inline { width: 100%; height: 100%; }
@@ -583,19 +594,6 @@
     }
     a.friend-row { text-decoration: none; color: inherit; transition: background 0.15s ease; }
     a.friend-row:hover { background: var(--color-primary-light); }
-
-    .friend-avatar {
-      flex-shrink: 0;
-      width: 2.75rem;
-      height: 2.75rem;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      font-weight: 700;
-      font-size: 1.1rem;
-    }
 
     .friend-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.1rem; }
     .friend-info strong { color: var(--color-text); }
@@ -1017,6 +1015,7 @@
       margin-bottom: 0.6rem;
     }
     .laborer-card p { margin: 0.15rem 0; color: var(--color-muted); font-size: 0.9rem; }
+    .laborer-card-top { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.3rem; }
 
     .job-list {
       display: grid;
@@ -1651,7 +1650,7 @@
         {% endwith %}
         <div class="nav-profile">
           <button type="button" id="profile-toggle" class="nav-identity" title="{{ nav_display_name }}" aria-haspopup="true" aria-expanded="false">
-            <span class="nav-identity-avatar" style="background: {{ user.pk|avatar_color }}">{{ nav_display_name|avatar_initial }}</span>
+            {% avatar nav_profile "sm" %}
             {% if nav_role_icon %}<span class="nav-identity-role">{% include nav_role_icon %}</span>{% endif %}
             <span class="nav-identity-name">{{ nav_display_name }}</span>
             <span class="nav-identity-caret">&#9662;</span>
@@ -1688,7 +1687,7 @@
     <button type="button" id="nav-drawer-close" class="panel-close nav-drawer-close" aria-label="Close menu">&times;</button>
     {% if user.is_authenticated %}
       <div class="nav-drawer-identity">
-        <span class="nav-identity-avatar nav-identity-avatar--lg" style="background: {{ user.pk|avatar_color }}">{{ nav_display_name|avatar_initial }}</span>
+        {% avatar nav_profile "lg" %}
         <div>
           <strong>{{ nav_display_name }}</strong>
           <span class="friend-meta">{{ user.get_role_display }}</span>

@@ -71,6 +71,8 @@ class ProfileBase(models.Model):
     phone_number = models.CharField(max_length=20, blank=True)
     city = models.CharField(max_length=100, blank=True)
     state = models.CharField(max_length=2, choices=US_STATE_CHOICES, blank=True)
+    profile_picture = models.ImageField(upload_to="avatars/", blank=True, null=True)
+    banner_image = models.ImageField(upload_to="banners/", blank=True, null=True)
 
     class Meta:
         abstract = True

@@ -82,19 +82,17 @@ class LaborerSignUpForm(BaseSignUpForm):
         self.fields["name"].label = "Your name or labor group name"
 
 
-class LaborerProfileEditForm(forms.ModelForm):
-    email = forms.EmailField()
+MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024
+ALLOWED_IMAGE_CONTENT_TYPES = {"image/jpeg", "image/png", "image/webp"}
 
-    class Meta:
-        model = LaborerProfile
-        fields = ("display_name", "phone_number", "city", "state")
-        labels = {"display_name": "Your name or labor group name"}
+
+class ProfileEditFormBase(forms.ModelForm):
+    email = forms.EmailField()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.instance and self.instance.pk:
             self.fields["email"].initial = self.instance.user.email
-        self.order_fields(["email", "display_name", "phone_number", "city", "state"])
 
     def clean_email(self):
         email = self.cleaned_data["email"].lower()
@@ -105,6 +103,22 @@ class LaborerProfileEditForm(forms.ModelForm):
             raise forms.ValidationError("An account with this email already exists.")
         return email
 
+    def _clean_image(self, field_name):
+        image = self.cleaned_data.get(field_name)
+        if not image or not hasattr(image, "content_type"):
+            return image
+        if image.content_type not in ALLOWED_IMAGE_CONTENT_TYPES:
+            raise forms.ValidationError("Please upload a JPG, PNG, or WEBP image.")
+        if image.size > MAX_IMAGE_SIZE_BYTES:
+            raise forms.ValidationError("Image must be smaller than 5MB.")
+        return image
+
+    def clean_profile_picture(self):
+        return self._clean_image("profile_picture")
+
+    def clean_banner_image(self):
+        return self._clean_image("banner_image")
+
     def save(self, commit=True):
         profile = super().save(commit=commit)
         if commit:
@@ -112,3 +126,29 @@ class LaborerProfileEditForm(forms.ModelForm):
             user.email = self.cleaned_data["email"]
             user.save(update_fields=["email"])
         return profile
+
+
+class LaborerProfileEditForm(ProfileEditFormBase):
+    class Meta:
+        model = LaborerProfile
+        fields = ("display_name", "phone_number", "city", "state", "profile_picture", "banner_image")
+        labels = {"display_name": "Your name or labor group name"}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.order_fields(
+            ["email", "display_name", "phone_number", "city", "state", "profile_picture", "banner_image"]
+        )
+
+
+class DriverProfileEditForm(ProfileEditFormBase):
+    class Meta:
+        model = DriverProfile
+        fields = ("company_name", "dot_number", "phone_number", "city", "state", "profile_picture", "banner_image")
+        labels = {"company_name": "Company or driver name"}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.order_fields(
+            ["email", "company_name", "dot_number", "phone_number", "city", "state", "profile_picture", "banner_image"]
+        )

@@ -361,6 +361,9 @@
             const badge = laborer.is_primary
               ? '<span class="county-slot-badge">BASED HERE</span>'
               : '<span class="county-slot-badge county-slot-badge--muted">ALSO SERVES</span>';
+            const avatar = laborer.avatar_url
+              ? `<img class="avatar-circle avatar-circle--lg" src="${escapeHtml(laborer.avatar_url)}" alt="">`
+              : `<span class="avatar-circle avatar-circle--lg" style="background: ${escapeHtml(laborer.avatar_color)}">${escapeHtml(laborer.avatar_initial)}</span>`;
             const actions = IS_DRIVER
               ? `
                 <div class="job-actions">
@@ -375,8 +378,13 @@
               : "";
             return `
               <div class="laborer-card">
-                <div>${badge}</div>
-                <strong>${name}</strong>
+                <div class="laborer-card-top">
+                  ${avatar}
+                  <div>
+                    <div>${badge}</div>
+                    <strong>${name}</strong>
+                  </div>
+                </div>
                 <p>${city ? city + ", " + state : ""}</p>
                 <p>${phone}</p>
                 ${actions}

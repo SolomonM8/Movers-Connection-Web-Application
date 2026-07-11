@@ -355,22 +355,16 @@ class MessageInboxView(LoginRequiredMixin, View):
         for application in applications:
             last_message = application.messages.order_by("-created_at").first()
             if user.role == User.Role.DRIVER:
-                other_name = (
-                    application.laborer_profile.display_name
-                    or application.laborer_profile.user.email
-                )
-                other_pk = application.laborer_profile.pk
+                other_profile = application.laborer_profile
+                other_name = other_profile.display_name or other_profile.user.email
             else:
-                other_name = (
-                    application.job.driver_profile.company_name
-                    or application.job.driver_profile.user.email
-                )
-                other_pk = application.job.driver_profile.pk
+                other_profile = application.job.driver_profile
+                other_name = other_profile.company_name or other_profile.user.email
             conversations.append(
                 {
                     "application": application,
                     "other_name": other_name,
-                    "other_pk": other_pk,
+                    "other_profile": other_profile,
                     "last_message": last_message,
                     "sort_key": last_message.created_at if last_message else application.responded_at,
                 }

@@ -1,7 +1,26 @@
 {% extends "accounts/dashboard_base.html" %}
+{% load avatar_tags %}
 {% block title %}Driver Dashboard - Movers Connection{% endblock %}
 {% block dashboard_title %}Driver / Moving Company Dashboard{% endblock %}
 {% block dashboard_content %}
+<section class="dashboard-section">
+  <div class="dashboard-section-header">
+    <h2>Account Information</h2>
+    <a class="btn-primary btn-inline" href="{% url 'accounts:driver_profile_edit' %}">Edit &rarr;</a>
+  </div>
+  {% if profile.banner_image %}<img class="profile-banner" src="{{ profile.banner_image.url }}" alt="">{% endif %}
+  <div class="profile-header">
+    {% avatar profile "xl" %}
+  </div>
+  <dl class="info-list">
+    <div><dt>Company / Driver Name</dt><dd>{{ profile.company_name|default:"Not set" }}</dd></div>
+    <div><dt>Email</dt><dd>{{ user.email }}</dd></div>
+    <div><dt>Phone</dt><dd>{{ profile.phone_number|default:"Not set" }}</dd></div>
+    <div><dt>Location</dt><dd>{% if profile.city %}{{ profile.city }}, {% endif %}{{ profile.get_state_display|default:"Not set" }}</dd></div>
+    <div><dt>USDOT Number</dt><dd>{{ profile.dot_number|default:"Not set" }}</dd></div>
+  </dl>
+</section>
+
 <section class="dashboard-section">
   <div class="stat-highlight">
     <span class="stat-highlight-number">{{ completed_jobs_count }}</span>
