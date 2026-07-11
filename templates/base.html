@@ -102,7 +102,7 @@
       border: 2px solid var(--color-primary-dark);
     }
 
-    @media (max-width: 1200px) {
+    @media (max-width: 1150px) {
       .nav-toggle { display: flex; }
       nav .nav-links { display: none; }
     }
@@ -150,6 +150,8 @@
 
     .nav-logout-form { margin: 0; }
 
+    .nav-profile { position: relative; flex-shrink: 0; }
+
     .nav-identity {
       display: inline-flex;
       align-items: center;
@@ -160,9 +162,61 @@
       border: 2px solid rgba(255, 255, 255, 0.75);
       color: #fff;
       text-decoration: none;
+      font-family: inherit;
+      cursor: pointer;
       flex-shrink: 0;
     }
     .nav-identity:hover { background: rgba(255, 255, 255, 0.25); }
+
+    .nav-identity-caret { font-size: 0.65rem; opacity: 0.85; margin-left: -0.1rem; }
+
+    .profile-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      z-index: 30;
+      width: 230px;
+      background: #fff;
+      border: 1px solid var(--color-border);
+      border-radius: 10px;
+      box-shadow: 0 12px 30px rgba(16, 32, 58, 0.2);
+      padding: 0.6rem;
+    }
+    .profile-dropdown.open { display: block; }
+
+    .profile-dropdown-header {
+      padding: 0.3rem 0.6rem 0.7rem;
+      margin-bottom: 0.3rem;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .profile-dropdown-header strong { display: block; color: var(--color-text); font-size: 0.95rem; }
+    .profile-dropdown-header span {
+      display: block;
+      color: var(--color-muted);
+      font-size: 0.8rem;
+      margin-top: 0.1rem;
+      word-break: break-all;
+    }
+
+    .profile-dropdown-logout-form { margin: 0; }
+
+    /* The global button[type="submit"] rule (0,1,1 specificity) otherwise beats a bare
+       .nav-drawer-link (0,1,0) on every property it also sets, turning this menu row into
+       a solid blue full-width CTA button instead of a plain hover row. ID-scope to win
+       outright rather than relying on source order. Same fix applied to the mobile drawer's
+       own logout row, which had this exact bug too (just not overflowing, so never noticed). */
+    #profile-dropdown .nav-drawer-link,
+    #nav-drawer .nav-drawer-link {
+      display: flex;
+      margin-top: 0;
+      padding: 0.75rem 0.6rem;
+      background: transparent;
+      box-shadow: none;
+      font-size: 0.95rem;
+      text-align: left;
+      width: 100%;
+    }
 
     .nav-identity-avatar {
       width: 1.9rem;
@@ -181,7 +235,14 @@
     .nav-identity-role { width: 1rem; height: 1rem; flex-shrink: 0; display: flex; }
     .nav-identity-role .icon-inline { width: 100%; height: 100%; }
 
-    .nav-identity-name { font-size: 0.9rem; font-weight: 700; white-space: nowrap; }
+    .nav-identity-name {
+      font-size: 0.9rem;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 9rem;
+    }
 
     .nav-drawer-backdrop {
       position: fixed;
@@ -1564,8 +1625,8 @@
         <a href="{% url 'accounts:friends' %}" class="nav-link-btn{% if url_name == 'friends' %} active{% endif %}" aria-label="Friends">{% include "includes/icon-friends.svg" %}<span>Friends</span></a>
         <a href="{% url 'jobs:message_inbox' %}" class="nav-link-btn{% if url_name == 'message_inbox' or url_name == 'messages' %} active{% endif %}" aria-label="Messages">{% include "includes/icon-message.svg" %}<span>Messages</span></a>
         <div class="notification-bell">
-          <button type="button" id="notification-toggle" class="nav-link-btn{% if url_name == 'notifications' %} active{% endif %}" aria-haspopup="true" aria-expanded="false" aria-label="Notifications">
-            {% include "includes/icon-bell.svg" %}<span>Notifications</span>
+          <button type="button" id="notification-toggle" class="nav-icon-btn" aria-haspopup="true" aria-expanded="false" title="Notifications" aria-label="Notifications">
+            {% include "includes/icon-bell.svg" %}
             {% if unread_notification_count %}<span class="notification-badge">{{ unread_notification_count }}</span>{% endif %}
           </button>
           <div id="notification-dropdown" class="notification-dropdown">
@@ -1588,17 +1649,24 @@
           </div>
         </div>
         {% endwith %}
-        <a href="{% url 'accounts:dashboard' %}" class="nav-identity" title="{{ user.email }}">
-          <span class="nav-identity-avatar" style="background: {{ user.pk|avatar_color }}">{{ nav_display_name|avatar_initial }}</span>
-          {% if nav_role_icon %}<span class="nav-identity-role">{% include nav_role_icon %}</span>{% endif %}
-          <span class="nav-identity-name">{{ nav_display_name }}</span>
-        </a>
-        <form action="{% url 'accounts:logout' %}" method="post" class="nav-logout-form">
-          {% csrf_token %}
-          <button type="submit" class="nav-link-btn" aria-label="Log out">
-            <span class="icon-flip">{% include "includes/icon-login.svg" %}</span><span>Log out</span>
+        <div class="nav-profile">
+          <button type="button" id="profile-toggle" class="nav-identity" title="{{ nav_display_name }}" aria-haspopup="true" aria-expanded="false">
+            <span class="nav-identity-avatar" style="background: {{ user.pk|avatar_color }}">{{ nav_display_name|avatar_initial }}</span>
+            {% if nav_role_icon %}<span class="nav-identity-role">{% include nav_role_icon %}</span>{% endif %}
+            <span class="nav-identity-name">{{ nav_display_name }}</span>
+            <span class="nav-identity-caret">&#9662;</span>
           </button>
-        </form>
+          <div id="profile-dropdown" class="profile-dropdown">
+            <div class="profile-dropdown-header">
+              <strong>{{ nav_display_name }}</strong>
+              <span>{{ user.email }}</span>
+            </div>
+            <form action="{% url 'accounts:logout' %}" method="post" class="profile-dropdown-logout-form">
+              {% csrf_token %}
+              <button type="submit" class="nav-drawer-link"><span class="icon-flip">{% include "includes/icon-login.svg" %}</span> Log out</button>
+            </form>
+          </div>
+        </div>
       {% else %}
         <a href="{% url 'accounts:login' %}" class="nav-btn nav-btn--ghost">
           {% include "includes/icon-login.svg" %}
@@ -1727,6 +1795,22 @@
               .catch(function () {});
           });
         }
+      }
+
+      var profileToggle = document.getElementById("profile-toggle");
+      var profileDropdown = document.getElementById("profile-dropdown");
+      if (profileToggle && profileDropdown) {
+        profileToggle.addEventListener("click", function (event) {
+          event.stopPropagation();
+          var isOpen = profileDropdown.classList.toggle("open");
+          profileToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+        });
+        document.addEventListener("click", function (event) {
+          if (!profileDropdown.contains(event.target) && !profileToggle.contains(event.target)) {
+            profileDropdown.classList.remove("open");
+            profileToggle.setAttribute("aria-expanded", "false");
+          }
+        });
       }
     })();
   </script>
