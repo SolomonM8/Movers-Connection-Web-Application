@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Job, JobApplication, Message
+from .models import FriendMessage, Job, JobApplication, Message
 
 
 @admin.register(Job)
@@ -20,4 +20,10 @@ class JobApplicationAdmin(admin.ModelAdmin):
 @admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):
     list_display = ("__str__", "application", "sender", "created_at")
+    search_fields = ("sender__email", "body")
+
+
+@admin.register(FriendMessage)
+class FriendMessageAdmin(admin.ModelAdmin):
+    list_display = ("__str__", "connection", "sender", "created_at")
     search_fields = ("sender__email", "body")

@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.db import models
 
-from accounts.models import DriverProfile, LaborerProfile
+from accounts.models import Connection, DriverProfile, LaborerProfile
 from coverage.models import County
 
 
@@ -82,3 +82,18 @@ class Message(models.Model):
 
     def __str__(self):
         return f"Message from {self.sender} on {self.application}"
+
+
+class FriendMessage(models.Model):
+    connection = models.ForeignKey(Connection, on_delete=models.CASCADE, related_name="messages")
+    sender = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="sent_friend_messages"
+    )
+    body = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["created_at"]
+
+    def __str__(self):
+        return f"Message from {self.sender} on {self.connection}"

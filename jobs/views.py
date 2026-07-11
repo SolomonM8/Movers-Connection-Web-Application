@@ -14,8 +14,8 @@ from accounts.constants import US_STATE_CHOICES
 from accounts.models import Connection, DriverProfile, LaborerProfile, Notification, User
 from accounts.views import RoleRequiredMixin
 
-from .forms import JobForm, MessageForm
-from .models import Job, JobApplication
+from .forms import FriendMessageForm, JobForm, MessageForm
+from .models import FriendMessage, Job, JobApplication
 
 
 class JobFormContextMixin:
@@ -411,4 +411,54 @@ class MessageThreadView(LoginRequiredMixin, View):
         thread = application.messages.select_related("sender")
         return render(
             request, self.template_name, {"application": application, "form": form, "thread": thread}
+        )
+
+
+class FriendMessageThreadView(LoginRequiredMixin, View):
+    template_name = "jobs/friend_message_thread.html"
+
+    def get_connection(self, request, connection_pk):
+        connection = get_object_or_404(
+            Connection.objects.select_related("driver_profile__user", "laborer_profile__user"),
+            pk=connection_pk,
+        )
+        user = request.user
+        is_driver = connection.driver_profile.user_id == user.id
+        is_laborer = connection.laborer_profile.user_id == user.id
+        if not (is_driver or is_laborer or user.is_superuser):
+            raise Http404
+        return connection
+
+    def get(self, request, connection_pk):
+        connection = self.get_connection(request, connection_pk)
+        form = FriendMessageForm()
+        thread = connection.messages.select_related("sender")
+        return render(
+            request, self.template_name, {"connection": connection, "form": form, "thread": thread}
+        )
+
+    def post(self, request, connection_pk):
+        connection = self.get_connection(request, connection_pk)
+        form = FriendMessageForm(request.POST)
+        if form.is_valid():
+            message = form.save(commit=False)
+            message.connection = connection
+            message.sender = request.user
+            message.save()
+            is_sender_driver = connection.driver_profile.user_id == request.user.id
+            recipient = (
+                connection.laborer_profile.user if is_sender_driver else connection.driver_profile.user
+            )
+            sender_display = (
+                str(connection.driver_profile) if is_sender_driver else str(connection.laborer_profile)
+            )
+            Notification.objects.create(
+                recipient=recipient,
+                message=f"New message from {sender_display}.",
+                url=reverse("jobs:friend_messages", args=[connection.pk]),
+            )
+            return redirect("jobs:friend_messages", connection_pk=connection_pk)
+        thread = connection.messages.select_related("sender")
+        return render(
+            request, self.template_name, {"connection": connection, "form": form, "thread": thread}
         )

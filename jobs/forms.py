@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Job, Message
+from .models import FriendMessage, Job, Message
 
 
 class JobForm(forms.ModelForm):
@@ -37,6 +37,14 @@ class JobForm(forms.ModelForm):
 class MessageForm(forms.ModelForm):
     class Meta:
         model = Message
+        fields = ["body"]
+        widgets = {"body": forms.Textarea(attrs={"rows": 3, "placeholder": "Write a message…"})}
+        labels = {"body": ""}
+
+
+class FriendMessageForm(forms.ModelForm):
+    class Meta:
+        model = FriendMessage
         fields = ["body"]
         widgets = {"body": forms.Textarea(attrs={"rows": 3, "placeholder": "Write a message…"})}
         labels = {"body": ""}

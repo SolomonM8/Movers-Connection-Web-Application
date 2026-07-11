@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Friend Chat - Movers Connection{% endblock %}
+{% block main %}
+<main class="wide-card">
+  <h1>Friend Chat</h1>
+  <p class="helper-link">
+    {{ connection.laborer_profile.display_name|default:connection.laborer_profile.user.email }}
+    &harr; {{ connection.driver_profile.company_name|default:connection.driver_profile.user.email }}
+  </p>
+
+  <div class="message-thread">
+    {% for message in thread %}
+      <div class="message-bubble{% if message.sender_id == request.user.id %} message-bubble--self{% endif %}">
+        <p class="message-meta">{{ message.sender.email }} &middot; {{ message.created_at|date:"M j, g:i A" }}</p>
+        <p>{{ message.body }}</p>
+      </div>
+    {% empty %}
+      <p>No messages yet. Say hello!</p>
+    {% endfor %}
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Send</button>
+  </form>
+
+  <p class="helper-link"><a href="{% url 'accounts:friends' %}">&larr; Back to friends</a></p>
+</main>
+{% endblock %}
