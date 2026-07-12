@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import FriendMessage, Job, Message
+from .models import ConversationMessage, Job
 
 
 class JobForm(forms.ModelForm):
@@ -34,17 +34,9 @@ class JobForm(forms.ModelForm):
         return cleaned_data
 
 
-class MessageForm(forms.ModelForm):
+class ConversationMessageForm(forms.ModelForm):
     class Meta:
-        model = Message
-        fields = ["body"]
-        widgets = {"body": forms.Textarea(attrs={"rows": 3, "placeholder": "Write a message…"})}
-        labels = {"body": ""}
-
-
-class FriendMessageForm(forms.ModelForm):
-    class Meta:
-        model = FriendMessage
+        model = ConversationMessage
         fields = ["body"]
         widgets = {"body": forms.Textarea(attrs={"rows": 3, "placeholder": "Write a message…"})}
         labels = {"body": ""}

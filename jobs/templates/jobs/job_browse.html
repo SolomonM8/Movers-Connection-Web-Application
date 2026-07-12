@@ -65,7 +65,7 @@
             <span class="county-slot-badge county-slot-badge--muted">{{ job.my_application.get_status_display|upper }}</span>
             {% if job.my_application.status == "accepted" %}
               <div class="job-actions">
-                <a class="btn-primary btn-inline" href="{% url 'jobs:messages' job.my_application.pk %}">Message &rarr;</a>
+                <button type="button" class="btn-primary btn-inline" data-open-conversation="{{ job.driver_profile.pk }}">Message &rarr;</button>
               </div>
             {% endif %}
           {% else %}

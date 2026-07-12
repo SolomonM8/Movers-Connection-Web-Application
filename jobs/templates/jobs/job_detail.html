@@ -69,7 +69,7 @@
               <p class="helper-link">Waiting for them to respond to your invite.</p>
             {% elif application.status == "accepted" %}
               <div class="job-actions">
-                <a class="btn-primary btn-inline" href="{% url 'jobs:messages' application.pk %}">Message &rarr;</a>
+                <button type="button" class="btn-primary btn-inline" data-open-conversation="{{ application.laborer_profile.pk }}">Message &rarr;</button>
               </div>
             {% endif %}
           </div>

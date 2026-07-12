@@ -1164,6 +1164,16 @@
       color: #fff;
     }
     .message-bubble--self .message-meta { color: rgba(255, 255, 255, 0.8); }
+    .message-bubble--system {
+      align-self: center;
+      max-width: 90%;
+      background: var(--color-border);
+      color: var(--color-muted);
+      border-radius: 999px;
+      padding: 0.35rem 0.9rem;
+      font-size: 0.78rem;
+      text-align: center;
+    }
     .message-meta { margin: 0 0 0.2rem; font-size: 0.75rem; color: var(--color-muted); }
 
     .msg-widget-toggle {
@@ -1312,6 +1322,16 @@
       padding: 0 0.3rem;
     }
     .msg-widget-empty { padding: 2rem 1rem; text-align: center; color: var(--color-muted); font-size: 0.9rem; }
+
+    #msg-widget-list-view { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+    .msg-widget-search-wrap { padding: 0.6rem 0.6rem 0; flex-shrink: 0; }
+    .msg-widget-search-wrap input {
+      margin: 0;
+      padding: 0.55rem 0.8rem;
+      border: 1px solid var(--color-border);
+      border-radius: 999px;
+      font-size: 0.85rem;
+    }
 
     .msg-widget-thread { flex: 1; display: flex; flex-direction: column; min-height: 0; }
     .msg-widget-messages { flex: 1; overflow-y: auto; padding: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem; }
@@ -1797,7 +1817,7 @@
         <a href="{% url 'accounts:dashboard' %}" class="nav-link-btn{% if url_name == 'driver_dashboard' or url_name == 'laborer_dashboard' or url_name == 'admin_dashboard' %} active{% endif %}" aria-label="Dashboard">{% include "includes/icon-dashboard.svg" %}<span>Dashboard</span></a>
         <a href="{% url 'coverage:map' %}" class="nav-link-btn{% if url_name == 'map' %} active{% endif %}" aria-label="Coverage Map">{% include "includes/icon-target.svg" %}<span>Coverage Map</span></a>
         <a href="{% url 'accounts:friends' %}" class="nav-link-btn{% if url_name == 'friends' %} active{% endif %}" aria-label="Friends">{% include "includes/icon-friends.svg" %}<span>Friends</span></a>
-        <button type="button" id="nav-messages-toggle" class="nav-link-btn{% if url_name == 'message_inbox' or url_name == 'messages' %} active{% endif %}" aria-label="Messages">{% include "includes/icon-message.svg" %}<span>Messages</span></button>
+        <button type="button" id="nav-messages-toggle" class="nav-link-btn" aria-label="Messages">{% include "includes/icon-message.svg" %}<span>Messages</span></button>
         <div class="notification-bell">
           <button type="button" id="notification-toggle" class="nav-icon-btn" aria-haspopup="true" aria-expanded="false" title="Notifications" aria-label="Notifications">
             {% include "includes/icon-bell.svg" %}
@@ -2038,7 +2058,12 @@
         <h3 id="msg-widget-title">Messages</h3>
         <button type="button" id="msg-widget-close" class="panel-close" aria-label="Close messages">&times;</button>
       </div>
-      <div id="msg-widget-list" class="msg-widget-list"></div>
+      <div id="msg-widget-list-view">
+        <div class="msg-widget-search-wrap">
+          <input type="text" id="msg-widget-search" placeholder="Search friends to message…" autocomplete="off">
+        </div>
+        <div id="msg-widget-list" class="msg-widget-list"></div>
+      </div>
       <div id="msg-widget-thread" class="msg-widget-thread hidden">
         <div id="msg-widget-messages" class="msg-widget-messages"></div>
         <form id="msg-widget-form" class="msg-widget-form">
@@ -2058,7 +2083,9 @@
         var msgBack = document.getElementById("msg-widget-back");
         var msgTitle = document.getElementById("msg-widget-title");
         var msgBadge = document.getElementById("msg-widget-badge");
+        var msgListView = document.getElementById("msg-widget-list-view");
         var msgList = document.getElementById("msg-widget-list");
+        var msgSearchInput = document.getElementById("msg-widget-search");
         var msgThreadEl = document.getElementById("msg-widget-thread");
         var msgMessages = document.getElementById("msg-widget-messages");
         var msgForm = document.getElementById("msg-widget-form");
@@ -2073,6 +2100,7 @@
         var badgePollTimer = null;
         var listPollTimer = null;
         var threadPollTimer = null;
+        var searchDebounceTimer = null;
 
         function msgEscapeHtml(value) {
           var div = document.createElement("div");
@@ -2080,19 +2108,19 @@
           return div.innerHTML;
         }
 
-        function avatarHtml(conv) {
-          if (conv.avatar_url) {
+        function avatarHtml(item) {
+          if (item.avatar_url) {
             return (
               '<img class="avatar-circle avatar-circle--md" src="' +
-              msgEscapeHtml(conv.avatar_url) +
+              msgEscapeHtml(item.avatar_url) +
               '" alt="">'
             );
           }
           return (
             '<span class="avatar-circle avatar-circle--md" style="background: ' +
-            msgEscapeHtml(conv.avatar_color) +
+            msgEscapeHtml(item.avatar_color) +
             '">' +
-            msgEscapeHtml(conv.avatar_initial) +
+            msgEscapeHtml(item.avatar_initial) +
             "</span>"
           );
         }
@@ -2113,23 +2141,25 @@
             .catch(function () {});
         }
 
-        function threadUrl(type, id) {
-          return type === "friend"
-            ? "/jobs/api/messages/friend/" + id + "/"
-            : "/jobs/api/messages/job/" + id + "/";
+        function threadUrl(id) {
+          return "/jobs/api/messages/thread/" + id + "/";
+        }
+
+        function badgesHtml(conv) {
+          var html = "";
+          if (conv.is_friend) html += '<span class="msg-widget-convo-badge msg-widget-convo-badge--friend">FRIEND</span>';
+          if (conv.has_job) html += '<span class="msg-widget-convo-badge msg-widget-convo-badge--job">JOB</span>';
+          return html;
         }
 
         function renderList(conversations) {
           if (!conversations.length) {
             msgList.innerHTML =
-              '<p class="msg-widget-empty">No conversations yet. Messages from friends and accepted jobs will show up here.</p>';
+              '<p class="msg-widget-empty">No conversations yet. Search a friend above to say hello.</p>';
             return;
           }
           msgList.innerHTML = conversations
             .map(function (conv) {
-              var badgeClass =
-                conv.type === "friend" ? "msg-widget-convo-badge--friend" : "msg-widget-convo-badge--job";
-              var badgeLabel = conv.type === "friend" ? "FRIEND" : "JOB";
               var preview = conv.last_message ? msgEscapeHtml(conv.last_message) : "No messages yet";
               var unread =
                 conv.unread_count > 0
@@ -2138,9 +2168,7 @@
                     "</span>"
                   : "";
               return (
-                '<button type="button" class="msg-widget-convo" data-type="' +
-                conv.type +
-                '" data-id="' +
+                '<button type="button" class="msg-widget-convo" data-id="' +
                 conv.id +
                 '" data-name="' +
                 msgEscapeHtml(conv.other_name) +
@@ -2149,11 +2177,9 @@
                 '<span class="msg-widget-convo-info"><span class="msg-widget-convo-name-row">' +
                 '<span class="msg-widget-convo-name">' +
                 msgEscapeHtml(conv.other_name) +
-                '</span><span class="msg-widget-convo-badge ' +
-                badgeClass +
-                '">' +
-                badgeLabel +
-                '</span></span><span class="msg-widget-convo-preview">' +
+                "</span>" +
+                badgesHtml(conv) +
+                '</span><span class="msg-widget-convo-preview">' +
                 preview +
                 "</span></span>" +
                 unread +
@@ -2163,7 +2189,7 @@
             .join("");
           Array.prototype.forEach.call(msgList.querySelectorAll(".msg-widget-convo"), function (btn) {
             btn.addEventListener("click", function () {
-              openThread(btn.dataset.type, btn.dataset.id, btn.dataset.name);
+              openThread(btn.dataset.id, btn.dataset.name);
             });
           });
         }
@@ -2177,10 +2203,64 @@
             });
         }
 
+        function renderSearchResults(results) {
+          if (!results.length) {
+            msgList.innerHTML = '<p class="msg-widget-empty">No friends match that search.</p>';
+            return;
+          }
+          msgList.innerHTML = results
+            .map(function (r) {
+              return (
+                '<button type="button" class="msg-widget-convo" data-other-id="' +
+                r.other_profile_id +
+                '" data-name="' +
+                msgEscapeHtml(r.other_name) +
+                '">' +
+                avatarHtml(r) +
+                '<span class="msg-widget-convo-info"><span class="msg-widget-convo-name-row">' +
+                '<span class="msg-widget-convo-name">' +
+                msgEscapeHtml(r.other_name) +
+                "</span></span></span></button>"
+              );
+            })
+            .join("");
+          Array.prototype.forEach.call(msgList.querySelectorAll(".msg-widget-convo"), function (btn) {
+            btn.addEventListener("click", function () {
+              startConversationWith(btn.dataset.otherId);
+            });
+          });
+        }
+
+        function fetchSearch(query) {
+          fetch("{% url 'jobs:friend_search' %}?q=" + encodeURIComponent(query))
+            .then(function (r) { return r.json(); })
+            .then(function (data) { renderSearchResults(data.results); })
+            .catch(function () {});
+        }
+
+        function startConversationWith(otherProfileId) {
+          var params = new URLSearchParams();
+          params.set("other_profile_id", otherProfileId);
+          fetch("{% url 'jobs:conversation_start' %}", {
+            method: "POST",
+            headers: {
+              "X-CSRFToken": msgCsrf,
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: params.toString(),
+          })
+            .then(function (r) { return r.json(); })
+            .then(function (data) { openThread(data.id, data.other_name); })
+            .catch(function () {});
+        }
+
         function renderMessages(msgs) {
           msgMessages.innerHTML =
             msgs
               .map(function (m) {
+                if (m.is_system) {
+                  return '<div class="message-bubble--system">' + msgEscapeHtml(m.body) + "</div>";
+                }
                 return (
                   '<div class="message-bubble' +
                   (m.is_self ? " message-bubble--self" : "") +
@@ -2197,7 +2277,7 @@
 
         function fetchThread() {
           if (!currentThread) return;
-          fetch(threadUrl(currentThread.type, currentThread.id))
+          fetch(threadUrl(currentThread))
             .then(function (r) { return r.json(); })
             .then(function (data) {
               renderMessages(data.messages);
@@ -2217,18 +2297,19 @@
           currentThread = null;
           msgTitle.textContent = "Messages";
           msgBack.classList.add("hidden");
-          msgList.classList.remove("hidden");
+          msgListView.classList.remove("hidden");
           msgThreadEl.classList.add("hidden");
+          if (msgSearchInput) msgSearchInput.value = "";
           stopThreadPoll();
           fetchList();
           listPollTimer = setInterval(fetchList, 25000);
         }
 
-        function openThread(type, id, name) {
-          currentThread = { type: type, id: id };
+        function openThread(id, name) {
+          currentThread = id;
           msgTitle.textContent = name;
           msgBack.classList.remove("hidden");
-          msgList.classList.add("hidden");
+          msgListView.classList.add("hidden");
           msgThreadEl.classList.remove("hidden");
           stopListPoll();
           msgMessages.innerHTML = '<p class="msg-widget-empty">Loading…</p>';
@@ -2243,6 +2324,13 @@
           msgPanel.setAttribute("aria-hidden", "false");
           msgToggle.setAttribute("aria-expanded", "true");
           showListView();
+        }
+
+        function openPanelRaw() {
+          msgPanel.classList.add("open");
+          msgBackdrop.classList.add("open");
+          msgPanel.setAttribute("aria-hidden", "false");
+          msgToggle.setAttribute("aria-expanded", "true");
         }
 
         function closePanel() {
@@ -2291,6 +2379,28 @@
           });
         }
 
+        // Any other page's "Message" button just needs data-open-conversation="<other profile id>".
+        document.addEventListener("click", function (event) {
+          var trigger = event.target.closest ? event.target.closest("[data-open-conversation]") : null;
+          if (!trigger) return;
+          var otherId = trigger.getAttribute("data-open-conversation");
+          if (!otherId) return;
+          openPanelRaw();
+          startConversationWith(otherId);
+        });
+
+        if (msgSearchInput) {
+          msgSearchInput.addEventListener("input", function () {
+            clearTimeout(searchDebounceTimer);
+            var query = msgSearchInput.value.trim();
+            if (!query) {
+              fetchList();
+              return;
+            }
+            searchDebounceTimer = setTimeout(function () { fetchSearch(query); }, 300);
+          });
+        }
+
         if (msgForm) {
           msgForm.addEventListener("submit", function (event) {
             event.preventDefault();
@@ -2299,7 +2409,7 @@
             msgInput.value = "";
             var params = new URLSearchParams();
             params.set("body", body);
-            fetch(threadUrl(currentThread.type, currentThread.id), {
+            fetch(threadUrl(currentThread), {
               method: "POST",
               headers: {
                 "X-CSRFToken": msgCsrf,
@@ -2337,6 +2447,29 @@
             }
           }
         });
+
+        (function checkOpenChatParam() {
+          var params = new URLSearchParams(window.location.search);
+          var openChatId = params.get("open_chat");
+          if (!openChatId) return;
+          openPanelRaw();
+          fetch("{% url 'jobs:message_conversations' %}")
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+              var match = data.conversations.filter(function (c) {
+                return String(c.id) === String(openChatId);
+              })[0];
+              if (match) {
+                openThread(match.id, match.other_name);
+              } else {
+                showListView();
+              }
+            })
+            .catch(function () { showListView(); });
+          var cleanUrl = new URL(window.location.href);
+          cleanUrl.searchParams.delete("open_chat");
+          window.history.replaceState(null, "", cleanUrl.pathname + cleanUrl.search);
+        })();
       })();
     </script>
   {% endif %}

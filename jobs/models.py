@@ -69,12 +69,33 @@ class JobApplication(models.Model):
         return f"{self.laborer_profile} applied to {self.job}"
 
 
-class Message(models.Model):
-    application = models.ForeignKey(JobApplication, on_delete=models.CASCADE, related_name="messages")
+class Conversation(models.Model):
+    driver_profile = models.ForeignKey(
+        DriverProfile, on_delete=models.CASCADE, related_name="conversations"
+    )
+    laborer_profile = models.ForeignKey(
+        LaborerProfile, on_delete=models.CASCADE, related_name="conversations"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("driver_profile", "laborer_profile")
+
+    def __str__(self):
+        return f"{self.driver_profile} <-> {self.laborer_profile}"
+
+
+class ConversationMessage(models.Model):
+    conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name="messages")
     sender = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="sent_job_messages"
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="sent_conversation_messages",
     )
     body = models.TextField()
+    is_system = models.BooleanField(default=False)
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -82,20 +103,4 @@ class Message(models.Model):
         ordering = ["created_at"]
 
     def __str__(self):
-        return f"Message from {self.sender} on {self.application}"
-
-
-class FriendMessage(models.Model):
-    connection = models.ForeignKey(Connection, on_delete=models.CASCADE, related_name="messages")
-    sender = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="sent_friend_messages"
-    )
-    body = models.TextField()
-    is_read = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ["created_at"]
-
-    def __str__(self):
-        return f"Message from {self.sender} on {self.connection}"
+        return f"Message from {self.sender} on {self.conversation}"

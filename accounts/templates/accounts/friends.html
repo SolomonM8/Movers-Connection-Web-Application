@@ -105,7 +105,7 @@
                   <span class="friend-meta">{{ profile.city }}{% if profile.city %}, {% endif %}{{ profile.state }} &middot; {{ profile.phone_number }}</span>
                 </div>
                 <div class="friend-actions">
-                  <a class="btn-secondary btn-inline" href="{% url 'jobs:friend_messages' connection.pk %}">Message &rarr;</a>
+                  <button type="button" class="btn-secondary btn-inline" data-open-conversation="{{ profile.pk }}">Message &rarr;</button>
                   <a class="btn-primary btn-inline" href="{% url 'jobs:invite' profile.pk %}">Invite to Job &rarr;</a>
                   <form method="post" action="{% url 'accounts:remove_friend' connection.pk %}">
                     {% csrf_token %}
@@ -123,7 +123,7 @@
                   <span class="friend-meta">{{ profile.city }}{% if profile.city %}, {% endif %}{{ profile.state }} &middot; {{ profile.phone_number }}</span>
                 </div>
                 <div class="friend-actions">
-                  <a class="btn-secondary btn-inline" href="{% url 'jobs:friend_messages' connection.pk %}">Message &rarr;</a>
+                  <button type="button" class="btn-secondary btn-inline" data-open-conversation="{{ profile.pk }}">Message &rarr;</button>
                   <form method="post" action="{% url 'accounts:remove_friend' connection.pk %}">
                     {% csrf_token %}
                     <button type="submit" class="btn-danger btn-inline">Remove</button>

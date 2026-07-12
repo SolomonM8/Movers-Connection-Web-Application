@@ -72,10 +72,16 @@ def dashboard_redirect(request):
     if not request.user.is_authenticated:
         return redirect("accounts:login")
     if request.user.is_superuser or request.user.role == User.Role.ADMIN:
-        return redirect("accounts:admin_dashboard")
-    if request.user.role == User.Role.DRIVER:
-        return redirect("accounts:driver_dashboard")
-    return redirect("accounts:laborer_dashboard")
+        target = "accounts:admin_dashboard"
+    elif request.user.role == User.Role.DRIVER:
+        target = "accounts:driver_dashboard"
+    else:
+        target = "accounts:laborer_dashboard"
+    url = reverse(target)
+    query_string = request.META.get("QUERY_STRING", "")
+    if query_string:
+        url = f"{url}?{query_string}"
+    return redirect(url)
 
 
 class RoleRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
