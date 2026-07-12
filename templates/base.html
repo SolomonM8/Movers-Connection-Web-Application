@@ -1161,6 +1161,176 @@
     .message-bubble--self .message-meta { color: rgba(255, 255, 255, 0.8); }
     .message-meta { margin: 0 0 0.2rem; font-size: 0.75rem; color: var(--color-muted); }
 
+    .msg-widget-toggle {
+      position: fixed;
+      right: 1.1rem;
+      bottom: 1.1rem;
+      width: 3.4rem;
+      height: 3.4rem;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+      color: #fff;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(22, 86, 214, 0.35);
+      z-index: 80;
+      transition: transform 0.15s ease;
+    }
+    .msg-widget-toggle:hover { transform: translateY(-2px); }
+    .msg-widget-toggle .icon-inline { width: 1.5rem; height: 1.5rem; }
+    .msg-widget-toggle-badge { position: absolute; top: -1px; right: -1px; }
+
+    .msg-widget-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(16, 32, 58, 0.5);
+      z-index: 85;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .msg-widget-backdrop.open { opacity: 1; pointer-events: auto; }
+
+    .msg-widget-panel {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 78vh;
+      max-height: 640px;
+      background: #fff;
+      border-radius: 16px 16px 0 0;
+      box-shadow: 0 -8px 30px rgba(16, 32, 58, 0.25);
+      z-index: 90;
+      display: flex;
+      flex-direction: column;
+      transform: translateY(100%);
+      transition: transform 0.25s ease;
+      overflow: hidden;
+    }
+    .msg-widget-panel.open { transform: translateY(0); }
+
+    @media (min-width: 700px) {
+      .msg-widget-backdrop { display: none; }
+      .msg-widget-panel {
+        left: auto;
+        right: 1.1rem;
+        bottom: 5.2rem;
+        width: 360px;
+        height: 500px;
+        max-height: 70vh;
+        border-radius: 16px;
+        transform: translateY(16px) scale(0.97);
+        opacity: 0;
+        pointer-events: none;
+        transition: transform 0.2s ease, opacity 0.2s ease;
+      }
+      .msg-widget-panel.open { transform: translateY(0) scale(1); opacity: 1; pointer-events: auto; }
+    }
+
+    .msg-widget-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.9rem 1rem;
+      border-bottom: 1px solid var(--color-border);
+      flex-shrink: 0;
+    }
+    .msg-widget-header h3 { margin: 0; flex: 1; font-size: 1rem; color: var(--color-text); }
+    .msg-widget-back {
+      background: transparent;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: var(--color-primary);
+      padding: 0.2rem 0.4rem;
+    }
+
+    .msg-widget-list { flex: 1; overflow-y: auto; padding: 0.5rem; }
+    .msg-widget-convo {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      padding: 0.65rem 0.6rem;
+      border-radius: 10px;
+      cursor: pointer;
+      text-align: left;
+      width: 100%;
+      background: transparent;
+      border: none;
+      font-family: inherit;
+    }
+    .msg-widget-convo:hover { background: var(--color-primary-light); }
+    .msg-widget-convo-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.1rem; }
+    .msg-widget-convo-name-row { display: flex; align-items: center; gap: 0.4rem; }
+    .msg-widget-convo-name {
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--color-text);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .msg-widget-convo-badge {
+      font-size: 0.62rem;
+      font-weight: 800;
+      padding: 0.05rem 0.4rem;
+      border-radius: 999px;
+      flex-shrink: 0;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+    .msg-widget-convo-badge--friend { background: var(--color-primary-light); color: var(--color-primary-dark); }
+    .msg-widget-convo-badge--job { background: #fdf0e0; color: #a15c00; }
+    .msg-widget-convo-preview {
+      font-size: 0.8rem;
+      color: var(--color-muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .msg-widget-convo-unread {
+      flex-shrink: 0;
+      min-width: 1.2rem;
+      height: 1.2rem;
+      border-radius: 999px;
+      background: #e0483a;
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 0.3rem;
+    }
+    .msg-widget-empty { padding: 2rem 1rem; text-align: center; color: var(--color-muted); font-size: 0.9rem; }
+
+    .msg-widget-thread { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+    .msg-widget-messages { flex: 1; overflow-y: auto; padding: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem; }
+    .msg-widget-form { display: flex; gap: 0.5rem; padding: 0.75rem; border-top: 1px solid var(--color-border); flex-shrink: 0; }
+    .msg-widget-form input {
+      flex: 1;
+      margin: 0;
+      padding: 0.55rem 0.8rem;
+      border: 1px solid var(--color-border);
+      border-radius: 999px;
+      font-size: 0.9rem;
+    }
+    /* button[type="submit"] elsewhere in this file has higher specificity than a bare
+       .msg-widget-form button (both (0,1,1), source order would decide) - ID-scope to win
+       outright rather than depending on where this block sits relative to that rule. */
+    #msg-widget-form button[type="submit"] {
+      margin: 0;
+      width: auto;
+      padding: 0.5rem 1rem;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      box-shadow: none;
+    }
+
     .dashboard-section {
       padding: 1.25rem 0;
       border-bottom: 1px solid var(--color-border);
@@ -1622,7 +1792,7 @@
         <a href="{% url 'accounts:dashboard' %}" class="nav-link-btn{% if url_name == 'driver_dashboard' or url_name == 'laborer_dashboard' or url_name == 'admin_dashboard' %} active{% endif %}" aria-label="Dashboard">{% include "includes/icon-dashboard.svg" %}<span>Dashboard</span></a>
         <a href="{% url 'coverage:map' %}" class="nav-link-btn{% if url_name == 'map' %} active{% endif %}" aria-label="Coverage Map">{% include "includes/icon-target.svg" %}<span>Coverage Map</span></a>
         <a href="{% url 'accounts:friends' %}" class="nav-link-btn{% if url_name == 'friends' %} active{% endif %}" aria-label="Friends">{% include "includes/icon-friends.svg" %}<span>Friends</span></a>
-        <a href="{% url 'jobs:message_inbox' %}" class="nav-link-btn{% if url_name == 'message_inbox' or url_name == 'messages' %} active{% endif %}" aria-label="Messages">{% include "includes/icon-message.svg" %}<span>Messages</span></a>
+        <button type="button" id="nav-messages-toggle" class="nav-link-btn{% if url_name == 'message_inbox' or url_name == 'messages' %} active{% endif %}" aria-label="Messages">{% include "includes/icon-message.svg" %}<span>Messages</span></button>
         <div class="notification-bell">
           <button type="button" id="notification-toggle" class="nav-icon-btn" aria-haspopup="true" aria-expanded="false" title="Notifications" aria-label="Notifications">
             {% include "includes/icon-bell.svg" %}
@@ -1696,7 +1866,7 @@
       <a href="{% url 'accounts:dashboard' %}" class="nav-drawer-link">{% include "includes/icon-dashboard.svg" %} Dashboard</a>
       <a href="{% url 'coverage:map' %}" class="nav-drawer-link">{% include "includes/icon-target.svg" %} Coverage Map</a>
       <a href="{% url 'accounts:friends' %}" class="nav-drawer-link">{% include "includes/icon-friends.svg" %} Friends</a>
-      <a href="{% url 'jobs:message_inbox' %}" class="nav-drawer-link">{% include "includes/icon-message.svg" %} Messages</a>
+      <button type="button" id="nav-drawer-messages-toggle" class="nav-drawer-link">{% include "includes/icon-message.svg" %} Messages</button>
       <a href="{% url 'accounts:notifications' %}" class="nav-drawer-link">
         {% include "includes/icon-bell.svg" %} Notifications
         {% if unread_notification_count %}<span class="notification-badge">{{ unread_notification_count }}</span>{% endif %}
@@ -1811,6 +1981,7 @@
           }
         });
       }
+
     })();
   </script>
   <div class="page-content">
@@ -1833,5 +2004,319 @@
     <p>&copy; {% now "Y" %} Four Pillars Moving. All rights reserved.</p>
     <p>Developed and managed by Four Pillars Moving.</p>
   </footer>
+  {% if user.is_authenticated %}
+    <button type="button" id="msg-widget-toggle" class="msg-widget-toggle" aria-label="Messages" aria-expanded="false">
+      {% include "includes/icon-message.svg" %}
+      <span id="msg-widget-badge" class="notification-badge msg-widget-toggle-badge hidden">0</span>
+    </button>
+    <div id="msg-widget-backdrop" class="msg-widget-backdrop"></div>
+    <div id="msg-widget-panel" class="msg-widget-panel" aria-hidden="true">
+      <div class="msg-widget-header">
+        <button type="button" id="msg-widget-back" class="msg-widget-back hidden" aria-label="Back to conversations">&larr;</button>
+        <h3 id="msg-widget-title">Messages</h3>
+        <button type="button" id="msg-widget-close" class="panel-close" aria-label="Close messages">&times;</button>
+      </div>
+      <div id="msg-widget-list" class="msg-widget-list"></div>
+      <div id="msg-widget-thread" class="msg-widget-thread hidden">
+        <div id="msg-widget-messages" class="msg-widget-messages"></div>
+        <form id="msg-widget-form" class="msg-widget-form">
+          <input type="text" id="msg-widget-input" placeholder="Write a message…" autocomplete="off">
+          <button type="submit">Send</button>
+        </form>
+      </div>
+    </div>
+    <script>
+      (function () {
+        var msgToggle = document.getElementById("msg-widget-toggle");
+        var msgPanel = document.getElementById("msg-widget-panel");
+        if (!msgToggle || !msgPanel) return;
+
+        var msgBackdrop = document.getElementById("msg-widget-backdrop");
+        var msgClose = document.getElementById("msg-widget-close");
+        var msgBack = document.getElementById("msg-widget-back");
+        var msgTitle = document.getElementById("msg-widget-title");
+        var msgBadge = document.getElementById("msg-widget-badge");
+        var msgList = document.getElementById("msg-widget-list");
+        var msgThreadEl = document.getElementById("msg-widget-thread");
+        var msgMessages = document.getElementById("msg-widget-messages");
+        var msgForm = document.getElementById("msg-widget-form");
+        var msgInput = document.getElementById("msg-widget-input");
+        var navMessagesToggle = document.getElementById("nav-messages-toggle");
+        var navDrawerMessagesToggle = document.getElementById("nav-drawer-messages-toggle");
+        var navDrawerEl = document.getElementById("nav-drawer");
+        var navDrawerBackdropEl = document.getElementById("nav-drawer-backdrop");
+        var msgCsrfInput = document.querySelector('input[name="csrfmiddlewaretoken"]');
+        var msgCsrf = msgCsrfInput ? msgCsrfInput.value : "";
+        var currentThread = null;
+        var badgePollTimer = null;
+        var listPollTimer = null;
+        var threadPollTimer = null;
+
+        function msgEscapeHtml(value) {
+          var div = document.createElement("div");
+          div.textContent = value == null ? "" : String(value);
+          return div.innerHTML;
+        }
+
+        function avatarHtml(conv) {
+          if (conv.avatar_url) {
+            return (
+              '<img class="avatar-circle avatar-circle--md" src="' +
+              msgEscapeHtml(conv.avatar_url) +
+              '" alt="">'
+            );
+          }
+          return (
+            '<span class="avatar-circle avatar-circle--md" style="background: ' +
+            msgEscapeHtml(conv.avatar_color) +
+            '">' +
+            msgEscapeHtml(conv.avatar_initial) +
+            "</span>"
+          );
+        }
+
+        function updateBadge(count) {
+          if (count > 0) {
+            msgBadge.textContent = count > 99 ? "99+" : String(count);
+            msgBadge.classList.remove("hidden");
+          } else {
+            msgBadge.classList.add("hidden");
+          }
+        }
+
+        function refreshBadge() {
+          fetch("{% url 'jobs:message_unread_count' %}")
+            .then(function (r) { return r.json(); })
+            .then(function (data) { updateBadge(data.count); })
+            .catch(function () {});
+        }
+
+        function threadUrl(type, id) {
+          return type === "friend"
+            ? "/jobs/api/messages/friend/" + id + "/"
+            : "/jobs/api/messages/job/" + id + "/";
+        }
+
+        function renderList(conversations) {
+          if (!conversations.length) {
+            msgList.innerHTML =
+              '<p class="msg-widget-empty">No conversations yet. Messages from friends and accepted jobs will show up here.</p>';
+            return;
+          }
+          msgList.innerHTML = conversations
+            .map(function (conv) {
+              var badgeClass =
+                conv.type === "friend" ? "msg-widget-convo-badge--friend" : "msg-widget-convo-badge--job";
+              var badgeLabel = conv.type === "friend" ? "FRIEND" : "JOB";
+              var preview = conv.last_message ? msgEscapeHtml(conv.last_message) : "No messages yet";
+              var unread =
+                conv.unread_count > 0
+                  ? '<span class="msg-widget-convo-unread">' +
+                    (conv.unread_count > 9 ? "9+" : conv.unread_count) +
+                    "</span>"
+                  : "";
+              return (
+                '<button type="button" class="msg-widget-convo" data-type="' +
+                conv.type +
+                '" data-id="' +
+                conv.id +
+                '" data-name="' +
+                msgEscapeHtml(conv.other_name) +
+                '">' +
+                avatarHtml(conv) +
+                '<span class="msg-widget-convo-info"><span class="msg-widget-convo-name-row">' +
+                '<span class="msg-widget-convo-name">' +
+                msgEscapeHtml(conv.other_name) +
+                '</span><span class="msg-widget-convo-badge ' +
+                badgeClass +
+                '">' +
+                badgeLabel +
+                '</span></span><span class="msg-widget-convo-preview">' +
+                preview +
+                "</span></span>" +
+                unread +
+                "</button>"
+              );
+            })
+            .join("");
+          Array.prototype.forEach.call(msgList.querySelectorAll(".msg-widget-convo"), function (btn) {
+            btn.addEventListener("click", function () {
+              openThread(btn.dataset.type, btn.dataset.id, btn.dataset.name);
+            });
+          });
+        }
+
+        function fetchList() {
+          fetch("{% url 'jobs:message_conversations' %}")
+            .then(function (r) { return r.json(); })
+            .then(function (data) { renderList(data.conversations); })
+            .catch(function () {
+              msgList.innerHTML = '<p class="msg-widget-empty">Couldn’t load conversations.</p>';
+            });
+        }
+
+        function renderMessages(msgs) {
+          msgMessages.innerHTML =
+            msgs
+              .map(function (m) {
+                return (
+                  '<div class="message-bubble' +
+                  (m.is_self ? " message-bubble--self" : "") +
+                  '"><p class="message-meta">' +
+                  msgEscapeHtml(m.sender_email) +
+                  "</p><p>" +
+                  msgEscapeHtml(m.body) +
+                  "</p></div>"
+                );
+              })
+              .join("") || '<p class="msg-widget-empty">No messages yet. Say hello!</p>';
+          msgMessages.scrollTop = msgMessages.scrollHeight;
+        }
+
+        function fetchThread() {
+          if (!currentThread) return;
+          fetch(threadUrl(currentThread.type, currentThread.id))
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+              renderMessages(data.messages);
+              refreshBadge();
+            })
+            .catch(function () {});
+        }
+
+        function stopListPoll() {
+          if (listPollTimer) { clearInterval(listPollTimer); listPollTimer = null; }
+        }
+        function stopThreadPoll() {
+          if (threadPollTimer) { clearInterval(threadPollTimer); threadPollTimer = null; }
+        }
+
+        function showListView() {
+          currentThread = null;
+          msgTitle.textContent = "Messages";
+          msgBack.classList.add("hidden");
+          msgList.classList.remove("hidden");
+          msgThreadEl.classList.add("hidden");
+          stopThreadPoll();
+          fetchList();
+          listPollTimer = setInterval(fetchList, 25000);
+        }
+
+        function openThread(type, id, name) {
+          currentThread = { type: type, id: id };
+          msgTitle.textContent = name;
+          msgBack.classList.remove("hidden");
+          msgList.classList.add("hidden");
+          msgThreadEl.classList.remove("hidden");
+          stopListPoll();
+          msgMessages.innerHTML = '<p class="msg-widget-empty">Loading…</p>';
+          fetchThread();
+          threadPollTimer = setInterval(fetchThread, 6000);
+          if (msgInput) msgInput.focus();
+        }
+
+        function openPanel() {
+          msgPanel.classList.add("open");
+          msgBackdrop.classList.add("open");
+          msgPanel.setAttribute("aria-hidden", "false");
+          msgToggle.setAttribute("aria-expanded", "true");
+          showListView();
+        }
+
+        function closePanel() {
+          msgPanel.classList.remove("open");
+          msgBackdrop.classList.remove("open");
+          msgPanel.setAttribute("aria-hidden", "true");
+          msgToggle.setAttribute("aria-expanded", "false");
+          stopListPoll();
+          stopThreadPoll();
+        }
+
+        msgToggle.addEventListener("click", function (event) {
+          event.stopPropagation();
+          if (msgPanel.classList.contains("open")) {
+            closePanel();
+          } else {
+            openPanel();
+          }
+        });
+        msgClose.addEventListener("click", closePanel);
+        msgBackdrop.addEventListener("click", closePanel);
+        msgBack.addEventListener("click", showListView);
+
+        document.addEventListener("click", function (event) {
+          if (
+            msgPanel.classList.contains("open") &&
+            !msgPanel.contains(event.target) &&
+            !msgToggle.contains(event.target)
+          ) {
+            closePanel();
+          }
+        });
+
+        if (navMessagesToggle) {
+          navMessagesToggle.addEventListener("click", function (event) {
+            event.stopPropagation();
+            openPanel();
+          });
+        }
+        if (navDrawerMessagesToggle) {
+          navDrawerMessagesToggle.addEventListener("click", function () {
+            if (navDrawerEl) navDrawerEl.classList.remove("open");
+            if (navDrawerBackdropEl) navDrawerBackdropEl.classList.remove("open");
+            document.body.classList.remove("drawer-open");
+            openPanel();
+          });
+        }
+
+        if (msgForm) {
+          msgForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+            if (!currentThread || !msgInput.value.trim()) return;
+            var body = msgInput.value;
+            msgInput.value = "";
+            var params = new URLSearchParams();
+            params.set("body", body);
+            fetch(threadUrl(currentThread.type, currentThread.id), {
+              method: "POST",
+              headers: {
+                "X-CSRFToken": msgCsrf,
+                "Content-Type": "application/x-www-form-urlencoded",
+              },
+              body: params.toString(),
+            })
+              .then(function (r) { return r.json(); })
+              .then(function () { fetchThread(); })
+              .catch(function () {});
+          });
+        }
+
+        refreshBadge();
+        badgePollTimer = setInterval(refreshBadge, 25000);
+
+        document.addEventListener("visibilitychange", function () {
+          if (document.hidden) {
+            if (badgePollTimer) { clearInterval(badgePollTimer); badgePollTimer = null; }
+            stopListPoll();
+            stopThreadPoll();
+          } else {
+            if (!badgePollTimer) {
+              refreshBadge();
+              badgePollTimer = setInterval(refreshBadge, 25000);
+            }
+            if (msgPanel.classList.contains("open")) {
+              if (currentThread) {
+                fetchThread();
+                threadPollTimer = setInterval(fetchThread, 6000);
+              } else {
+                fetchList();
+                listPollTimer = setInterval(fetchList, 25000);
+              }
+            }
+          }
+        });
+      })();
+    </script>
+  {% endif %}
 </body>
 </html>

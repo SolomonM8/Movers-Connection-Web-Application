@@ -31,4 +31,24 @@ urlpatterns = [
         views.InvitationRespondView.as_view(),
         name="invitation_respond",
     ),
+    path(
+        "api/messages/unread-count/",
+        views.MessageUnreadCountAPIView.as_view(),
+        name="message_unread_count",
+    ),
+    path(
+        "api/messages/conversations/",
+        views.ConversationListAPIView.as_view(),
+        name="message_conversations",
+    ),
+    path(
+        "api/messages/job/<int:app_pk>/",
+        views.JobMessageThreadAPIView.as_view(),
+        name="message_thread_api",
+    ),
+    path(
+        "api/messages/friend/<int:connection_pk>/",
+        views.FriendMessageThreadAPIView.as_view(),
+        name="friend_message_thread_api",
+    ),
 ]

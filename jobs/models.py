@@ -75,6 +75,7 @@ class Message(models.Model):
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="sent_job_messages"
     )
     body = models.TextField()
+    is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -90,6 +91,7 @@ class FriendMessage(models.Model):
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="sent_friend_messages"
     )
     body = models.TextField()
+    is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
