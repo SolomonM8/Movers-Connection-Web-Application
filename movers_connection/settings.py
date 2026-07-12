@@ -31,11 +31,16 @@ DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1'])
 
-# Railway injects this automatically for the service's public domain.
+# Railway injects this automatically for the service's default *.up.railway.app domain.
 RAILWAY_PUBLIC_DOMAIN = env('RAILWAY_PUBLIC_DOMAIN', default=None)
 if RAILWAY_PUBLIC_DOMAIN:
     ALLOWED_HOSTS.append(RAILWAY_PUBLIC_DOMAIN)
-    CSRF_TRUSTED_ORIGINS = [f'https://{RAILWAY_PUBLIC_DOMAIN}']
+
+# Any custom domain(s) go in ALLOWED_HOSTS (env var), and Django also needs
+# them here with a scheme for CSRF to accept POSTs from that origin.
+CSRF_TRUSTED_ORIGINS = [
+    f'https://{host}' for host in ALLOWED_HOSTS if host not in ('localhost', '127.0.0.1')
+]
 
 
 # Application definition
