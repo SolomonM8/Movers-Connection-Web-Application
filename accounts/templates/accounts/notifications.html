@@ -13,10 +13,27 @@
 {% if notification_list %}
   <div class="notification-list">
     {% for notification in notification_list %}
-      <a class="notification-item{% if not notification.is_read %} notification-item--unread{% endif %}" href="{{ notification.url|default:'#' }}">
-        <span>{{ notification.message }}</span>
-        <span class="notification-item-date">{{ notification.created_at|date:"M j, g:i A" }}</span>
-      </a>
+      {% if notification.related_connection_id and notification.related_connection.status == "pending" and notification.related_connection.requested_by_id != user.id %}
+        <div class="notification-item notification-item--action{% if not notification.is_read %} notification-item--unread{% endif %}">
+          <span>{{ notification.message }}</span>
+          <span class="notification-item-date">{{ notification.created_at|date:"M j, g:i A" }}</span>
+          <div class="notification-item-actions">
+            <form method="post" action="{% url 'accounts:accept_friend_request' notification.related_connection_id %}">
+              {% csrf_token %}
+              <button type="submit" class="btn-primary btn-inline">Accept</button>
+            </form>
+            <form method="post" action="{% url 'accounts:decline_friend_request' notification.related_connection_id %}">
+              {% csrf_token %}
+              <button type="submit" class="btn-danger btn-inline">Decline</button>
+            </form>
+          </div>
+        </div>
+      {% else %}
+        <a class="notification-item{% if not notification.is_read %} notification-item--unread{% endif %}" href="{{ notification.url|default:'#' }}">
+          <span>{{ notification.message }}</span>
+          <span class="notification-item-date">{{ notification.created_at|date:"M j, g:i A" }}</span>
+        </a>
+      {% endif %}
     {% endfor %}
   </div>
 {% else %}

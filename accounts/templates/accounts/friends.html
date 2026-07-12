@@ -4,50 +4,142 @@
 {% block main %}
 <main class="wide-card">
   <h1>Friends</h1>
-  {% if connections %}
-    <div class="friend-list">
-      {% for connection in connections %}
-        {% if is_driver %}
-          {% with profile=connection.laborer_profile %}
+
+  {% if incoming_requests %}
+    <section class="dashboard-section">
+      <h2>Requests waiting on you</h2>
+      <div class="friend-list">
+        {% for connection in incoming_requests %}
+          {% if is_driver %}{% with profile=connection.laborer_profile %}
             <div class="friend-row">
               {% avatar profile "lg" %}
               <div class="friend-info">
                 <strong>{{ profile.display_name|default:profile.user.email }}</strong>
-                <span class="friend-meta">{{ profile.city }}{% if profile.city %}, {% endif %}{{ profile.state }} &middot; {{ profile.phone_number }}</span>
+                <span class="friend-meta">wants to be friends</span>
               </div>
               <div class="friend-actions">
-                <a class="btn-secondary btn-inline" href="{% url 'jobs:friend_messages' connection.pk %}">Message &rarr;</a>
-                <a class="btn-primary btn-inline" href="{% url 'jobs:invite' profile.pk %}">Invite to Job &rarr;</a>
-                <form method="post" action="{% url 'accounts:remove_friend' connection.pk %}">
+                <form method="post" action="{% url 'accounts:accept_friend_request' connection.pk %}">
                   {% csrf_token %}
-                  <button type="submit" class="btn-danger btn-inline">Remove</button>
+                  <button type="submit" class="btn-primary btn-inline">Accept</button>
+                </form>
+                <form method="post" action="{% url 'accounts:decline_friend_request' connection.pk %}">
+                  {% csrf_token %}
+                  <button type="submit" class="btn-danger btn-inline">Decline</button>
                 </form>
               </div>
             </div>
-          {% endwith %}
-        {% else %}
-          {% with profile=connection.driver_profile %}
+          {% endwith %}{% else %}{% with profile=connection.driver_profile %}
             <div class="friend-row">
               {% avatar profile "lg" %}
               <div class="friend-info">
                 <strong>{{ profile.company_name|default:profile.user.email }}</strong>
-                <span class="friend-meta">{{ profile.city }}{% if profile.city %}, {% endif %}{{ profile.state }} &middot; {{ profile.phone_number }}</span>
+                <span class="friend-meta">wants to be friends</span>
               </div>
               <div class="friend-actions">
-                <a class="btn-secondary btn-inline" href="{% url 'jobs:friend_messages' connection.pk %}">Message &rarr;</a>
-                <form method="post" action="{% url 'accounts:remove_friend' connection.pk %}">
+                <form method="post" action="{% url 'accounts:accept_friend_request' connection.pk %}">
                   {% csrf_token %}
-                  <button type="submit" class="btn-danger btn-inline">Remove</button>
+                  <button type="submit" class="btn-primary btn-inline">Accept</button>
+                </form>
+                <form method="post" action="{% url 'accounts:decline_friend_request' connection.pk %}">
+                  {% csrf_token %}
+                  <button type="submit" class="btn-danger btn-inline">Decline</button>
                 </form>
               </div>
             </div>
-          {% endwith %}
-        {% endif %}
-      {% endfor %}
-    </div>
-  {% else %}
-    <p>You haven't added any friends yet. {% if is_driver %}Add laborers from the Coverage Map.{% else %}Add drivers from jobs you see in Browse Jobs.{% endif %}</p>
+          {% endwith %}{% endif %}
+        {% endfor %}
+      </div>
+    </section>
   {% endif %}
+
+  {% if outgoing_requests %}
+    <section class="dashboard-section">
+      <h2>Requests you've sent</h2>
+      <div class="friend-list">
+        {% for connection in outgoing_requests %}
+          {% if is_driver %}{% with profile=connection.laborer_profile %}
+            <div class="friend-row">
+              {% avatar profile "lg" %}
+              <div class="friend-info">
+                <strong>{{ profile.display_name|default:profile.user.email }}</strong>
+                <span class="friend-meta">Pending</span>
+              </div>
+              <div class="friend-actions">
+                <form method="post" action="{% url 'accounts:decline_friend_request' connection.pk %}">
+                  {% csrf_token %}
+                  <button type="submit" class="btn-danger btn-inline">Cancel</button>
+                </form>
+              </div>
+            </div>
+          {% endwith %}{% else %}{% with profile=connection.driver_profile %}
+            <div class="friend-row">
+              {% avatar profile "lg" %}
+              <div class="friend-info">
+                <strong>{{ profile.company_name|default:profile.user.email }}</strong>
+                <span class="friend-meta">Pending</span>
+              </div>
+              <div class="friend-actions">
+                <form method="post" action="{% url 'accounts:decline_friend_request' connection.pk %}">
+                  {% csrf_token %}
+                  <button type="submit" class="btn-danger btn-inline">Cancel</button>
+                </form>
+              </div>
+            </div>
+          {% endwith %}{% endif %}
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  <section class="dashboard-section">
+    {% if incoming_requests or outgoing_requests %}<h2>Friends</h2>{% endif %}
+    {% if connections %}
+      <div class="friend-list">
+        {% for connection in connections %}
+          {% if is_driver %}
+            {% with profile=connection.laborer_profile %}
+              <div class="friend-row">
+                {% avatar profile "lg" %}
+                <div class="friend-info">
+                  <strong>{{ profile.display_name|default:profile.user.email }}</strong>
+                  <span class="friend-meta">{{ profile.city }}{% if profile.city %}, {% endif %}{{ profile.state }} &middot; {{ profile.phone_number }}</span>
+                </div>
+                <div class="friend-actions">
+                  <a class="btn-secondary btn-inline" href="{% url 'jobs:friend_messages' connection.pk %}">Message &rarr;</a>
+                  <a class="btn-primary btn-inline" href="{% url 'jobs:invite' profile.pk %}">Invite to Job &rarr;</a>
+                  <form method="post" action="{% url 'accounts:remove_friend' connection.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-danger btn-inline">Remove</button>
+                  </form>
+                </div>
+              </div>
+            {% endwith %}
+          {% else %}
+            {% with profile=connection.driver_profile %}
+              <div class="friend-row">
+                {% avatar profile "lg" %}
+                <div class="friend-info">
+                  <strong>{{ profile.company_name|default:profile.user.email }}</strong>
+                  <span class="friend-meta">{{ profile.city }}{% if profile.city %}, {% endif %}{{ profile.state }} &middot; {{ profile.phone_number }}</span>
+                </div>
+                <div class="friend-actions">
+                  <a class="btn-secondary btn-inline" href="{% url 'jobs:friend_messages' connection.pk %}">Message &rarr;</a>
+                  <form method="post" action="{% url 'accounts:remove_friend' connection.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-danger btn-inline">Remove</button>
+                  </form>
+                </div>
+              </div>
+            {% endwith %}
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% elif not incoming_requests and not outgoing_requests %}
+      <p>You haven't added any friends yet. {% if is_driver %}Add laborers from the Coverage Map.{% else %}Add drivers from jobs you see in Browse Jobs.{% endif %}</p>
+    {% else %}
+      <p>No friends yet.</p>
+    {% endif %}
+  </section>
   <p class="helper-link"><a href="{% url 'accounts:dashboard' %}">&larr; Back to dashboard</a></p>
 </main>
 {% endblock %}

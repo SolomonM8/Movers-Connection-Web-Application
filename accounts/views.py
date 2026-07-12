@@ -168,7 +168,9 @@ class NotificationListView(LoginRequiredMixin, ListView):
     context_object_name = "notification_list"
 
     def get_queryset(self):
-        return Notification.objects.filter(recipient=self.request.user)[:30]
+        return Notification.objects.filter(recipient=self.request.user).select_related(
+            "related_connection"
+        )[:30]
 
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
@@ -201,14 +203,70 @@ class FriendsListView(RoleRequiredMixin, TemplateView):
         is_driver = user.role == User.Role.DRIVER
         context["is_driver"] = is_driver
         if is_driver:
-            context["connections"] = Connection.objects.filter(
-                driver_profile=user.driver_profile
-            ).select_related("laborer_profile", "laborer_profile__user")
+            qs = Connection.objects.filter(driver_profile=user.driver_profile).select_related(
+                "laborer_profile", "laborer_profile__user"
+            )
         else:
-            context["connections"] = Connection.objects.filter(
-                laborer_profile=user.laborer_profile
-            ).select_related("driver_profile", "driver_profile__user")
+            qs = Connection.objects.filter(laborer_profile=user.laborer_profile).select_related(
+                "driver_profile", "driver_profile__user"
+            )
+        context["connections"] = qs.filter(status=Connection.Status.ACCEPTED)
+        context["incoming_requests"] = qs.filter(status=Connection.Status.PENDING).exclude(
+            requested_by=user
+        )
+        context["outgoing_requests"] = qs.filter(
+            status=Connection.Status.PENDING, requested_by=user
+        )
         return context
+
+
+def _display_name_for_user(user):
+    if hasattr(user, "driver_profile"):
+        return str(user.driver_profile)
+    if hasattr(user, "laborer_profile"):
+        return str(user.laborer_profile)
+    return user.email
+
+
+def _handle_friend_request(request, driver_profile, laborer_profile):
+    connection = Connection.objects.filter(
+        driver_profile=driver_profile, laborer_profile=laborer_profile
+    ).first()
+    other_user = (
+        laborer_profile.user if request.user.id == driver_profile.user_id else driver_profile.user
+    )
+
+    if connection is None:
+        connection = Connection.objects.create(
+            driver_profile=driver_profile,
+            laborer_profile=laborer_profile,
+            status=Connection.Status.PENDING,
+            requested_by=request.user,
+        )
+        Notification.objects.create(
+            recipient=other_user,
+            message=f"{_display_name_for_user(request.user)} wants to be friends.",
+            url=reverse("accounts:friends"),
+            related_connection=connection,
+        )
+        messages.success(request, "Friend request sent.")
+    elif connection.status == Connection.Status.ACCEPTED:
+        messages.info(request, "You're already friends.")
+    elif connection.requested_by_id == request.user.id:
+        messages.info(request, "Request already sent — waiting on them to respond.")
+    else:
+        # They'd already requested us first; adding them back counts as accepting.
+        connection.status = Connection.Status.ACCEPTED
+        connection.responded_at = timezone.now()
+        connection.save(update_fields=["status", "responded_at"])
+        if connection.requested_by_id:
+            Notification.objects.create(
+                recipient=connection.requested_by,
+                message=f"{_display_name_for_user(request.user)} accepted your friend request.",
+                url=reverse("accounts:friends"),
+            )
+        messages.success(request, "You're now friends!")
+    return connection
 
 
 class AddLaborerFriendView(RoleRequiredMixin, View):
@@ -216,13 +274,7 @@ class AddLaborerFriendView(RoleRequiredMixin, View):
 
     def post(self, request, laborer_pk):
         laborer_profile = get_object_or_404(LaborerProfile, pk=laborer_pk)
-        _, created = Connection.objects.get_or_create(
-            driver_profile=request.user.driver_profile, laborer_profile=laborer_profile
-        )
-        if created:
-            messages.success(request, f"Added {laborer_profile} to your friends.")
-        else:
-            messages.info(request, f"{laborer_profile} is already in your friends.")
+        _handle_friend_request(request, request.user.driver_profile, laborer_profile)
         return redirect(request.META.get("HTTP_REFERER") or reverse("accounts:friends"))
 
 
@@ -231,13 +283,66 @@ class AddDriverFriendView(RoleRequiredMixin, View):
 
     def post(self, request, driver_pk):
         driver_profile = get_object_or_404(DriverProfile, pk=driver_pk)
-        _, created = Connection.objects.get_or_create(
-            driver_profile=driver_profile, laborer_profile=request.user.laborer_profile
-        )
-        if created:
-            messages.success(request, f"Added {driver_profile} to your friends.")
+        _handle_friend_request(request, driver_profile, request.user.laborer_profile)
+        return redirect(request.META.get("HTTP_REFERER") or reverse("accounts:friends"))
+
+
+class AcceptFriendRequestView(RoleRequiredMixin, View):
+    allowed_roles = (User.Role.DRIVER, User.Role.LABORER)
+
+    def post(self, request, connection_pk):
+        user = request.user
+        if user.role == User.Role.DRIVER:
+            connection = get_object_or_404(
+                Connection,
+                pk=connection_pk,
+                driver_profile=user.driver_profile,
+                status=Connection.Status.PENDING,
+            )
         else:
-            messages.info(request, f"{driver_profile} is already in your friends.")
+            connection = get_object_or_404(
+                Connection,
+                pk=connection_pk,
+                laborer_profile=user.laborer_profile,
+                status=Connection.Status.PENDING,
+            )
+        if connection.requested_by_id == user.id:
+            messages.error(request, "You can't accept your own request.")
+            return redirect(request.META.get("HTTP_REFERER") or reverse("accounts:friends"))
+        connection.status = Connection.Status.ACCEPTED
+        connection.responded_at = timezone.now()
+        connection.save(update_fields=["status", "responded_at"])
+        if connection.requested_by_id:
+            Notification.objects.create(
+                recipient=connection.requested_by,
+                message=f"{_display_name_for_user(user)} accepted your friend request.",
+                url=reverse("accounts:friends"),
+            )
+        messages.success(request, "Friend request accepted.")
+        return redirect(request.META.get("HTTP_REFERER") or reverse("accounts:friends"))
+
+
+class DeclineFriendRequestView(RoleRequiredMixin, View):
+    allowed_roles = (User.Role.DRIVER, User.Role.LABORER)
+
+    def post(self, request, connection_pk):
+        user = request.user
+        if user.role == User.Role.DRIVER:
+            connection = get_object_or_404(
+                Connection,
+                pk=connection_pk,
+                driver_profile=user.driver_profile,
+                status=Connection.Status.PENDING,
+            )
+        else:
+            connection = get_object_or_404(
+                Connection,
+                pk=connection_pk,
+                laborer_profile=user.laborer_profile,
+                status=Connection.Status.PENDING,
+            )
+        connection.delete()
+        messages.success(request, "Request removed.")
         return redirect(request.META.get("HTTP_REFERER") or reverse("accounts:friends"))
 
 
@@ -248,11 +353,17 @@ class RemoveFriendView(RoleRequiredMixin, View):
         user = request.user
         if user.role == User.Role.DRIVER:
             connection = get_object_or_404(
-                Connection, pk=connection_pk, driver_profile=user.driver_profile
+                Connection,
+                pk=connection_pk,
+                driver_profile=user.driver_profile,
+                status=Connection.Status.ACCEPTED,
             )
         else:
             connection = get_object_or_404(
-                Connection, pk=connection_pk, laborer_profile=user.laborer_profile
+                Connection,
+                pk=connection_pk,
+                laborer_profile=user.laborer_profile,
+                status=Connection.Status.ACCEPTED,
             )
         connection.delete()
         messages.success(request, "Removed from friends.")

@@ -210,15 +210,16 @@ class LaborerJobListView(RoleRequiredMixin, ListView):
         profile = self.request.user.laborer_profile
         applications = JobApplication.objects.filter(laborer_profile=profile)
         application_by_job = {app.job_id: app for app in applications}
+        connections = Connection.objects.filter(laborer_profile=profile)
+        my_friend_status = {
+            c.driver_profile_id: c.status
+            for c in connections.only("driver_profile_id", "status")
+        }
         jobs = list(context["jobs"])
         for job in jobs:
             job.my_application = application_by_job.get(job.id)
+            job.driver_friend_status = my_friend_status.get(job.driver_profile_id, "none")
         context["jobs"] = jobs
-        context["my_friend_driver_ids"] = set(
-            Connection.objects.filter(laborer_profile=profile).values_list(
-                "driver_profile_id", flat=True
-            )
-        )
         context["invitations"] = JobApplication.objects.filter(
             laborer_profile=profile,
             source=JobApplication.Source.INVITED,

@@ -364,14 +364,16 @@
             const avatar = laborer.avatar_url
               ? `<img class="avatar-circle avatar-circle--lg" src="${escapeHtml(laborer.avatar_url)}" alt="">`
               : `<span class="avatar-circle avatar-circle--lg" style="background: ${escapeHtml(laborer.avatar_color)}">${escapeHtml(laborer.avatar_initial)}</span>`;
+            const friendControl =
+              laborer.connection_status === "friends"
+                ? '<span class="county-slot-badge">FRIEND</span>'
+                : laborer.connection_status === "pending"
+                ? '<span class="county-slot-badge county-slot-badge--muted">PENDING</span>'
+                : `<button type="button" class="inline-friend-btn" data-add-friend="${laborer.laborer_id}">+ Add Friend</button>`;
             const actions = IS_DRIVER
               ? `
                 <div class="job-actions">
-                  ${
-                    laborer.is_friend
-                      ? '<span class="county-slot-badge">FRIEND</span>'
-                      : `<button type="button" class="inline-friend-btn" data-add-friend="${laborer.laborer_id}">+ Add Friend</button>`
-                  }
+                  ${friendControl}
                   <a class="btn-primary btn-inline" href="/jobs/invite/${laborer.laborer_id}/">Invite to Job &rarr;</a>
                 </div>
               `
@@ -410,7 +412,7 @@
           headers: csrfInput ? { "X-CSRFToken": csrfInput.value } : {},
         })
           .then(() => {
-            btn.outerHTML = '<span class="county-slot-badge">FRIEND</span>';
+            btn.outerHTML = '<span class="county-slot-badge county-slot-badge--muted">PENDING</span>';
           })
           .catch(() => {});
       });

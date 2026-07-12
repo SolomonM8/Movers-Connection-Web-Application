@@ -36,4 +36,14 @@ urlpatterns = [
         name="add_driver_friend",
     ),
     path("friends/remove/<int:connection_pk>/", views.RemoveFriendView.as_view(), name="remove_friend"),
+    path(
+        "friends/accept/<int:connection_pk>/",
+        views.AcceptFriendRequestView.as_view(),
+        name="accept_friend_request",
+    ),
+    path(
+        "friends/decline/<int:connection_pk>/",
+        views.DeclineFriendRequestView.as_view(),
+        name="decline_friend_request",
+    ),
 ]
