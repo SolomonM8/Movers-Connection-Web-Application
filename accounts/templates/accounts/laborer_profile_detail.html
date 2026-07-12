@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load avatar_tags %}
+{% block title %}{{ profile.display_name|default:profile.user.email }} - Movers Connection{% endblock %}
+{% block main %}
+<main class="wide-card">
+  {% if profile.banner_image %}<img class="profile-banner" src="{{ profile.banner_image.url }}" alt="">{% endif %}
+  <div class="profile-header">
+    {% avatar profile "xl" %}
+  </div>
+  <h1>{{ profile.display_name|default:profile.user.email }}</h1>
+  <dl class="info-list">
+    <div><dt>Location</dt><dd>{% if profile.city %}{{ profile.city }}, {% endif %}{{ profile.get_state_display|default:"Not set" }}</dd></div>
+    <div><dt>Phone</dt><dd>{{ profile.phone_number|default:"Not set" }}</dd></div>
+    <div><dt>Experience</dt><dd>{{ profile.years_experience }} year{{ profile.years_experience|pluralize }}</dd></div>
+  </dl>
+
+  <section class="dashboard-section">
+    <h2>Service Areas</h2>
+    {% if service_areas %}
+      <div class="county-slots">
+        {% for area in service_areas %}
+          <div class="county-slot filled{% if area.is_primary %} primary{% endif %}">
+            <span class="county-slot-name">{{ area.county.name }}, {{ area.county.state }}{% if area.is_primary %} (Home){% endif %}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>No service areas listed yet.</p>
+    {% endif %}
+  </section>
+
+  <section class="dashboard-section">
+    <div class="stat-highlight">
+      <span class="stat-highlight-number">{{ completed_jobs_count }}</span>
+      <span class="stat-highlight-label">Jobs Completed</span>
+    </div>
+  </section>
+
+  {% include "accounts/includes/rating_summary.html" %}
+
+  <p class="helper-link"><a href="{% url 'accounts:dashboard' %}">&larr; Back to dashboard</a></p>
+</main>
+{% endblock %}

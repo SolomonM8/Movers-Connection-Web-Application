@@ -137,13 +137,28 @@ class CountyLaborersAPIView(LoginRequiredMixin, View):
             .select_related("laborer_profile", "laborer_profile__user")
             .order_by("-is_primary")
         )
-        friend_ids = set()
+        accepted_ids = set()
+        pending_ids = set()
         if request.user.role == User.Role.DRIVER:
-            friend_ids = set(
-                Connection.objects.filter(driver_profile=request.user.driver_profile).values_list(
+            connections = Connection.objects.filter(driver_profile=request.user.driver_profile)
+            accepted_ids = set(
+                connections.filter(status=Connection.Status.ACCEPTED).values_list(
                     "laborer_profile_id", flat=True
                 )
             )
+            pending_ids = set(
+                connections.filter(status=Connection.Status.PENDING).values_list(
+                    "laborer_profile_id", flat=True
+                )
+            )
+
+        def _connection_status(laborer_id):
+            if laborer_id in accepted_ids:
+                return "friends"
+            if laborer_id in pending_ids:
+                return "pending"
+            return "none"
+
         data = {
             "county_name": county.name,
             "state": county.state,
@@ -155,7 +170,7 @@ class CountyLaborersAPIView(LoginRequiredMixin, View):
                     "state": sa.laborer_profile.state,
                     "phone_number": sa.laborer_profile.phone_number,
                     "is_primary": sa.is_primary,
-                    "is_friend": sa.laborer_profile_id in friend_ids,
+                    "connection_status": _connection_status(sa.laborer_profile_id),
                     "avatar_url": (
                         sa.laborer_profile.profile_picture.url
                         if sa.laborer_profile.profile_picture

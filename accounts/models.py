@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
@@ -93,30 +94,35 @@ class LaborerProfile(ProfileBase):
     display_name = models.CharField(max_length=255, blank=True)
     bio = models.TextField(blank=True)
     years_experience = models.PositiveIntegerField(default=0)
+    has_dolly = models.BooleanField(default=False)
+    has_floor_dolly = models.BooleanField(default=False)
+    has_tools = models.BooleanField(default=False)
+    has_drills = models.BooleanField(default=False)
+    has_shoulder_dollies = models.BooleanField(default=False)
+    has_hump_straps = models.BooleanField(default=False)
 
     def __str__(self):
         return self.display_name or self.user.email
 
 
-class Notification(models.Model):
-    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notifications")
-    message = models.CharField(max_length=255)
-    url = models.CharField(max_length=255, blank=True)
-    is_read = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ["-created_at"]
-
-    def __str__(self):
-        return f"{self.recipient}: {self.message}"
-
-
 class Connection(models.Model):
+    class Status(models.TextChoices):
+        PENDING = "pending", "Pending"
+        ACCEPTED = "accepted", "Accepted"
+
     driver_profile = models.ForeignKey(DriverProfile, on_delete=models.CASCADE, related_name="connections")
     laborer_profile = models.ForeignKey(
         LaborerProfile, on_delete=models.CASCADE, related_name="connections"
     )
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING)
+    requested_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="+",
+    )
+    responded_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -125,3 +131,20 @@ class Connection(models.Model):
 
     def __str__(self):
         return f"{self.driver_profile} <-> {self.laborer_profile}"
+
+
+class Notification(models.Model):
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notifications")
+    message = models.CharField(max_length=255)
+    url = models.CharField(max_length=255, blank=True)
+    related_connection = models.ForeignKey(
+        Connection, on_delete=models.CASCADE, null=True, blank=True, related_name="notifications"
+    )
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.recipient}: {self.message}"

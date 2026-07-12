@@ -17,6 +17,7 @@ urlpatterns = [
     path("dashboard/laborer/edit/", views.LaborerProfileEditView.as_view(), name="laborer_profile_edit"),
     path("dashboard/driver/edit/", views.DriverProfileEditView.as_view(), name="driver_profile_edit"),
     path("dashboard/admin/", views.AdminDashboardView.as_view(), name="admin_dashboard"),
+    path("laborer/<int:laborer_pk>/", views.LaborerProfileDetailView.as_view(), name="laborer_profile_detail"),
     path("notifications/", views.NotificationListView.as_view(), name="notifications"),
     path(
         "notifications/mark-read/",
@@ -36,4 +37,14 @@ urlpatterns = [
         name="add_driver_friend",
     ),
     path("friends/remove/<int:connection_pk>/", views.RemoveFriendView.as_view(), name="remove_friend"),
+    path(
+        "friends/accept/<int:connection_pk>/",
+        views.AcceptFriendRequestView.as_view(),
+        name="accept_friend_request",
+    ),
+    path(
+        "friends/decline/<int:connection_pk>/",
+        views.DeclineFriendRequestView.as_view(),
+        name="decline_friend_request",
+    ),
 ]

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Rate {{ application.laborer_profile.display_name|default:application.laborer_profile.user.email }} - Movers Connection{% endblock %}
+{% block main %}
+<main class="wide-card">
+  <h1>Rate {{ application.laborer_profile.display_name|default:application.laborer_profile.user.email }}</h1>
+  <p>{{ job.get_job_type_display }} job on {{ job.job_date|date:"M j, Y" }} in {{ job.county.name }}, {{ job.county.state }}</p>
+
+  {% if form.non_field_errors %}{{ form.non_field_errors }}{% endif %}
+
+  <form method="post" class="star-radio-group">
+    {% csrf_token %}
+    {% for field in form %}
+      <label>{{ field.label }}</label>
+      {{ field }}
+      {{ field.errors }}
+    {% endfor %}
+    <button type="submit">Submit Rating</button>
+  </form>
+  <p class="helper-link"><a href="{% url 'jobs:detail' job.pk %}">&larr; Back to job</a></p>
+</main>
+{% endblock %}

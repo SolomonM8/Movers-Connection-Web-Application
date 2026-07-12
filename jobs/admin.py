@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import FriendMessage, Job, JobApplication, Message
+from .models import Conversation, ConversationMessage, Job, JobApplication, JobRating
 
 
 @admin.register(Job)
@@ -17,13 +17,19 @@ class JobApplicationAdmin(admin.ModelAdmin):
     search_fields = ("laborer_profile__display_name", "job__county__name")
 
 
-@admin.register(Message)
-class MessageAdmin(admin.ModelAdmin):
-    list_display = ("__str__", "application", "sender", "created_at")
+@admin.register(Conversation)
+class ConversationAdmin(admin.ModelAdmin):
+    list_display = ("__str__", "driver_profile", "laborer_profile", "created_at")
+    search_fields = ("driver_profile__company_name", "laborer_profile__display_name")
+
+
+@admin.register(ConversationMessage)
+class ConversationMessageAdmin(admin.ModelAdmin):
+    list_display = ("__str__", "conversation", "sender", "is_system", "created_at")
     search_fields = ("sender__email", "body")
 
 
-@admin.register(FriendMessage)
-class FriendMessageAdmin(admin.ModelAdmin):
-    list_display = ("__str__", "connection", "sender", "created_at")
-    search_fields = ("sender__email", "body")
+@admin.register(JobRating)
+class JobRatingAdmin(admin.ModelAdmin):
+    list_display = ("__str__", "application", "professionalism", "punctuality", "moving_skill", "created_at")
+    search_fields = ("application__laborer_profile__display_name",)

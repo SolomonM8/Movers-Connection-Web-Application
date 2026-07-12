@@ -1,5 +1,7 @@
 from django.conf import settings
 from django.db import models
+from django.db.models import Avg, Count, Q
+from django.utils import timezone
 
 from accounts.models import Connection, DriverProfile, LaborerProfile
 from coverage.models import County
@@ -32,6 +34,10 @@ class Job(models.Model):
     flat_rate_per_worker = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
     hourly_rate = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
     weight_lbs = models.PositiveIntegerField(null=True, blank=True, verbose_name="Approximate weight (lbs)")
+    needs_loading_skill = models.BooleanField(default=False)
+    needs_unloading_skill = models.BooleanField(default=False)
+    needs_packing_skill = models.BooleanField(default=False)
+    needs_equipment_skill = models.BooleanField(default=False)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.OPEN)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -40,6 +46,10 @@ class Job(models.Model):
 
     def __str__(self):
         return f"{self.get_job_type_display()} job on {self.job_date} in {self.county}"
+
+    @property
+    def is_rating_eligible(self):
+        return self.status == self.Status.COMPLETED or self.job_date < timezone.now().date()
 
 
 class JobApplication(models.Model):
@@ -69,12 +79,103 @@ class JobApplication(models.Model):
         return f"{self.laborer_profile} applied to {self.job}"
 
 
-class Message(models.Model):
-    application = models.ForeignKey(JobApplication, on_delete=models.CASCADE, related_name="messages")
+RATING_CHOICES = [(i, str(i)) for i in range(1, 6)]
+
+CORE_RATING_FIELDS = ["professionalism", "punctuality", "moving_skill"]
+CONDITIONAL_RATING_FIELDS = ["loading_skill", "unloading_skill", "packing_skill", "equipment_skill"]
+RATING_FIELD_LABELS = {
+    "professionalism": "Professionalism",
+    "punctuality": "Punctuality",
+    "moving_skill": "Moving skill",
+    "loading_skill": "Loading skill",
+    "unloading_skill": "Unloading skill",
+    "packing_skill": "Packing skill",
+    "equipment_skill": "Equipment",
+}
+
+# Maps each conditional rating field to the Job boolean that makes it applicable.
+CONDITIONAL_RATING_JOB_FLAGS = {
+    "loading_skill": "needs_loading_skill",
+    "unloading_skill": "needs_unloading_skill",
+    "packing_skill": "needs_packing_skill",
+    "equipment_skill": "needs_equipment_skill",
+}
+
+
+class JobRating(models.Model):
+    application = models.OneToOneField(JobApplication, on_delete=models.CASCADE, related_name="rating")
+    professionalism = models.PositiveSmallIntegerField(choices=RATING_CHOICES)
+    punctuality = models.PositiveSmallIntegerField(choices=RATING_CHOICES)
+    moving_skill = models.PositiveSmallIntegerField(choices=RATING_CHOICES)
+    loading_skill = models.PositiveSmallIntegerField(choices=RATING_CHOICES, null=True, blank=True)
+    unloading_skill = models.PositiveSmallIntegerField(choices=RATING_CHOICES, null=True, blank=True)
+    packing_skill = models.PositiveSmallIntegerField(choices=RATING_CHOICES, null=True, blank=True)
+    equipment_skill = models.PositiveSmallIntegerField(choices=RATING_CHOICES, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Rating for {self.application}"
+
+
+def unrated_eligible_applications(driver_profile):
+    today = timezone.now().date()
+    return JobApplication.objects.filter(
+        job__driver_profile=driver_profile,
+        status=JobApplication.Status.ACCEPTED,
+        rating__isnull=True,
+    ).filter(Q(job__status=Job.Status.COMPLETED) | Q(job__job_date__lt=today))
+
+
+def rating_summary_for_laborer(laborer_profile):
+    qs = JobRating.objects.filter(application__laborer_profile=laborer_profile)
+
+    def _row(field):
+        agg = qs.aggregate(avg=Avg(field), count=Count(field))
+        avg, count = agg["avg"], agg["count"]
+        filled = round(avg) if avg else 0
+        return {
+            "label": RATING_FIELD_LABELS[field],
+            "average": avg,
+            "count": count,
+            "stars_display": "★" * filled + "☆" * (5 - filled),
+        }
+
+    core = [_row(field) for field in CORE_RATING_FIELDS]
+    conditional = [
+        _row(field)
+        for field in CONDITIONAL_RATING_FIELDS
+        if qs.filter(**{f"{field}__isnull": False}).exists()
+    ]
+    return {"core": core, "conditional": conditional}
+
+
+class Conversation(models.Model):
+    driver_profile = models.ForeignKey(
+        DriverProfile, on_delete=models.CASCADE, related_name="conversations"
+    )
+    laborer_profile = models.ForeignKey(
+        LaborerProfile, on_delete=models.CASCADE, related_name="conversations"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("driver_profile", "laborer_profile")
+
+    def __str__(self):
+        return f"{self.driver_profile} <-> {self.laborer_profile}"
+
+
+class ConversationMessage(models.Model):
+    conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name="messages")
     sender = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="sent_job_messages"
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="sent_conversation_messages",
     )
     body = models.TextField()
+    is_system = models.BooleanField(default=False)
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -82,20 +183,4 @@ class Message(models.Model):
         ordering = ["created_at"]
 
     def __str__(self):
-        return f"Message from {self.sender} on {self.application}"
-
-
-class FriendMessage(models.Model):
-    connection = models.ForeignKey(Connection, on_delete=models.CASCADE, related_name="messages")
-    sender = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="sent_friend_messages"
-    )
-    body = models.TextField()
-    is_read = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ["created_at"]
-
-    def __str__(self):
-        return f"Message from {self.sender} on {self.connection}"
+        return f"Message from {self.sender} on {self.conversation}"

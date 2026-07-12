@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Rate Laborers - Movers Connection{% endblock %}
+{% block main %}
+<main class="wide-card">
+  <h1>Rate Laborers</h1>
+  <p>{{ job.get_job_type_display }} job on {{ job.job_date|date:"M j, Y" }} in {{ job.county.name }}, {{ job.county.state }}</p>
+
+  {% if unrated_applications %}
+    <div class="job-list">
+      {% for application in unrated_applications %}
+        <div class="job-card">
+          <div class="job-card-header">
+            <strong>{{ application.laborer_profile.display_name|default:application.laborer_profile.user.email }}</strong>
+          </div>
+          <div class="job-actions">
+            <a class="btn-primary btn-inline" href="{% url 'jobs:rate_application' application.pk %}">Rate &rarr;</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>All laborers on this job have been rated.</p>
+  {% endif %}
+  <p class="helper-link"><a href="{% url 'jobs:detail' job.pk %}">&larr; Back to job</a></p>
+</main>
+{% endblock %}

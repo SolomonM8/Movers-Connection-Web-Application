@@ -1,0 +1,37 @@
+{% load avatar_tags %}
+<section class="dashboard-section">
+  <h2>Ratings</h2>
+  {% for row in rating_summary.core %}
+    <div class="rating-row">
+      <span class="rating-row-label">{{ row.label }}</span>
+      {% if row.count %}
+        <span><span class="rating-stars">{{ row.stars_display }}</span> {{ row.average|floatformat:1 }} <span class="rating-meta">({{ row.count }} rating{{ row.count|pluralize }})</span></span>
+      {% else %}
+        <span class="rating-meta">No ratings yet</span>
+      {% endif %}
+    </div>
+  {% endfor %}
+</section>
+
+{% if rating_summary.conditional %}
+<section class="dashboard-section">
+  <h2>Additional Skills</h2>
+  {% for row in rating_summary.conditional %}
+    <div class="rating-row">
+      <span class="rating-row-label">{{ row.label }}</span>
+      <span><span class="rating-stars">{{ row.stars_display }}</span> {{ row.average|floatformat:1 }} <span class="rating-meta">({{ row.count }} rating{{ row.count|pluralize }})</span></span>
+    </div>
+  {% endfor %}
+</section>
+{% endif %}
+
+<section class="dashboard-section">
+  <h2>Equipment</h2>
+  <ul class="checklist">
+    {% for label, has_it in equipment_checklist %}
+      <li class="checklist-item{% if not has_it %} checklist-item--unchecked{% endif %}">
+        <span class="checklist-icon">{% if has_it %}&#10003;{% else %}&#10007;{% endif %}</span> {{ label }}
+      </li>
+    {% endfor %}
+  </ul>
+</section>

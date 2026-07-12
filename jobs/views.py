@@ -7,6 +7,7 @@ from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
+from django.utils.html import format_html
 from django.views import View
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
@@ -15,8 +16,39 @@ from accounts.models import Connection, DriverProfile, LaborerProfile, Notificat
 from accounts.templatetags.avatar_tags import compute_avatar_color, compute_avatar_initial
 from accounts.views import RoleRequiredMixin
 
-from .forms import FriendMessageForm, JobForm, MessageForm
-from .models import FriendMessage, Job, JobApplication, Message
+from .forms import ConversationMessageForm, JobForm, JobRatingForm
+from .models import (
+    Conversation,
+    ConversationMessage,
+    Job,
+    JobApplication,
+    JobRating,
+    unrated_eligible_applications,
+)
+
+
+def get_or_create_conversation(driver_profile, laborer_profile):
+    conversation, _ = Conversation.objects.get_or_create(
+        driver_profile=driver_profile, laborer_profile=laborer_profile
+    )
+    return conversation
+
+
+def add_system_message(conversation, body):
+    ConversationMessage.objects.create(conversation=conversation, is_system=True, body=body)
+
+
+def notify_new_message(recipient, sender_display, url):
+    Notification.objects.create(
+        recipient=recipient, message=f"New message from {sender_display}.", url=url
+    )
+
+
+def message_cta_html(other_profile):
+    return format_html(
+        ' <button type="button" class="btn-secondary btn-inline" data-open-conversation="{}">Message them &rarr;</button>',
+        other_profile.pk,
+    )
 
 
 class JobFormContextMixin:
@@ -46,12 +78,22 @@ class JobCreateView(JobFormContextMixin, RoleRequiredMixin, CreateView):
             driver_profile=profile, status=Job.Status.OPEN, job_date__gte=today
         ).count()
 
+    def _has_unrated_eligible_applications(self):
+        return unrated_eligible_applications(self.request.user.driver_profile).exists()
+
     def get(self, request, *args, **kwargs):
         if self._active_job_count() >= Job.MAX_ACTIVE_PER_DRIVER:
             messages.error(
                 request,
                 f"You can only have {Job.MAX_ACTIVE_PER_DRIVER} active jobs at a time. "
                 "Complete or delete one before posting another.",
+            )
+            return redirect("accounts:dashboard")
+        if self._has_unrated_eligible_applications():
+            messages.error(
+                request,
+                "You have jobs awaiting a rating. Rate your past laborers from your dashboard "
+                "before posting a new job.",
             )
             return redirect("accounts:dashboard")
         return super().get(request, *args, **kwargs)
@@ -62,6 +104,13 @@ class JobCreateView(JobFormContextMixin, RoleRequiredMixin, CreateView):
                 request,
                 f"You can only have {Job.MAX_ACTIVE_PER_DRIVER} active jobs at a time. "
                 "Complete or delete one before posting another.",
+            )
+            return redirect("accounts:dashboard")
+        if self._has_unrated_eligible_applications():
+            messages.error(
+                request,
+                "You have jobs awaiting a rating. Rate your past laborers from your dashboard "
+                "before posting a new job.",
             )
             return redirect("accounts:dashboard")
         return super().post(request, *args, **kwargs)
@@ -139,13 +188,99 @@ class JobMarkCompleteView(DriverJobOwnerMixin, View):
         job = get_object_or_404(Job, pk=pk, driver_profile=request.user.driver_profile)
         if job.status != Job.Status.OPEN:
             messages.info(request, "This job is already marked completed.")
-        elif job.job_date > timezone.now().date():
+            return redirect("jobs:detail", pk=pk)
+        if job.job_date > timezone.now().date():
             messages.error(request, "You can't mark a job completed before its date arrives.")
-        else:
-            job.status = Job.Status.COMPLETED
-            job.save(update_fields=["status"])
-            messages.success(request, "Job marked as completed.")
+            return redirect("jobs:detail", pk=pk)
+
+        job.status = Job.Status.COMPLETED
+        job.save(update_fields=["status"])
+        messages.success(request, "Job marked as completed.")
+
+        unrated = job.applications.filter(status=JobApplication.Status.ACCEPTED, rating__isnull=True)
+        count = unrated.count()
+        if count == 1:
+            return redirect("jobs:rate_application", app_pk=unrated.first().pk)
+        if count > 1:
+            return redirect("jobs:rating_index", pk=job.pk)
         return redirect("jobs:detail", pk=pk)
+
+
+class JobRatingIndexView(DriverJobOwnerMixin, DetailView):
+    model = Job
+    template_name = "jobs/job_rating_index.html"
+    context_object_name = "job"
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if not self.object.is_rating_eligible:
+            messages.error(request, "This job isn't eligible for rating yet.")
+            return redirect("jobs:detail", pk=self.object.pk)
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["unrated_applications"] = self.object.applications.filter(
+            status=JobApplication.Status.ACCEPTED, rating__isnull=True
+        ).select_related("laborer_profile", "laborer_profile__user")
+        return context
+
+
+class JobRatingCreateView(RoleRequiredMixin, CreateView):
+    form_class = JobRatingForm
+    template_name = "jobs/job_rating_form.html"
+    allowed_roles = (User.Role.DRIVER,)
+
+    def dispatch(self, request, *args, **kwargs):
+        self.application = get_object_or_404(
+            JobApplication.objects.select_related(
+                "job", "laborer_profile", "laborer_profile__user"
+            ),
+            pk=kwargs["app_pk"],
+            job__driver_profile=getattr(request.user, "driver_profile", None),
+            status=JobApplication.Status.ACCEPTED,
+        )
+        self.job = self.application.job
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        if not self.job.is_rating_eligible:
+            messages.error(request, "This job isn't eligible for rating yet.")
+            return redirect("jobs:detail", pk=self.job.pk)
+        if hasattr(self.application, "rating"):
+            messages.info(request, "You've already rated this laborer for this job.")
+            return redirect("jobs:detail", pk=self.job.pk)
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        if not self.job.is_rating_eligible or hasattr(self.application, "rating"):
+            return redirect("jobs:detail", pk=self.job.pk)
+        return super().post(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["job"] = self.job
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["application"] = self.application
+        context["job"] = self.job
+        return context
+
+    def form_valid(self, form):
+        form.instance.application = self.application
+        response = super().form_valid(form)
+        messages.success(self.request, f"Rating submitted for {self.application.laborer_profile}.")
+        return response
+
+    def get_success_url(self):
+        remaining = self.job.applications.filter(
+            status=JobApplication.Status.ACCEPTED, rating__isnull=True
+        ).exclude(pk=self.application.pk)
+        if remaining.exists():
+            return reverse("jobs:rating_index", args=[self.job.pk])
+        return reverse("jobs:detail", args=[self.job.pk])
 
 
 class ApplicationRespondView(DriverJobOwnerMixin, View):
@@ -159,15 +294,27 @@ class ApplicationRespondView(DriverJobOwnerMixin, View):
             application.status = JobApplication.Status.ACCEPTED
             application.responded_at = timezone.now()
             application.save(update_fields=["status", "responded_at"])
+            conversation = get_or_create_conversation(job.driver_profile, application.laborer_profile)
+            add_system_message(
+                conversation,
+                f"Job accepted: {job.get_job_type_display()} on {job.job_date} in {job.county}.",
+            )
             Notification.objects.create(
                 recipient=application.laborer_profile.user,
                 message=(
                     f"You were accepted for the {job.get_job_type_display()} job on "
                     f"{job.job_date} in {job.county}."
                 ),
-                url=reverse("jobs:messages", args=[application.pk]),
+                url=reverse("accounts:dashboard") + f"?open_chat={conversation.pk}",
             )
-            messages.success(request, f"Accepted {application.laborer_profile}.")
+            messages.success(
+                request,
+                format_html(
+                    "Accepted {}.{}",
+                    application.laborer_profile,
+                    message_cta_html(application.laborer_profile),
+                ),
+            )
         elif action == "decline":
             application.status = JobApplication.Status.DECLINED
             application.responded_at = timezone.now()
@@ -210,15 +357,16 @@ class LaborerJobListView(RoleRequiredMixin, ListView):
         profile = self.request.user.laborer_profile
         applications = JobApplication.objects.filter(laborer_profile=profile)
         application_by_job = {app.job_id: app for app in applications}
+        connections = Connection.objects.filter(laborer_profile=profile)
+        my_friend_status = {
+            c.driver_profile_id: c.status
+            for c in connections.only("driver_profile_id", "status")
+        }
         jobs = list(context["jobs"])
         for job in jobs:
             job.my_application = application_by_job.get(job.id)
+            job.driver_friend_status = my_friend_status.get(job.driver_profile_id, "none")
         context["jobs"] = jobs
-        context["my_friend_driver_ids"] = set(
-            Connection.objects.filter(laborer_profile=profile).values_list(
-                "driver_profile_id", flat=True
-            )
-        )
         context["invitations"] = JobApplication.objects.filter(
             laborer_profile=profile,
             source=JobApplication.Source.INVITED,
@@ -243,15 +391,26 @@ class InvitationRespondView(RoleRequiredMixin, View):
             application.status = JobApplication.Status.ACCEPTED
             application.responded_at = timezone.now()
             application.save(update_fields=["status", "responded_at"])
+            conversation = get_or_create_conversation(job.driver_profile, application.laborer_profile)
+            add_system_message(
+                conversation,
+                f"Invite accepted: {job.get_job_type_display()} on {job.job_date} in {job.county}.",
+            )
             Notification.objects.create(
                 recipient=job.driver_profile.user,
                 message=(
                     f"{application.laborer_profile} accepted your invite for the "
                     f"{job.get_job_type_display()} job on {job.job_date} in {job.county}."
                 ),
-                url=reverse("jobs:messages", args=[application.pk]),
+                url=reverse("accounts:dashboard") + f"?open_chat={conversation.pk}",
             )
-            messages.success(request, "Invitation accepted!")
+            messages.success(
+                request,
+                format_html(
+                    "Invitation accepted!{}",
+                    message_cta_html(job.driver_profile),
+                ),
+            )
         elif action == "decline":
             application.status = JobApplication.Status.DECLINED
             application.responded_at = timezone.now()
@@ -320,6 +479,11 @@ class JobInviteView(RoleRequiredMixin, View):
             defaults={"source": JobApplication.Source.INVITED},
         )
         if created:
+            conversation = get_or_create_conversation(request.user.driver_profile, laborer_profile)
+            add_system_message(
+                conversation,
+                f"New job invite: {job.get_job_type_display()} on {job.job_date} in {job.county}.",
+            )
             Notification.objects.create(
                 recipient=laborer_profile.user,
                 message=(
@@ -334,169 +498,42 @@ class JobInviteView(RoleRequiredMixin, View):
         return redirect("jobs:detail", pk=job.pk)
 
 
-class MessageInboxView(LoginRequiredMixin, View):
-    template_name = "jobs/message_inbox.html"
-
-    def get(self, request):
-        user = request.user
-        if user.role == User.Role.DRIVER and hasattr(user, "driver_profile"):
-            applications = JobApplication.objects.filter(
-                job__driver_profile=user.driver_profile, status=JobApplication.Status.ACCEPTED
-            ).select_related("job", "job__county", "laborer_profile", "laborer_profile__user")
-        elif user.role == User.Role.LABORER and hasattr(user, "laborer_profile"):
-            applications = JobApplication.objects.filter(
-                laborer_profile=user.laborer_profile, status=JobApplication.Status.ACCEPTED
-            ).select_related(
-                "job", "job__county", "job__driver_profile", "job__driver_profile__user"
-            )
-        else:
-            applications = JobApplication.objects.none()
-
-        conversations = []
-        for application in applications:
-            last_message = application.messages.order_by("-created_at").first()
-            if user.role == User.Role.DRIVER:
-                other_profile = application.laborer_profile
-                other_name = other_profile.display_name or other_profile.user.email
-            else:
-                other_profile = application.job.driver_profile
-                other_name = other_profile.company_name or other_profile.user.email
-            conversations.append(
-                {
-                    "application": application,
-                    "other_name": other_name,
-                    "other_profile": other_profile,
-                    "last_message": last_message,
-                    "sort_key": last_message.created_at if last_message else application.responded_at,
-                }
-            )
-        conversations.sort(key=lambda c: c["sort_key"], reverse=True)
-        return render(request, self.template_name, {"conversations": conversations})
-
-
-def get_job_application_for_user(request, app_pk):
-    application = get_object_or_404(
-        JobApplication.objects.select_related("job", "job__driver_profile__user", "laborer_profile__user"),
-        pk=app_pk,
-        status=JobApplication.Status.ACCEPTED,
+def get_conversation_for_user(request, conversation_pk):
+    conversation = get_object_or_404(
+        Conversation.objects.select_related("driver_profile__user", "laborer_profile__user"),
+        pk=conversation_pk,
     )
     user = request.user
-    is_driver = application.job.driver_profile.user_id == user.id
-    is_laborer = application.laborer_profile.user_id == user.id
+    is_driver = conversation.driver_profile.user_id == user.id
+    is_laborer = conversation.laborer_profile.user_id == user.id
     if not (is_driver or is_laborer or user.is_superuser):
         raise Http404
-    return application
+    return conversation
 
 
-def get_connection_for_user(request, connection_pk):
-    connection = get_object_or_404(
-        Connection.objects.select_related("driver_profile__user", "laborer_profile__user"),
-        pk=connection_pk,
-    )
-    user = request.user
-    is_driver = connection.driver_profile.user_id == user.id
-    is_laborer = connection.laborer_profile.user_id == user.id
-    if not (is_driver or is_laborer or user.is_superuser):
-        raise Http404
-    return connection
-
-
-def notify_new_message(recipient, sender_display, url):
-    Notification.objects.create(
-        recipient=recipient, message=f"New message from {sender_display}.", url=url
-    )
-
-
-def serialize_message(message, request_user):
+def serialize_conversation_message(message, request_user):
     return {
         "id": message.pk,
-        "is_self": message.sender_id == request_user.id,
-        "sender_email": message.sender.email,
+        "is_system": message.is_system,
+        "is_self": bool(message.sender_id) and message.sender_id == request_user.id,
+        "sender_email": message.sender.email if message.sender else None,
         "body": message.body,
         "created_at": message.created_at.isoformat(),
     }
 
 
-class MessageThreadView(LoginRequiredMixin, View):
-    template_name = "jobs/message_thread.html"
-
-    def get_application(self, request, app_pk):
-        return get_job_application_for_user(request, app_pk)
-
-    def get(self, request, app_pk):
-        application = self.get_application(request, app_pk)
-        form = MessageForm()
-        thread = application.messages.select_related("sender")
-        return render(
-            request, self.template_name, {"application": application, "form": form, "thread": thread}
-        )
-
-    def post(self, request, app_pk):
-        application = self.get_application(request, app_pk)
-        form = MessageForm(request.POST)
-        if form.is_valid():
-            message = form.save(commit=False)
-            message.application = application
-            message.sender = request.user
-            message.save()
-            return redirect("jobs:messages", app_pk=app_pk)
-        thread = application.messages.select_related("sender")
-        return render(
-            request, self.template_name, {"application": application, "form": form, "thread": thread}
-        )
-
-
-class FriendMessageThreadView(LoginRequiredMixin, View):
-    template_name = "jobs/friend_message_thread.html"
-
-    def get_connection(self, request, connection_pk):
-        return get_connection_for_user(request, connection_pk)
-
-    def get(self, request, connection_pk):
-        connection = self.get_connection(request, connection_pk)
-        form = FriendMessageForm()
-        thread = connection.messages.select_related("sender")
-        return render(
-            request, self.template_name, {"connection": connection, "form": form, "thread": thread}
-        )
-
-    def post(self, request, connection_pk):
-        connection = self.get_connection(request, connection_pk)
-        form = FriendMessageForm(request.POST)
-        if form.is_valid():
-            message = form.save(commit=False)
-            message.connection = connection
-            message.sender = request.user
-            message.save()
-            is_sender_driver = connection.driver_profile.user_id == request.user.id
-            recipient = (
-                connection.laborer_profile.user if is_sender_driver else connection.driver_profile.user
-            )
-            sender_display = (
-                str(connection.driver_profile) if is_sender_driver else str(connection.laborer_profile)
-            )
-            notify_new_message(
-                recipient, sender_display, reverse("jobs:friend_messages", args=[connection.pk])
-            )
-            return redirect("jobs:friend_messages", connection_pk=connection_pk)
-        thread = connection.messages.select_related("sender")
-        return render(
-            request, self.template_name, {"connection": connection, "form": form, "thread": thread}
-        )
-
-
-def serialize_conversation(conv_type, obj_id, other_profile, other_name, subtitle, last_message, fallback_time, unread_count):
-    timestamp = last_message.created_at if last_message else fallback_time
+def serialize_conversation_row(conversation, other_profile, other_name, is_friend, has_job, last_message, unread_count):
+    timestamp = last_message.created_at if last_message else conversation.created_at
     return {
-        "type": conv_type,
-        "id": obj_id,
+        "id": conversation.pk,
         "other_name": other_name,
         "avatar_url": other_profile.profile_picture.url if other_profile.profile_picture else None,
         "avatar_color": compute_avatar_color(other_profile.pk),
         "avatar_initial": compute_avatar_initial(other_name),
-        "subtitle": subtitle,
+        "is_friend": is_friend,
+        "has_job": has_job,
         "last_message": last_message.body if last_message else None,
-        "last_message_at": timestamp.isoformat() if timestamp else None,
+        "last_message_at": timestamp.isoformat(),
         "unread_count": unread_count,
     }
 
@@ -504,159 +541,192 @@ def serialize_conversation(conv_type, obj_id, other_profile, other_name, subtitl
 class MessageUnreadCountAPIView(LoginRequiredMixin, View):
     def get(self, request):
         user = request.user
-        job_count = (
-            Message.objects.filter(
-                Q(application__job__driver_profile__user=user) | Q(application__laborer_profile__user=user)
+        count = (
+            ConversationMessage.objects.filter(
+                Q(conversation__driver_profile__user=user) | Q(conversation__laborer_profile__user=user)
             )
             .exclude(sender=user)
             .filter(is_read=False)
             .count()
         )
-        friend_count = (
-            FriendMessage.objects.filter(
-                Q(connection__driver_profile__user=user) | Q(connection__laborer_profile__user=user)
-            )
-            .exclude(sender=user)
-            .filter(is_read=False)
-            .count()
-        )
-        return JsonResponse({"count": job_count + friend_count})
+        return JsonResponse({"count": count})
 
 
 class ConversationListAPIView(LoginRequiredMixin, View):
     def get(self, request):
         user = request.user
-        conversations = []
+        today = timezone.now().date()
+        rows = []
 
         if user.role == User.Role.DRIVER and hasattr(user, "driver_profile"):
-            applications = JobApplication.objects.filter(
-                job__driver_profile=user.driver_profile, status=JobApplication.Status.ACCEPTED
-            ).select_related("job", "job__county", "laborer_profile", "laborer_profile__user")
-            for application in applications:
-                other_profile = application.laborer_profile
+            profile = user.driver_profile
+            conversations_qs = Conversation.objects.filter(driver_profile=profile).select_related(
+                "laborer_profile", "laborer_profile__user"
+            )
+            friend_ids = set(
+                Connection.objects.filter(
+                    driver_profile=profile, status=Connection.Status.ACCEPTED
+                ).values_list("laborer_profile_id", flat=True)
+            )
+            job_ids = set(
+                JobApplication.objects.filter(
+                    job__driver_profile=profile,
+                    status=JobApplication.Status.ACCEPTED,
+                    job__status=Job.Status.OPEN,
+                    job__job_date__gte=today,
+                ).values_list("laborer_profile_id", flat=True)
+            )
+            for conversation in conversations_qs:
+                other_profile = conversation.laborer_profile
                 other_name = other_profile.display_name or other_profile.user.email
-                last_message = application.messages.order_by("-created_at").first()
-                unread = application.messages.filter(is_read=False).exclude(sender=user).count()
-                conversations.append(
-                    serialize_conversation(
-                        "job",
-                        application.pk,
+                last_message = conversation.messages.order_by("-created_at").first()
+                unread = conversation.messages.filter(is_read=False).exclude(sender=user).count()
+                rows.append(
+                    serialize_conversation_row(
+                        conversation,
                         other_profile,
                         other_name,
-                        f"{application.job.get_job_type_display()} · {application.job.county.name}, {application.job.county.state}",
+                        other_profile.pk in friend_ids,
+                        other_profile.pk in job_ids,
                         last_message,
-                        application.responded_at,
                         unread,
                     )
                 )
         elif user.role == User.Role.LABORER and hasattr(user, "laborer_profile"):
-            applications = JobApplication.objects.filter(
-                laborer_profile=user.laborer_profile, status=JobApplication.Status.ACCEPTED
-            ).select_related("job", "job__county", "job__driver_profile", "job__driver_profile__user")
-            for application in applications:
-                other_profile = application.job.driver_profile
+            profile = user.laborer_profile
+            conversations_qs = Conversation.objects.filter(laborer_profile=profile).select_related(
+                "driver_profile", "driver_profile__user"
+            )
+            friend_ids = set(
+                Connection.objects.filter(
+                    laborer_profile=profile, status=Connection.Status.ACCEPTED
+                ).values_list("driver_profile_id", flat=True)
+            )
+            job_ids = set(
+                JobApplication.objects.filter(
+                    laborer_profile=profile,
+                    status=JobApplication.Status.ACCEPTED,
+                    job__status=Job.Status.OPEN,
+                    job__job_date__gte=today,
+                ).values_list("job__driver_profile_id", flat=True)
+            )
+            for conversation in conversations_qs:
+                other_profile = conversation.driver_profile
                 other_name = other_profile.company_name or other_profile.user.email
-                last_message = application.messages.order_by("-created_at").first()
-                unread = application.messages.filter(is_read=False).exclude(sender=user).count()
-                conversations.append(
-                    serialize_conversation(
-                        "job",
-                        application.pk,
+                last_message = conversation.messages.order_by("-created_at").first()
+                unread = conversation.messages.filter(is_read=False).exclude(sender=user).count()
+                rows.append(
+                    serialize_conversation_row(
+                        conversation,
                         other_profile,
                         other_name,
-                        f"{application.job.get_job_type_display()} · {application.job.county.name}, {application.job.county.state}",
+                        other_profile.pk in friend_ids,
+                        other_profile.pk in job_ids,
                         last_message,
-                        application.responded_at,
                         unread,
                     )
                 )
 
-        if hasattr(user, "driver_profile"):
-            connections = Connection.objects.filter(driver_profile=user.driver_profile).select_related(
-                "laborer_profile", "laborer_profile__user"
-            )
-            for connection in connections:
-                other_profile = connection.laborer_profile
-                other_name = other_profile.display_name or other_profile.user.email
-                last_message = connection.messages.order_by("-created_at").first()
-                unread = connection.messages.filter(is_read=False).exclude(sender=user).count()
-                conversations.append(
-                    serialize_conversation(
-                        "friend", connection.pk, other_profile, other_name, "Friend",
-                        last_message, connection.created_at, unread,
-                    )
-                )
-        elif hasattr(user, "laborer_profile"):
-            connections = Connection.objects.filter(laborer_profile=user.laborer_profile).select_related(
-                "driver_profile", "driver_profile__user"
-            )
-            for connection in connections:
-                other_profile = connection.driver_profile
-                other_name = other_profile.company_name or other_profile.user.email
-                last_message = connection.messages.order_by("-created_at").first()
-                unread = connection.messages.filter(is_read=False).exclude(sender=user).count()
-                conversations.append(
-                    serialize_conversation(
-                        "friend", connection.pk, other_profile, other_name, "Friend",
-                        last_message, connection.created_at, unread,
-                    )
-                )
-
-        conversations.sort(key=lambda c: c["last_message_at"] or "", reverse=True)
-        return JsonResponse({"conversations": conversations})
+        rows.sort(key=lambda c: c["last_message_at"], reverse=True)
+        return JsonResponse({"conversations": rows})
 
 
-class JobMessageThreadAPIView(LoginRequiredMixin, View):
-    def get(self, request, app_pk):
-        application = get_job_application_for_user(request, app_pk)
-        application.messages.filter(is_read=False).exclude(sender=request.user).update(is_read=True)
-        thread = application.messages.select_related("sender")
-        return JsonResponse({"messages": [serialize_message(m, request.user) for m in thread]})
+class FriendSearchAPIView(LoginRequiredMixin, View):
+    def get(self, request):
+        user = request.user
+        query = request.GET.get("q", "").strip().lower()
+        results = []
+        if query:
+            if user.role == User.Role.DRIVER and hasattr(user, "driver_profile"):
+                connections = Connection.objects.filter(
+                    driver_profile=user.driver_profile, status=Connection.Status.ACCEPTED
+                ).select_related("laborer_profile", "laborer_profile__user")
+                for connection in connections:
+                    profile = connection.laborer_profile
+                    name = profile.display_name or profile.user.email
+                    if query in name.lower():
+                        results.append(
+                            {
+                                "other_profile_id": profile.pk,
+                                "other_name": name,
+                                "avatar_url": profile.profile_picture.url if profile.profile_picture else None,
+                                "avatar_color": compute_avatar_color(profile.pk),
+                                "avatar_initial": compute_avatar_initial(name),
+                            }
+                        )
+            elif user.role == User.Role.LABORER and hasattr(user, "laborer_profile"):
+                connections = Connection.objects.filter(
+                    laborer_profile=user.laborer_profile, status=Connection.Status.ACCEPTED
+                ).select_related("driver_profile", "driver_profile__user")
+                for connection in connections:
+                    profile = connection.driver_profile
+                    name = profile.company_name or profile.user.email
+                    if query in name.lower():
+                        results.append(
+                            {
+                                "other_profile_id": profile.pk,
+                                "other_name": name,
+                                "avatar_url": profile.profile_picture.url if profile.profile_picture else None,
+                                "avatar_color": compute_avatar_color(profile.pk),
+                                "avatar_initial": compute_avatar_initial(name),
+                            }
+                        )
+        return JsonResponse({"results": results[:10]})
 
-    def post(self, request, app_pk):
-        application = get_job_application_for_user(request, app_pk)
-        form = MessageForm(request.POST)
+
+class ConversationStartAPIView(LoginRequiredMixin, View):
+    def post(self, request):
+        user = request.user
+        other_profile_id = request.POST.get("other_profile_id")
+        if not other_profile_id:
+            return JsonResponse({"error": "other_profile_id is required"}, status=400)
+        if user.role == User.Role.DRIVER and hasattr(user, "driver_profile"):
+            other_profile = get_object_or_404(LaborerProfile, pk=other_profile_id)
+            conversation = get_or_create_conversation(user.driver_profile, other_profile)
+            other_name = other_profile.display_name or other_profile.user.email
+        elif user.role == User.Role.LABORER and hasattr(user, "laborer_profile"):
+            other_profile = get_object_or_404(DriverProfile, pk=other_profile_id)
+            conversation = get_or_create_conversation(other_profile, user.laborer_profile)
+            other_name = other_profile.company_name or other_profile.user.email
+        else:
+            raise Http404
+        return JsonResponse(
+            {
+                "id": conversation.pk,
+                "other_name": other_name,
+                "avatar_url": other_profile.profile_picture.url if other_profile.profile_picture else None,
+                "avatar_color": compute_avatar_color(other_profile.pk),
+                "avatar_initial": compute_avatar_initial(other_name),
+            }
+        )
+
+
+class ConversationThreadAPIView(LoginRequiredMixin, View):
+    def get(self, request, conversation_pk):
+        conversation = get_conversation_for_user(request, conversation_pk)
+        conversation.messages.filter(is_read=False).exclude(sender=request.user).update(is_read=True)
+        thread = conversation.messages.select_related("sender")
+        return JsonResponse(
+            {"messages": [serialize_conversation_message(m, request.user) for m in thread]}
+        )
+
+    def post(self, request, conversation_pk):
+        conversation = get_conversation_for_user(request, conversation_pk)
+        form = ConversationMessageForm(request.POST)
         if not form.is_valid():
             return JsonResponse({"errors": form.errors}, status=400)
         message = form.save(commit=False)
-        message.application = application
+        message.conversation = conversation
         message.sender = request.user
         message.save()
-        is_sender_driver = application.job.driver_profile.user_id == request.user.id
+        is_sender_driver = conversation.driver_profile.user_id == request.user.id
         recipient = (
-            application.laborer_profile.user if is_sender_driver else application.job.driver_profile.user
+            conversation.laborer_profile.user if is_sender_driver else conversation.driver_profile.user
         )
         sender_display = (
-            str(application.job.driver_profile) if is_sender_driver else str(application.laborer_profile)
-        )
-        notify_new_message(recipient, sender_display, reverse("jobs:messages", args=[application.pk]))
-        return JsonResponse({"message": serialize_message(message, request.user)})
-
-
-class FriendMessageThreadAPIView(LoginRequiredMixin, View):
-    def get(self, request, connection_pk):
-        connection = get_connection_for_user(request, connection_pk)
-        connection.messages.filter(is_read=False).exclude(sender=request.user).update(is_read=True)
-        thread = connection.messages.select_related("sender")
-        return JsonResponse({"messages": [serialize_message(m, request.user) for m in thread]})
-
-    def post(self, request, connection_pk):
-        connection = get_connection_for_user(request, connection_pk)
-        form = FriendMessageForm(request.POST)
-        if not form.is_valid():
-            return JsonResponse({"errors": form.errors}, status=400)
-        message = form.save(commit=False)
-        message.connection = connection
-        message.sender = request.user
-        message.save()
-        is_sender_driver = connection.driver_profile.user_id == request.user.id
-        recipient = (
-            connection.laborer_profile.user if is_sender_driver else connection.driver_profile.user
-        )
-        sender_display = (
-            str(connection.driver_profile) if is_sender_driver else str(connection.laborer_profile)
+            str(conversation.driver_profile) if is_sender_driver else str(conversation.laborer_profile)
         )
         notify_new_message(
-            recipient, sender_display, reverse("jobs:friend_messages", args=[connection.pk])
+            recipient, sender_display, reverse("accounts:dashboard") + f"?open_chat={conversation.pk}"
         )
-        return JsonResponse({"message": serialize_message(message, request.user)})
+        return JsonResponse({"message": serialize_conversation_message(message, request.user)})

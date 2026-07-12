@@ -8,7 +8,7 @@ def nav_context(request):
 
     context = {
         "unread_notification_count": user.notifications.filter(is_read=False).count(),
-        "recent_notifications": user.notifications.all()[:5],
+        "recent_notifications": user.notifications.select_related("related_connection").all()[:5],
     }
 
     name_source = None

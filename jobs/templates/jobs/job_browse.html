@@ -45,8 +45,10 @@
           <p>{{ job.county.name }}, {{ job.county.state }}{% if job.city %} &middot; {{ job.city }}{% endif %}</p>
           <p>
             {{ job.driver_profile.company_name|default:job.driver_profile.user.email }}
-            {% if job.driver_profile.pk in my_friend_driver_ids %}
+            {% if job.driver_friend_status == "accepted" %}
               <span class="county-slot-badge">FRIEND</span>
+            {% elif job.driver_friend_status == "pending" %}
+              <span class="county-slot-badge county-slot-badge--muted">PENDING</span>
             {% else %}
               <form method="post" action="{% url 'accounts:add_driver_friend' job.driver_profile.pk %}" class="inline-friend-form">
                 {% csrf_token %}
@@ -63,7 +65,7 @@
             <span class="county-slot-badge county-slot-badge--muted">{{ job.my_application.get_status_display|upper }}</span>
             {% if job.my_application.status == "accepted" %}
               <div class="job-actions">
-                <a class="btn-primary btn-inline" href="{% url 'jobs:messages' job.my_application.pk %}">Message &rarr;</a>
+                <button type="button" class="btn-primary btn-inline" data-open-conversation="{{ job.driver_profile.pk }}">Message &rarr;</button>
               </div>
             {% endif %}
           {% else %}

@@ -48,6 +48,7 @@
               <strong>{{ application.laborer_profile.display_name|default:application.laborer_profile.user.email }}</strong>
               <span class="county-slot-badge{% if application.status != "accepted" %} county-slot-badge--muted{% endif %}">{{ application.get_status_display|upper }}</span>
             </div>
+            <p><a class="helper-link" href="{% url 'accounts:laborer_profile_detail' application.laborer_profile.pk %}">View Profile &rarr;</a></p>
             <p>
               <span class="county-slot-badge county-slot-badge--muted">{{ application.get_source_display|upper }}</span>
             </p>
@@ -69,7 +70,7 @@
               <p class="helper-link">Waiting for them to respond to your invite.</p>
             {% elif application.status == "accepted" %}
               <div class="job-actions">
-                <a class="btn-primary btn-inline" href="{% url 'jobs:messages' application.pk %}">Message &rarr;</a>
+                <button type="button" class="btn-primary btn-inline" data-open-conversation="{{ application.laborer_profile.pk }}">Message &rarr;</button>
               </div>
             {% endif %}
           </div>
