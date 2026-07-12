@@ -1,8 +1,18 @@
 from django import forms
 from django.contrib.auth import password_validation
+from django.contrib.auth.forms import AuthenticationForm
 
 from .constants import US_STATE_CHOICES
 from .models import DriverProfile, LaborerProfile, User
+
+
+class NoAutofocusAuthenticationForm(AuthenticationForm):
+    """Autofocus on the username field blocks the soft keyboard from
+    reopening on tap in Android WebViews (Capacitor app)."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["username"].widget.attrs.pop("autofocus", None)
 
 
 class BaseSignUpForm(forms.ModelForm):

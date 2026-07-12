@@ -10,7 +10,13 @@ from django.utils.html import format_html
 from django.views import View
 from django.views.generic import CreateView, DetailView, ListView, TemplateView, UpdateView
 
-from .forms import DriverProfileEditForm, DriverSignUpForm, LaborerProfileEditForm, LaborerSignUpForm
+from .forms import (
+    DriverProfileEditForm,
+    DriverSignUpForm,
+    LaborerProfileEditForm,
+    LaborerSignUpForm,
+    NoAutofocusAuthenticationForm,
+)
 from .models import Connection, DriverProfile, LaborerProfile, Notification, User
 
 
@@ -29,6 +35,7 @@ class RoleChoiceView(TemplateView):
 
 class CustomLoginView(LoginView):
     template_name = "accounts/login.html"
+    form_class = NoAutofocusAuthenticationForm
 
 
 class DriverSignUpView(CreateView):
