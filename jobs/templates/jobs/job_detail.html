@@ -50,7 +50,7 @@
             </div>
             <p><a class="helper-link" href="{% url 'accounts:laborer_profile_detail' application.laborer_profile.pk %}">View Profile &rarr;</a></p>
             <p>
-              <span class="county-slot-badge county-slot-badge--muted">{{ application.get_source_display|upper }}</span>
+              <span class="county-slot-badge county-slot-badge--muted">VIA {{ application.get_source_display|upper }}</span>
             </p>
             <p>{{ application.laborer_profile.city }}{% if application.laborer_profile.city %}, {% endif %}{{ application.laborer_profile.state }}</p>
             <p>{{ application.laborer_profile.phone_number }}</p>
