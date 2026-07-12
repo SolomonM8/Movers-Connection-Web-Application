@@ -1211,6 +1211,28 @@
     }
     .message-meta { margin: 0 0 0.2rem; font-size: 0.75rem; color: var(--color-muted); }
 
+    .board-feed { display: flex; flex-direction: column; gap: 1rem; }
+    .board-post { border: 1px solid var(--color-border); border-radius: 12px; padding: 1rem 1.1rem; background: #fff; }
+    .board-post-header { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.5rem; }
+    .board-post-meta { display: flex; flex-direction: column; }
+    .board-post-time { font-size: 0.78rem; color: var(--color-muted); }
+    .board-post-body { margin: 0.5rem 0; white-space: pre-wrap; }
+
+    .board-image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.4rem; margin: 0.6rem 0; }
+    .board-image-grid img { width: 100%; height: 140px; object-fit: cover; border-radius: 8px; border: 1px solid var(--color-border); }
+
+    .board-job-links { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.4rem 0; }
+
+    .board-post-footer { display: flex; align-items: center; gap: 0.9rem; margin-top: 0.6rem; font-size: 0.85rem; color: var(--color-muted); }
+    .board-post-footer a { color: var(--color-primary-dark); text-decoration: none; }
+
+    .board-comment-list { display: flex; flex-direction: column; gap: 0.6rem; margin: 1rem 0; }
+    .board-comment { display: flex; gap: 0.6rem; padding: 0.6rem 0.8rem; background: var(--color-primary-light); border-radius: 10px; }
+    .board-comment-body { flex: 1; min-width: 0; }
+    .board-comment-meta { font-size: 0.75rem; color: var(--color-muted); margin: 0 0 0.15rem; }
+
+    .board-pagination { display: flex; justify-content: center; gap: 0.6rem; margin-top: 1rem; }
+
     .msg-widget-toggle {
       position: fixed;
       right: 1.1rem;
@@ -1896,6 +1918,7 @@
         <a href="{% url 'accounts:dashboard' %}" class="nav-link-btn{% if url_name == 'driver_dashboard' or url_name == 'laborer_dashboard' or url_name == 'admin_dashboard' %} active{% endif %}" aria-label="Dashboard">{% include "includes/icon-dashboard.svg" %}<span>Dashboard</span></a>
         <a href="{% url 'coverage:map' %}" class="nav-link-btn{% if url_name == 'map' %} active{% endif %}" aria-label="Coverage Map">{% include "includes/icon-target.svg" %}<span>Coverage Map</span></a>
         <a href="{% url 'accounts:friends' %}" class="nav-link-btn{% if url_name == 'friends' %} active{% endif %}" aria-label="Friends">{% include "includes/icon-friends.svg" %}<span>Friends</span></a>
+        <a href="{% url 'board:feed' %}" class="nav-link-btn{% if request.resolver_match.app_name == 'board' %} active{% endif %}" aria-label="Community">{% include "includes/icon-board.svg" %}<span>Community</span></a>
         <button type="button" id="nav-messages-toggle" class="nav-link-btn" aria-label="Messages">{% include "includes/icon-message.svg" %}<span>Messages</span></button>
         <div class="notification-bell">
           <button type="button" id="notification-toggle" class="nav-icon-btn" aria-haspopup="true" aria-expanded="false" title="Notifications" aria-label="Notifications">
@@ -1987,6 +2010,7 @@
       <a href="{% url 'accounts:dashboard' %}" class="nav-drawer-link">{% include "includes/icon-dashboard.svg" %} Dashboard</a>
       <a href="{% url 'coverage:map' %}" class="nav-drawer-link">{% include "includes/icon-target.svg" %} Coverage Map</a>
       <a href="{% url 'accounts:friends' %}" class="nav-drawer-link">{% include "includes/icon-friends.svg" %} Friends</a>
+      <a href="{% url 'board:feed' %}" class="nav-drawer-link">{% include "includes/icon-board.svg" %} Community</a>
       <button type="button" id="nav-drawer-messages-toggle" class="nav-drawer-link">{% include "includes/icon-message.svg" %} Messages</button>
       <a href="{% url 'accounts:notifications' %}" class="nav-drawer-link">
         {% include "includes/icon-bell.svg" %} Notifications

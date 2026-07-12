@@ -275,6 +275,14 @@ def _display_name_for_user(user):
     return user.email
 
 
+def _profile_for_user(user):
+    if hasattr(user, "driver_profile"):
+        return user.driver_profile
+    if hasattr(user, "laborer_profile"):
+        return user.laborer_profile
+    return None
+
+
 def _start_friend_conversation(driver_profile, laborer_profile):
     from jobs.views import add_system_message, get_or_create_conversation
 

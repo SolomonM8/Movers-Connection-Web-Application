@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load avatar_tags %}
+{% block title %}Community - Movers Connection{% endblock %}
+{% block main %}
+<main class="wide-card">
+  <div class="dashboard-section-header">
+    <h1>Community</h1>
+    <a class="btn-primary btn-inline" href="{% url 'board:create' %}">+ New Post</a>
+  </div>
+
+  {% if posts %}
+    <div class="board-feed">
+      {% for post in posts %}
+        <div class="board-post">
+          <div class="board-post-header">
+            {% avatar post.author_profile "md" %}
+            <div class="board-post-meta">
+              <strong>{{ post.author_display_name }}</strong>
+              <span class="board-post-time">{{ post.created_at|date:"M j, Y g:i A" }}</span>
+            </div>
+          </div>
+
+          {% if post.body %}<p class="board-post-body">{{ post.body|linebreaksbr }}</p>{% endif %}
+
+          {% if post.images.all %}
+            <div class="board-image-grid">
+              {% for image in post.images.all %}
+                <img src="{{ image.image.url }}" alt="">
+              {% endfor %}
+            </div>
+          {% endif %}
+
+          {% if post.jobs.all %}
+            <div class="board-job-links">
+              {% for job in post.jobs.all %}
+                <a class="county-slot-badge" href="{% url 'jobs:detail' job.pk %}">JOB: {{ job.get_job_type_display }} &mdash; {{ job.job_date|date:"M j" }}</a>
+              {% endfor %}
+            </div>
+          {% endif %}
+
+          <div class="board-post-footer">
+            <a href="{% url 'board:detail' post.pk %}">{{ post.comment_count }} comment{{ post.comment_count|pluralize }}</a>
+            {% if post.author_id == user.id %}
+              <form method="post" action="{% url 'board:delete' post.pk %}" onsubmit="return confirm('Delete this post? This cannot be undone.');">
+                {% csrf_token %}
+                <button type="submit" class="btn-danger btn-inline">Delete</button>
+              </form>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    {% if is_paginated %}
+      <div class="board-pagination">
+        {% if page_obj.has_previous %}<a class="btn-secondary btn-inline" href="?page={{ page_obj.previous_page_number }}">&larr; Newer</a>{% endif %}
+        {% if page_obj.has_next %}<a class="btn-secondary btn-inline" href="?page={{ page_obj.next_page_number }}">Older &rarr;</a>{% endif %}
+      </div>
+    {% endif %}
+  {% else %}
+    <p>No posts yet. Be the first to share something with the community.</p>
+  {% endif %}
+</main>
+{% endblock %}

@@ -16,6 +16,7 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),
     path('coverage/', include('coverage.urls')),
     path('jobs/', include('jobs.urls')),
+    path('board/', include('board.urls')),
     path('', LandingView.as_view(), name='landing'),
 ]
 

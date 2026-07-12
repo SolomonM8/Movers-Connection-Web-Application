@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}New Post - Movers Connection{% endblock %}
+{% block main %}
+<main class="wide-card">
+  <h1>New Post</h1>
+
+  {% if form.non_field_errors %}<p class="field-error">{{ form.non_field_errors|striptags }}</p>{% endif %}
+
+  <form method="post" enctype="multipart/form-data" id="post-form">
+    {% csrf_token %}
+    <label for="{{ form.body.id_for_label }}">What's on your mind?</label>
+    {{ form.body }}
+    {{ form.body.errors }}
+
+    <label for="post-images">Photos (optional, up to 6)</label>
+    <input type="file" id="post-images" name="images" multiple accept="image/jpeg,image/png,image/webp">
+
+    {% if form.jobs %}
+      <label>Link one or more of your open jobs (optional)</label>
+      <div class="checkbox-group">
+        {% for checkbox in form.jobs %}
+          <label class="checkbox-label">{{ checkbox.tag }} {{ checkbox.choice_label }}</label>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <button type="submit">Post</button>
+  </form>
+  <p class="helper-link"><a href="{% url 'board:feed' %}">&larr; Back to Community</a></p>
+</main>
+{% endblock %}
