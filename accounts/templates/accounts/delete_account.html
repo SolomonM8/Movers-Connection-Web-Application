@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Delete Account - Movers Connection{% endblock %}
+{% block content %}
+<div class="form-header">
+  <h1>Delete Your Account</h1>
+</div>
+<p>This permanently deletes your profile, job history, messages, and friend connections. This cannot be undone.</p>
+<form method="post">
+  {% csrf_token %}
+  <p>
+    <label for="delete-password">Confirm your password:</label>
+    <input type="password" name="password" id="delete-password" autocomplete="current-password" required>
+  </p>
+  <button type="submit" class="btn-danger">Permanently Delete My Account</button>
+</form>
+<p class="helper-link"><a href="{% url 'accounts:dashboard' %}">&larr; Back to dashboard</a></p>
+{% endblock %}

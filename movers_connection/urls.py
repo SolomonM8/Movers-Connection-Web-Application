@@ -8,6 +8,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
+from django.views.generic import TemplateView
 
 from accounts.views import LandingView
 
@@ -17,6 +18,7 @@ urlpatterns = [
     path('coverage/', include('coverage.urls')),
     path('jobs/', include('jobs.urls')),
     path('board/', include('board.urls')),
+    path('privacy/', TemplateView.as_view(template_name='privacy_policy.html'), name='privacy_policy'),
     path('', LandingView.as_view(), name='landing'),
 ]
 

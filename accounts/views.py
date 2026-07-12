@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import LoginView
 from django.http import JsonResponse
@@ -210,6 +210,22 @@ class DriverProfileEditView(RoleRequiredMixin, UpdateView):
     def form_valid(self, form):
         messages.success(self.request, "Your account information has been updated.")
         return super().form_valid(form)
+
+
+class AccountDeleteView(LoginRequiredMixin, TemplateView):
+    template_name = "accounts/delete_account.html"
+
+    def post(self, request, *args, **kwargs):
+        password = request.POST.get("password", "")
+        if not request.user.check_password(password):
+            messages.error(request, "That password isn't right. Your account was not deleted.")
+            return redirect("accounts:delete_account")
+
+        user = request.user
+        logout(request)
+        user.delete()
+        messages.success(request, "Your account has been permanently deleted.")
+        return redirect("landing")
 
 
 class AdminDashboardView(RoleRequiredMixin, TemplateView):
