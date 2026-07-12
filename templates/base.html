@@ -980,14 +980,34 @@
       margin-top: -10px;
     }
 
-    .county-panel {
+    .county-panel-backdrop {
       position: fixed;
       inset: 0;
-      z-index: 50;
-      background: #fff;
-      padding: 4rem 1.5rem 1.5rem;
-      overflow-y: auto;
+      background: rgba(16, 32, 58, 0.5);
+      z-index: 90;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
     }
+    .county-panel-backdrop.open { opacity: 1; pointer-events: auto; }
+
+    .county-panel {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: min(85vw, 360px);
+      z-index: 100;
+      background: #fff;
+      padding: 3.5rem 1.25rem 1.25rem;
+      box-shadow: 8px 0 30px rgba(16, 32, 58, 0.3);
+      transform: translateX(-100%);
+      transition: transform 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .county-panel.open { transform: translateX(0); }
 
     .panel-close {
       position: absolute;
@@ -1009,16 +1029,31 @@
     }
     .panel-close:hover { background: var(--color-primary-light); }
 
-    .county-panel h3 { margin-top: 0; color: var(--color-text); }
+    .county-panel-title { flex-shrink: 0; }
+    .county-panel h3 { margin-top: 0; margin-bottom: 0.75rem; color: var(--color-text); }
+
+    .county-panel-content { flex: 1; min-height: 0; overflow-y: auto; }
+    .county-panel-loading { color: var(--color-muted); }
+    .county-panel-count {
+      margin: 0 0 0.75rem;
+      color: var(--color-muted);
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
 
     body.panel-open { overflow: hidden; }
 
+    .laborer-list { display: flex; flex-direction: column; gap: 0.75rem; }
+
     .laborer-card {
       border: 1px solid var(--color-border);
-      border-radius: 8px;
-      padding: 0.75rem 1rem;
-      margin-bottom: 0.6rem;
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      transition: box-shadow 0.15s ease, border-color 0.15s ease;
     }
+    .laborer-card:hover { box-shadow: 0 4px 14px rgba(22, 86, 214, 0.10); border-color: var(--color-primary); }
     .laborer-card p { margin: 0.15rem 0; color: var(--color-muted); font-size: 0.9rem; }
     .laborer-card-top { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.3rem; }
 
@@ -1255,6 +1290,8 @@
       flex-shrink: 0;
     }
     .msg-widget-header h3 { margin: 0; flex: 1; font-size: 1rem; color: var(--color-text); }
+    .msg-widget-header-avatar { display: flex; flex-shrink: 0; }
+    .msg-widget-header-avatar.hidden { display: none; }
     .msg-widget-back {
       background: transparent;
       border: none;
@@ -1411,19 +1448,26 @@
       .map-layout { flex-direction: row; }
       .map-container { flex: 1; min-width: 0; }
 
+      .county-panel-backdrop { display: none; }
+
       .county-panel {
         position: static;
-        inset: auto;
+        top: auto;
+        left: auto;
+        bottom: auto;
         z-index: auto;
         width: 320px;
         flex-shrink: 0;
         max-height: 630px;
-        overflow-y: auto;
         padding: 1.5rem;
         border: 1px solid var(--color-border);
         border-radius: 12px;
         box-shadow: 0 6px 20px rgba(22, 86, 214, 0.10);
+        transform: none;
+        transition: none;
+        display: none;
       }
+      .county-panel.open { display: flex; }
 
       .panel-close { display: none; }
       body.panel-open { overflow: auto; }
@@ -2055,6 +2099,7 @@
     <div id="msg-widget-panel" class="msg-widget-panel" aria-hidden="true">
       <div class="msg-widget-header">
         <button type="button" id="msg-widget-back" class="msg-widget-back hidden" aria-label="Back to conversations">&larr;</button>
+        <span id="msg-widget-header-avatar" class="msg-widget-header-avatar hidden"></span>
         <h3 id="msg-widget-title">Messages</h3>
         <button type="button" id="msg-widget-close" class="panel-close" aria-label="Close messages">&times;</button>
       </div>
@@ -2082,6 +2127,7 @@
         var msgClose = document.getElementById("msg-widget-close");
         var msgBack = document.getElementById("msg-widget-back");
         var msgTitle = document.getElementById("msg-widget-title");
+        var msgHeaderAvatar = document.getElementById("msg-widget-header-avatar");
         var msgBadge = document.getElementById("msg-widget-badge");
         var msgListView = document.getElementById("msg-widget-list-view");
         var msgList = document.getElementById("msg-widget-list");
@@ -2172,6 +2218,12 @@
                 conv.id +
                 '" data-name="' +
                 msgEscapeHtml(conv.other_name) +
+                '" data-avatar-url="' +
+                msgEscapeHtml(conv.avatar_url || "") +
+                '" data-avatar-color="' +
+                msgEscapeHtml(conv.avatar_color || "") +
+                '" data-avatar-initial="' +
+                msgEscapeHtml(conv.avatar_initial || "") +
                 '">' +
                 avatarHtml(conv) +
                 '<span class="msg-widget-convo-info"><span class="msg-widget-convo-name-row">' +
@@ -2189,7 +2241,11 @@
             .join("");
           Array.prototype.forEach.call(msgList.querySelectorAll(".msg-widget-convo"), function (btn) {
             btn.addEventListener("click", function () {
-              openThread(btn.dataset.id, btn.dataset.name);
+              openThread(btn.dataset.id, btn.dataset.name, {
+                avatar_url: btn.dataset.avatarUrl,
+                avatar_color: btn.dataset.avatarColor,
+                avatar_initial: btn.dataset.avatarInitial,
+              });
             });
           });
         }
@@ -2250,7 +2306,7 @@
             body: params.toString(),
           })
             .then(function (r) { return r.json(); })
-            .then(function (data) { openThread(data.id, data.other_name); })
+            .then(function (data) { openThread(data.id, data.other_name, data); })
             .catch(function () {});
         }
 
@@ -2296,6 +2352,8 @@
         function showListView() {
           currentThread = null;
           msgTitle.textContent = "Messages";
+          msgHeaderAvatar.innerHTML = "";
+          msgHeaderAvatar.classList.add("hidden");
           msgBack.classList.add("hidden");
           msgListView.classList.remove("hidden");
           msgThreadEl.classList.add("hidden");
@@ -2305,9 +2363,16 @@
           listPollTimer = setInterval(fetchList, 25000);
         }
 
-        function openThread(id, name) {
+        function openThread(id, name, avatar) {
           currentThread = id;
           msgTitle.textContent = name;
+          if (avatar && (avatar.avatar_url || avatar.avatar_initial)) {
+            msgHeaderAvatar.innerHTML = avatarHtml(avatar);
+            msgHeaderAvatar.classList.remove("hidden");
+          } else {
+            msgHeaderAvatar.innerHTML = "";
+            msgHeaderAvatar.classList.add("hidden");
+          }
           msgBack.classList.remove("hidden");
           msgListView.classList.add("hidden");
           msgThreadEl.classList.remove("hidden");
@@ -2460,7 +2525,7 @@
                 return String(c.id) === String(openChatId);
               })[0];
               if (match) {
-                openThread(match.id, match.other_name);
+                openThread(match.id, match.other_name, match);
               } else {
                 showListView();
               }

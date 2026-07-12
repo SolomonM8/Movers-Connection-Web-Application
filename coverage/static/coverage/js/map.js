@@ -16,6 +16,8 @@
   const backButton = document.getElementById("back-button");
   const statusEl = document.getElementById("map-status");
   const panel = document.getElementById("county-panel");
+  const panelBackdrop = document.getElementById("county-panel-backdrop");
+  const panelTitle = document.getElementById("county-panel-title");
   const panelContent = document.getElementById("county-panel-content");
   const panelClose = document.getElementById("panel-close");
   const zoomControls = document.getElementById("zoom-controls");
@@ -27,16 +29,19 @@
   const searchHintClose = document.getElementById("search-hint-close");
 
   function openPanel() {
-    panel.classList.remove("hidden");
+    panel.classList.add("open");
+    if (panelBackdrop) panelBackdrop.classList.add("open");
     document.body.classList.add("panel-open");
   }
 
   function closePanel() {
-    panel.classList.add("hidden");
+    panel.classList.remove("open");
+    if (panelBackdrop) panelBackdrop.classList.remove("open");
     document.body.classList.remove("panel-open");
   }
 
   panelClose.addEventListener("click", closePanel);
+  if (panelBackdrop) panelBackdrop.addEventListener("click", closePanel);
 
   const svg = d3.select(mapContainer).append("svg");
   const stateClipPath = svg.append("defs").append("clipPath").attr("id", "state-clip");
@@ -224,7 +229,7 @@
     roadClipGroup.attr("clip-path", null);
     roadClipGroup.selectAll("path.interstate").remove();
     drawStateLabels(statesFC.features);
-    drawCities(allCities.filter((c) => c.major), projection);
+    drawCities([], projection);
   }
 
   function drawState(abbr, stateFipsId) {
@@ -341,15 +346,15 @@
     const stateAbbrEsc = escapeHtml(info ? info.state : stateAbbr);
     const cityName = findRepresentativeCity(feature, stateAbbr);
     const cityLabel = cityName ? ` (${escapeHtml(cityName)})` : "";
-    const header = `<h3>${countyName}${cityLabel}, ${stateAbbrEsc}</h3>`;
+    if (panelTitle) panelTitle.innerHTML = `<h3>${countyName}${cityLabel}, ${stateAbbrEsc}</h3>`;
 
-    panelContent.innerHTML = `${header}<p>Loading labor groups&hellip;</p>`;
+    panelContent.innerHTML = `<p class="county-panel-loading">Loading labor groups&hellip;</p>`;
 
     fetch(`/coverage/api/counties/${fips}/laborers/`)
       .then((response) => response.json())
       .then((data) => {
         if (!data.laborers.length) {
-          panelContent.innerHTML = `${header}<p>No labor groups have registered coverage for this county yet.</p>`;
+          panelContent.innerHTML = `<p class="county-panel-loading">No labor groups have registered coverage for this county yet.</p>`;
           return;
         }
         const cards = data.laborers
@@ -394,11 +399,13 @@
             `;
           })
           .join("");
-        panelContent.innerHTML = `${header}${cards}`;
+        const count = data.laborers.length;
+        const countLabel = `${count} labor group${count === 1 ? "" : "s"} found`;
+        panelContent.innerHTML = `<p class="county-panel-count">${countLabel}</p><div class="laborer-list">${cards}</div>`;
         if (IS_DRIVER) bindAddFriendButtons();
       })
       .catch(() => {
-        panelContent.innerHTML = `${header}<p>Couldn't load labor groups for this county. Please try again.</p>`;
+        panelContent.innerHTML = `<p class="county-panel-loading">Couldn't load labor groups for this county. Please try again.</p>`;
       });
   }
 

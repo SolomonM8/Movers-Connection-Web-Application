@@ -7,6 +7,7 @@ from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
+from django.utils.html import format_html
 from django.views import View
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
@@ -33,6 +34,13 @@ def add_system_message(conversation, body):
 def notify_new_message(recipient, sender_display, url):
     Notification.objects.create(
         recipient=recipient, message=f"New message from {sender_display}.", url=url
+    )
+
+
+def message_cta_html(other_profile):
+    return format_html(
+        ' <button type="button" class="btn-secondary btn-inline" data-open-conversation="{}">Message them &rarr;</button>',
+        other_profile.pk,
     )
 
 
@@ -189,7 +197,14 @@ class ApplicationRespondView(DriverJobOwnerMixin, View):
                 ),
                 url=reverse("accounts:dashboard") + f"?open_chat={conversation.pk}",
             )
-            messages.success(request, f"Accepted {application.laborer_profile}.")
+            messages.success(
+                request,
+                format_html(
+                    "Accepted {}.{}",
+                    application.laborer_profile,
+                    message_cta_html(application.laborer_profile),
+                ),
+            )
         elif action == "decline":
             application.status = JobApplication.Status.DECLINED
             application.responded_at = timezone.now()
@@ -279,7 +294,13 @@ class InvitationRespondView(RoleRequiredMixin, View):
                 ),
                 url=reverse("accounts:dashboard") + f"?open_chat={conversation.pk}",
             )
-            messages.success(request, "Invitation accepted!")
+            messages.success(
+                request,
+                format_html(
+                    "Invitation accepted!{}",
+                    message_cta_html(job.driver_profile),
+                ),
+            )
         elif action == "decline":
             application.status = JobApplication.Status.DECLINED
             application.responded_at = timezone.now()

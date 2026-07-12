@@ -6,6 +6,7 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
+from django.utils.html import format_html
 from django.views import View
 from django.views.generic import CreateView, ListView, TemplateView, UpdateView
 
@@ -234,12 +235,27 @@ def _display_name_for_user(user):
     return user.email
 
 
+def _start_friend_conversation(driver_profile, laborer_profile):
+    from jobs.views import add_system_message, get_or_create_conversation
+
+    conversation = get_or_create_conversation(driver_profile, laborer_profile)
+    add_system_message(conversation, "You are now friends!")
+    return conversation
+
+
+def _open_chat_url(conversation):
+    return reverse("accounts:dashboard") + f"?open_chat={conversation.pk}"
+
+
 def _handle_friend_request(request, driver_profile, laborer_profile):
     connection = Connection.objects.filter(
         driver_profile=driver_profile, laborer_profile=laborer_profile
     ).first()
     other_user = (
         laborer_profile.user if request.user.id == driver_profile.user_id else driver_profile.user
+    )
+    other_profile = (
+        laborer_profile if request.user.id == driver_profile.user_id else driver_profile
     )
 
     if connection is None:
@@ -262,16 +278,22 @@ def _handle_friend_request(request, driver_profile, laborer_profile):
         messages.info(request, "Request already sent — waiting on them to respond.")
     else:
         # They'd already requested us first; adding them back counts as accepting.
+        from jobs.views import message_cta_html
+
         connection.status = Connection.Status.ACCEPTED
         connection.responded_at = timezone.now()
         connection.save(update_fields=["status", "responded_at"])
+        conversation = _start_friend_conversation(driver_profile, laborer_profile)
         if connection.requested_by_id:
             Notification.objects.create(
                 recipient=connection.requested_by,
                 message=f"{_display_name_for_user(request.user)} accepted your friend request.",
-                url=reverse("accounts:friends"),
+                url=_open_chat_url(conversation),
             )
-        messages.success(request, "You're now friends!")
+        messages.success(
+            request,
+            format_html("You're now friends!{}", message_cta_html(other_profile)),
+        )
     return connection
 
 
@@ -315,16 +337,25 @@ class AcceptFriendRequestView(RoleRequiredMixin, View):
         if connection.requested_by_id == user.id:
             messages.error(request, "You can't accept your own request.")
             return redirect(request.META.get("HTTP_REFERER") or reverse("accounts:friends"))
+        from jobs.views import message_cta_html
+
+        other_profile = (
+            connection.laborer_profile if user.role == User.Role.DRIVER else connection.driver_profile
+        )
         connection.status = Connection.Status.ACCEPTED
         connection.responded_at = timezone.now()
         connection.save(update_fields=["status", "responded_at"])
+        conversation = _start_friend_conversation(connection.driver_profile, connection.laborer_profile)
         if connection.requested_by_id:
             Notification.objects.create(
                 recipient=connection.requested_by,
                 message=f"{_display_name_for_user(user)} accepted your friend request.",
-                url=reverse("accounts:friends"),
+                url=_open_chat_url(conversation),
             )
-        messages.success(request, "Friend request accepted.")
+        messages.success(
+            request,
+            format_html("Friend request accepted.{}", message_cta_html(other_profile)),
+        )
         return redirect(request.META.get("HTTP_REFERER") or reverse("accounts:friends"))
 
 
