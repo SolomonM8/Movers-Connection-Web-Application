@@ -17,7 +17,7 @@ from .forms import (
     LaborerSignUpForm,
     NoAutofocusAuthenticationForm,
 )
-from .models import Connection, DriverProfile, LaborerProfile, Notification, User
+from .models import Connection, DeviceToken, DriverProfile, LaborerProfile, Notification, User
 
 
 class LandingView(TemplateView):
@@ -231,6 +231,18 @@ class AccountDeleteView(LoginRequiredMixin, TemplateView):
 class AdminDashboardView(RoleRequiredMixin, TemplateView):
     template_name = "accounts/admin_dashboard.html"
     allowed_roles = (User.Role.ADMIN,)
+
+
+class RegisterPushTokenView(LoginRequiredMixin, View):
+    def post(self, request):
+        token = request.POST.get("token", "").strip()
+        platform = request.POST.get("platform", "android").strip() or "android"
+        if not token:
+            return JsonResponse({"status": "error", "message": "Missing token"}, status=400)
+        DeviceToken.objects.update_or_create(
+            token=token, defaults={"user": request.user, "platform": platform}
+        )
+        return JsonResponse({"status": "ok"})
 
 
 class NotificationListView(LoginRequiredMixin, ListView):

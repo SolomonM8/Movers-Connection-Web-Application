@@ -18,6 +18,7 @@ urlpatterns = [
     path("dashboard/driver/edit/", views.DriverProfileEditView.as_view(), name="driver_profile_edit"),
     path("dashboard/admin/", views.AdminDashboardView.as_view(), name="admin_dashboard"),
     path("account/delete/", views.AccountDeleteView.as_view(), name="delete_account"),
+    path("push/register/", views.RegisterPushTokenView.as_view(), name="register_push_token"),
     path("laborer/<int:laborer_pk>/", views.LaborerProfileDetailView.as_view(), name="laborer_profile_detail"),
     path("notifications/", views.NotificationListView.as_view(), name="notifications"),
     path(

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "762926534001",
+    "project_id": "themoversconnection",
+    "storage_bucket": "themoversconnection.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:762926534001:android:2730caf140acc3ce927ad0",
+        "android_client_info": {
+          "package_name": "com.themoversconnection.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqujFsJNSfUzYakrc9k25VlfXzv5buFJQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

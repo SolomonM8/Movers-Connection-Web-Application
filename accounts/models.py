@@ -2,6 +2,8 @@ from django.conf import settings
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils import timezone
 
 from .constants import US_STATE_CHOICES
@@ -148,3 +150,24 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"{self.recipient}: {self.message}"
+
+
+class DeviceToken(models.Model):
+    """A push-notification token for one installed copy of the mobile app."""
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="device_tokens")
+    token = models.CharField(max_length=255, unique=True)
+    platform = models.CharField(max_length=20, default="android")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user} ({self.platform})"
+
+
+@receiver(post_save, sender=Notification)
+def _send_push_for_notification(sender, instance, created, **kwargs):
+    if not created:
+        return
+    from .push import send_push_to_user
+
+    send_push_to_user(instance.recipient, "Movers Connection", instance.message, instance.url)

@@ -2658,6 +2658,38 @@
         })();
       })();
     </script>
+
+    <script>
+      (function () {
+        if (!window.Capacitor || !window.Capacitor.isNativePlatform()) return;
+        var PushNotifications = window.Capacitor.Plugins && window.Capacitor.Plugins.PushNotifications;
+        if (!PushNotifications) return;
+
+        function registerToken(token, platform) {
+          fetch("{% url 'accounts:register_push_token' %}", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+              "X-CSRFToken": "{{ csrf_token }}",
+            },
+            body: "token=" + encodeURIComponent(token) + "&platform=" + encodeURIComponent(platform),
+          }).catch(function () {});
+        }
+
+        PushNotifications.addListener("registration", function (tokenResult) {
+          registerToken(tokenResult.value, window.Capacitor.getPlatform());
+        });
+        PushNotifications.addListener("registrationError", function (err) {
+          console.error("Push registration error", err);
+        });
+
+        PushNotifications.requestPermissions().then(function (result) {
+          if (result.receive === "granted") {
+            PushNotifications.register();
+          }
+        });
+      })();
+    </script>
   {% endif %}
 </body>
 </html>
