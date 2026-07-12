@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Conversation, ConversationMessage, Job, JobApplication
+from .models import Conversation, ConversationMessage, Job, JobApplication, JobRating
 
 
 @admin.register(Job)
@@ -27,3 +27,9 @@ class ConversationAdmin(admin.ModelAdmin):
 class ConversationMessageAdmin(admin.ModelAdmin):
     list_display = ("__str__", "conversation", "sender", "is_system", "created_at")
     search_fields = ("sender__email", "body")
+
+
+@admin.register(JobRating)
+class JobRatingAdmin(admin.ModelAdmin):
+    list_display = ("__str__", "application", "professionalism", "punctuality", "moving_skill", "created_at")
+    search_fields = ("application__laborer_profile__display_name",)

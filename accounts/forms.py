@@ -131,13 +131,48 @@ class ProfileEditFormBase(forms.ModelForm):
 class LaborerProfileEditForm(ProfileEditFormBase):
     class Meta:
         model = LaborerProfile
-        fields = ("display_name", "phone_number", "city", "state", "profile_picture", "banner_image")
-        labels = {"display_name": "Your name or labor group name"}
+        fields = (
+            "display_name",
+            "phone_number",
+            "city",
+            "state",
+            "profile_picture",
+            "banner_image",
+            "has_dolly",
+            "has_floor_dolly",
+            "has_tools",
+            "has_drills",
+            "has_shoulder_dollies",
+            "has_hump_straps",
+        )
+        labels = {
+            "display_name": "Your name or labor group name",
+            "has_dolly": "Dolly",
+            "has_floor_dolly": "Floor dolly",
+            "has_tools": "Tools",
+            "has_drills": "Drills",
+            "has_shoulder_dollies": "Shoulder dollies",
+            "has_hump_straps": "Hump straps",
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.order_fields(
-            ["email", "display_name", "phone_number", "city", "state", "profile_picture", "banner_image"]
+            [
+                "email",
+                "display_name",
+                "phone_number",
+                "city",
+                "state",
+                "profile_picture",
+                "banner_image",
+                "has_dolly",
+                "has_floor_dolly",
+                "has_tools",
+                "has_drills",
+                "has_shoulder_dollies",
+                "has_hump_straps",
+            ]
         )
 
 

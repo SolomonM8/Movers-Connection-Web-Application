@@ -59,6 +59,24 @@
   {% endif %}
 </section>
 
+{% if unrated_applications %}
+<section class="dashboard-section">
+  <div class="onboarding-callout">
+    <div>
+      <p><strong>Jobs awaiting a rating.</strong> Rate laborers from completed or past jobs.</p>
+      <ul class="rating-callout-list">
+        {% for application in unrated_applications %}
+          <li><a href="{% url 'jobs:rate_application' application.pk %}">
+            Rate {{ application.laborer_profile.display_name|default:application.laborer_profile.user.email }}
+            &mdash; {{ application.job.get_job_type_display }} on {{ application.job.job_date|date:"M j, Y" }} &rarr;
+          </a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</section>
+{% endif %}
+
 <section class="dashboard-section">
   <div class="onboarding-callout">
     <p><strong>Need labor for a job?</strong> Search the Coverage Map by address to find labor groups near it.</p>

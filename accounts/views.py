@@ -8,7 +8,7 @@ from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.html import format_html
 from django.views import View
-from django.views.generic import CreateView, ListView, TemplateView, UpdateView
+from django.views.generic import CreateView, DetailView, ListView, TemplateView, UpdateView
 
 from .forms import DriverProfileEditForm, DriverSignUpForm, LaborerProfileEditForm, LaborerSignUpForm
 from .models import Connection, DriverProfile, LaborerProfile, Notification, User
@@ -102,7 +102,7 @@ class DriverDashboardView(RoleRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         from django.db.models import Count
 
-        from jobs.models import Job
+        from jobs.models import Job, unrated_eligible_applications
 
         context = super().get_context_data(**kwargs)
         profile = self.request.user.driver_profile
@@ -115,6 +115,9 @@ class DriverDashboardView(RoleRequiredMixin, TemplateView):
         context["profile"] = profile
         context["active_jobs"] = active_jobs
         context["completed_jobs_count"] = profile.jobs.filter(status=Job.Status.COMPLETED).count()
+        context["unrated_applications"] = unrated_eligible_applications(profile).select_related(
+            "job", "job__county", "laborer_profile", "laborer_profile__user"
+        )
         return context
 
 
@@ -123,6 +126,8 @@ class LaborerDashboardView(RoleRequiredMixin, TemplateView):
     allowed_roles = (User.Role.LABORER,)
 
     def get_context_data(self, **kwargs):
+        from jobs.models import rating_summary_for_laborer
+
         context = super().get_context_data(**kwargs)
         profile = self.request.user.laborer_profile
         areas = list(
@@ -134,6 +139,8 @@ class LaborerDashboardView(RoleRequiredMixin, TemplateView):
         context["primary_area"] = next((area for area in areas if area.is_primary), None)
         context["other_areas"] = [area for area in areas if not area.is_primary]
         context["service_areas_count"] = len(areas)
+        context["rating_summary"] = rating_summary_for_laborer(profile)
+        context["equipment_checklist"] = _equipment_checklist(profile)
         return context
 
 
@@ -149,6 +156,39 @@ class LaborerProfileEditView(RoleRequiredMixin, UpdateView):
     def form_valid(self, form):
         messages.success(self.request, "Your account information has been updated.")
         return super().form_valid(form)
+
+
+def _equipment_checklist(profile):
+    return [
+        ("Dolly", profile.has_dolly),
+        ("Floor dolly", profile.has_floor_dolly),
+        ("Tools", profile.has_tools),
+        ("Drills", profile.has_drills),
+        ("Shoulder dollies", profile.has_shoulder_dollies),
+        ("Hump straps", profile.has_hump_straps),
+    ]
+
+
+class LaborerProfileDetailView(LoginRequiredMixin, DetailView):
+    model = LaborerProfile
+    pk_url_kwarg = "laborer_pk"
+    template_name = "accounts/laborer_profile_detail.html"
+    context_object_name = "profile"
+
+    def get_context_data(self, **kwargs):
+        from jobs.models import Job, JobApplication, rating_summary_for_laborer
+
+        context = super().get_context_data(**kwargs)
+        profile = self.object
+        context["service_areas"] = profile.service_areas.select_related("county").order_by(
+            "-is_primary", "county__state", "county__name"
+        )
+        context["completed_jobs_count"] = profile.job_applications.filter(
+            status=JobApplication.Status.ACCEPTED, job__status=Job.Status.COMPLETED
+        ).count()
+        context["rating_summary"] = rating_summary_for_laborer(profile)
+        context["equipment_checklist"] = _equipment_checklist(profile)
+        return context
 
 
 class DriverProfileEditView(RoleRequiredMixin, UpdateView):

@@ -48,6 +48,7 @@
               <strong>{{ application.laborer_profile.display_name|default:application.laborer_profile.user.email }}</strong>
               <span class="county-slot-badge{% if application.status != "accepted" %} county-slot-badge--muted{% endif %}">{{ application.get_status_display|upper }}</span>
             </div>
+            <p><a class="helper-link" href="{% url 'accounts:laborer_profile_detail' application.laborer_profile.pk %}">View Profile &rarr;</a></p>
             <p>
               <span class="county-slot-badge county-slot-badge--muted">{{ application.get_source_display|upper }}</span>
             </p>

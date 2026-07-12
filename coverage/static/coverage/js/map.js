@@ -394,6 +394,7 @@
                 </div>
                 <p>${city ? city + ", " + state : ""}</p>
                 <p>${phone}</p>
+                <p><a class="helper-link" href="/accounts/laborer/${laborer.laborer_id}/">View Profile &rarr;</a></p>
                 ${actions}
               </div>
             `;

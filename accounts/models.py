@@ -94,6 +94,12 @@ class LaborerProfile(ProfileBase):
     display_name = models.CharField(max_length=255, blank=True)
     bio = models.TextField(blank=True)
     years_experience = models.PositiveIntegerField(default=0)
+    has_dolly = models.BooleanField(default=False)
+    has_floor_dolly = models.BooleanField(default=False)
+    has_tools = models.BooleanField(default=False)
+    has_drills = models.BooleanField(default=False)
+    has_shoulder_dollies = models.BooleanField(default=False)
+    has_hump_straps = models.BooleanField(default=False)
 
     def __str__(self):
         return self.display_name or self.user.email

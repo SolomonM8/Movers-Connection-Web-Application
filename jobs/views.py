@@ -16,8 +16,15 @@ from accounts.models import Connection, DriverProfile, LaborerProfile, Notificat
 from accounts.templatetags.avatar_tags import compute_avatar_color, compute_avatar_initial
 from accounts.views import RoleRequiredMixin
 
-from .forms import ConversationMessageForm, JobForm
-from .models import Conversation, ConversationMessage, Job, JobApplication
+from .forms import ConversationMessageForm, JobForm, JobRatingForm
+from .models import (
+    Conversation,
+    ConversationMessage,
+    Job,
+    JobApplication,
+    JobRating,
+    unrated_eligible_applications,
+)
 
 
 def get_or_create_conversation(driver_profile, laborer_profile):
@@ -71,12 +78,22 @@ class JobCreateView(JobFormContextMixin, RoleRequiredMixin, CreateView):
             driver_profile=profile, status=Job.Status.OPEN, job_date__gte=today
         ).count()
 
+    def _has_unrated_eligible_applications(self):
+        return unrated_eligible_applications(self.request.user.driver_profile).exists()
+
     def get(self, request, *args, **kwargs):
         if self._active_job_count() >= Job.MAX_ACTIVE_PER_DRIVER:
             messages.error(
                 request,
                 f"You can only have {Job.MAX_ACTIVE_PER_DRIVER} active jobs at a time. "
                 "Complete or delete one before posting another.",
+            )
+            return redirect("accounts:dashboard")
+        if self._has_unrated_eligible_applications():
+            messages.error(
+                request,
+                "You have jobs awaiting a rating. Rate your past laborers from your dashboard "
+                "before posting a new job.",
             )
             return redirect("accounts:dashboard")
         return super().get(request, *args, **kwargs)
@@ -87,6 +104,13 @@ class JobCreateView(JobFormContextMixin, RoleRequiredMixin, CreateView):
                 request,
                 f"You can only have {Job.MAX_ACTIVE_PER_DRIVER} active jobs at a time. "
                 "Complete or delete one before posting another.",
+            )
+            return redirect("accounts:dashboard")
+        if self._has_unrated_eligible_applications():
+            messages.error(
+                request,
+                "You have jobs awaiting a rating. Rate your past laborers from your dashboard "
+                "before posting a new job.",
             )
             return redirect("accounts:dashboard")
         return super().post(request, *args, **kwargs)
@@ -164,13 +188,99 @@ class JobMarkCompleteView(DriverJobOwnerMixin, View):
         job = get_object_or_404(Job, pk=pk, driver_profile=request.user.driver_profile)
         if job.status != Job.Status.OPEN:
             messages.info(request, "This job is already marked completed.")
-        elif job.job_date > timezone.now().date():
+            return redirect("jobs:detail", pk=pk)
+        if job.job_date > timezone.now().date():
             messages.error(request, "You can't mark a job completed before its date arrives.")
-        else:
-            job.status = Job.Status.COMPLETED
-            job.save(update_fields=["status"])
-            messages.success(request, "Job marked as completed.")
+            return redirect("jobs:detail", pk=pk)
+
+        job.status = Job.Status.COMPLETED
+        job.save(update_fields=["status"])
+        messages.success(request, "Job marked as completed.")
+
+        unrated = job.applications.filter(status=JobApplication.Status.ACCEPTED, rating__isnull=True)
+        count = unrated.count()
+        if count == 1:
+            return redirect("jobs:rate_application", app_pk=unrated.first().pk)
+        if count > 1:
+            return redirect("jobs:rating_index", pk=job.pk)
         return redirect("jobs:detail", pk=pk)
+
+
+class JobRatingIndexView(DriverJobOwnerMixin, DetailView):
+    model = Job
+    template_name = "jobs/job_rating_index.html"
+    context_object_name = "job"
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if not self.object.is_rating_eligible:
+            messages.error(request, "This job isn't eligible for rating yet.")
+            return redirect("jobs:detail", pk=self.object.pk)
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["unrated_applications"] = self.object.applications.filter(
+            status=JobApplication.Status.ACCEPTED, rating__isnull=True
+        ).select_related("laborer_profile", "laborer_profile__user")
+        return context
+
+
+class JobRatingCreateView(RoleRequiredMixin, CreateView):
+    form_class = JobRatingForm
+    template_name = "jobs/job_rating_form.html"
+    allowed_roles = (User.Role.DRIVER,)
+
+    def dispatch(self, request, *args, **kwargs):
+        self.application = get_object_or_404(
+            JobApplication.objects.select_related(
+                "job", "laborer_profile", "laborer_profile__user"
+            ),
+            pk=kwargs["app_pk"],
+            job__driver_profile=getattr(request.user, "driver_profile", None),
+            status=JobApplication.Status.ACCEPTED,
+        )
+        self.job = self.application.job
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        if not self.job.is_rating_eligible:
+            messages.error(request, "This job isn't eligible for rating yet.")
+            return redirect("jobs:detail", pk=self.job.pk)
+        if hasattr(self.application, "rating"):
+            messages.info(request, "You've already rated this laborer for this job.")
+            return redirect("jobs:detail", pk=self.job.pk)
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        if not self.job.is_rating_eligible or hasattr(self.application, "rating"):
+            return redirect("jobs:detail", pk=self.job.pk)
+        return super().post(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["job"] = self.job
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["application"] = self.application
+        context["job"] = self.job
+        return context
+
+    def form_valid(self, form):
+        form.instance.application = self.application
+        response = super().form_valid(form)
+        messages.success(self.request, f"Rating submitted for {self.application.laborer_profile}.")
+        return response
+
+    def get_success_url(self):
+        remaining = self.job.applications.filter(
+            status=JobApplication.Status.ACCEPTED, rating__isnull=True
+        ).exclude(pk=self.application.pk)
+        if remaining.exists():
+            return reverse("jobs:rating_index", args=[self.job.pk])
+        return reverse("jobs:detail", args=[self.job.pk])
 
 
 class ApplicationRespondView(DriverJobOwnerMixin, View):

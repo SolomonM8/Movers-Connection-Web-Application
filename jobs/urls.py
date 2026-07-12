@@ -13,6 +13,8 @@ urlpatterns = [
     path("<int:pk>/edit/", views.JobUpdateView.as_view(), name="edit"),
     path("<int:pk>/delete/", views.JobDeleteView.as_view(), name="delete"),
     path("<int:pk>/complete/", views.JobMarkCompleteView.as_view(), name="mark_complete"),
+    path("<int:pk>/ratings/", views.JobRatingIndexView.as_view(), name="rating_index"),
+    path("applications/<int:app_pk>/rate/", views.JobRatingCreateView.as_view(), name="rate_application"),
     path("<int:pk>/apply/", views.JobApplyView.as_view(), name="apply"),
     path(
         "<int:pk>/applications/<int:app_pk>/respond/",

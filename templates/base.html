@@ -1503,6 +1503,41 @@
       box-shadow: 0 0 0 3px var(--color-primary-light);
     }
 
+    input[type="checkbox"], input[type="radio"] {
+      width: auto;
+      padding: 0;
+      margin-top: 0;
+    }
+    .checkbox-group { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.6rem; }
+    .checkbox-label { display: flex; align-items: center; gap: 0.5rem; font-weight: 500; margin-top: 0; }
+
+    .checklist { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.4rem; }
+    .checklist-item { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; color: var(--color-text); }
+    .checklist-item--unchecked { color: var(--color-muted); font-weight: 400; }
+    .checklist-icon { font-weight: 700; }
+    .checklist-item:not(.checklist-item--unchecked) .checklist-icon { color: #1f8a4c; }
+    .checklist-item--unchecked .checklist-icon { color: var(--color-muted); }
+
+    .rating-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .rating-row:last-child { border-bottom: none; }
+    .rating-row-label { font-weight: 600; color: var(--color-text); }
+    .rating-stars { color: #f0a500; letter-spacing: 0.1em; font-size: 1.05rem; }
+    .rating-meta { font-size: 0.85rem; color: var(--color-muted); }
+    .rating-callout-list { list-style: none; padding: 0; margin: 0.5rem 0 0; display: flex; flex-direction: column; gap: 0.4rem; }
+    .rating-callout-list a { color: var(--color-primary-dark); font-weight: 600; text-decoration: none; }
+    .rating-callout-list a:hover { text-decoration: underline; }
+
+    .star-radio-group > div { display: flex; gap: 1rem; flex-wrap: wrap; margin: 0.3rem 0 1rem; }
+    .star-radio-group > div > div { margin: 0; }
+    .star-radio-group > div label { display: inline-flex; align-items: center; gap: 0.3rem; margin-top: 0; font-weight: 500; }
+
     button[type="submit"], .btn-primary {
       display: inline-block;
       margin-top: 1.5rem;
