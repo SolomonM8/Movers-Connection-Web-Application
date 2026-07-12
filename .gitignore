@@ -8,3 +8,4 @@ media/
 staticfiles/
 .vscode/
 .idea/
+node_modules/

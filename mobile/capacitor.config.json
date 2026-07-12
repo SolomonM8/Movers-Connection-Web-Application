@@ -1,0 +1,10 @@
+{
+  "appId": "com.themoversconnection.app",
+  "appName": "Movers Connection",
+  "webDir": "www",
+  "server": {
+    "url": "https://themoversconnection.com",
+    "androidScheme": "https",
+    "cleartext": false
+  }
+}
