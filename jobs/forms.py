@@ -20,8 +20,6 @@ class JobForm(forms.ModelForm):
             "job_type",
             "workers_needed",
             "weight_lbs",
-            "needs_loading_skill",
-            "needs_unloading_skill",
             "needs_packing_skill",
             "needs_equipment_skill",
             "pricing_model",
@@ -34,8 +32,6 @@ class JobForm(forms.ModelForm):
         }
         labels = {
             "city": "Meeting point / city (optional)",
-            "needs_loading_skill": "Needs loading skill",
-            "needs_unloading_skill": "Needs unloading skill",
             "needs_packing_skill": "Needs packing skill",
             "needs_equipment_skill": "Needs equipment",
         }
@@ -49,6 +45,22 @@ class JobForm(forms.ModelForm):
         if pricing_model == Job.PricingModel.HOURLY and not cleaned_data.get("hourly_rate"):
             self.add_error("hourly_rate", "Enter an hourly rate.")
         return cleaned_data
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        # Loading/unloading skill is implied by the job type itself — no separate
+        # checkbox. Packing is only user-choosable for Load jobs (packing before a
+        # load makes sense; packing after an unload doesn't) and is otherwise
+        # implied by the job type being Packing itself.
+        instance.needs_loading_skill = instance.job_type == Job.JobType.LOAD
+        instance.needs_unloading_skill = instance.job_type == Job.JobType.UNLOAD
+        if instance.job_type == Job.JobType.PACKING:
+            instance.needs_packing_skill = True
+        elif instance.job_type != Job.JobType.LOAD:
+            instance.needs_packing_skill = False
+        if commit:
+            instance.save()
+        return instance
 
 
 class JobRatingForm(forms.ModelForm):

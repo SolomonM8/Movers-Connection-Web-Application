@@ -94,10 +94,9 @@
       {{ form.weight_lbs.errors }}
 
       <label>Skills needed for this job (used for rating laborers afterward)</label>
+      <p class="helper-link">Loading/unloading skill is assumed from the job type above.</p>
       <div class="checkbox-group">
-        <label class="checkbox-label" for="{{ form.needs_loading_skill.id_for_label }}">{{ form.needs_loading_skill }} {{ form.needs_loading_skill.label }}</label>
-        <label class="checkbox-label" for="{{ form.needs_unloading_skill.id_for_label }}">{{ form.needs_unloading_skill }} {{ form.needs_unloading_skill.label }}</label>
-        <label class="checkbox-label" for="{{ form.needs_packing_skill.id_for_label }}">{{ form.needs_packing_skill }} {{ form.needs_packing_skill.label }}</label>
+        <label class="checkbox-label" data-job-type-field="packing" for="{{ form.needs_packing_skill.id_for_label }}">{{ form.needs_packing_skill }} {{ form.needs_packing_skill.label }}</label>
         <label class="checkbox-label" for="{{ form.needs_equipment_skill.id_for_label }}">{{ form.needs_equipment_skill }} {{ form.needs_equipment_skill.label }}</label>
       </div>
     </section>

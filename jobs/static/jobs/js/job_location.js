@@ -350,4 +350,18 @@
     pricingSelect.addEventListener("change", updatePricingVisibility);
     updatePricingVisibility();
   }
+
+  // ---- Packing-skill checkbox: only relevant when job type is Load ----
+  const jobTypeSelect = document.getElementById("id_job_type");
+  const packingField = document.querySelector('[data-job-type-field="packing"]');
+  const packingCheckbox = document.getElementById("id_needs_packing_skill");
+  if (jobTypeSelect && packingField) {
+    function updatePackingVisibility() {
+      const isLoad = jobTypeSelect.value === "load";
+      packingField.classList.toggle("hidden", !isLoad);
+      if (!isLoad && packingCheckbox) packingCheckbox.checked = false;
+    }
+    jobTypeSelect.addEventListener("change", updatePackingVisibility);
+    updatePackingVisibility();
+  }
 })();
