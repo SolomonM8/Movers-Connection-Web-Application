@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'cloudinary',
     'accounts',
     'coverage',
     'jobs',
@@ -135,8 +136,31 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+# Uploaded media (avatars, banners, board post photos) needs to live somewhere that
+# survives redeploys and is actually served in production — a local disk (like
+# Railway's) doesn't satisfy either. When Cloudinary credentials are present we use
+# it for all uploads; otherwise (local dev with no Cloudinary account set up) we
+# fall back to the plain local filesystem, matching prior behavior.
+CLOUDINARY_CLOUD_NAME = env('CLOUDINARY_CLOUD_NAME', default=None)
+CLOUDINARY_API_KEY = env('CLOUDINARY_API_KEY', default=None)
+CLOUDINARY_API_SECRET = env('CLOUDINARY_API_SECRET', default=None)
+CLOUDINARY_CONFIGURED = bool(CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET)
+
+if CLOUDINARY_CONFIGURED:
+    CLOUDINARY_STORAGE = {
+        'CLOUD_NAME': CLOUDINARY_CLOUD_NAME,
+        'API_KEY': CLOUDINARY_API_KEY,
+        'API_SECRET': CLOUDINARY_API_SECRET,
+    }
+
 STORAGES = {
-    'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+    'default': {
+        'BACKEND': (
+            'cloudinary_storage.storage.MediaCloudinaryStorage'
+            if CLOUDINARY_CONFIGURED
+            else 'django.core.files.storage.FileSystemStorage'
+        ),
+    },
     'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'},
 }
 

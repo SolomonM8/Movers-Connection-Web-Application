@@ -1393,6 +1393,18 @@
     }
 
     .msg-widget-thread { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+    .msg-widget-job-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding: 0.6rem 0.75rem;
+      background: var(--color-primary-light);
+      border-bottom: 1px solid var(--color-border);
+      flex-shrink: 0;
+      font-size: 0.85rem;
+    }
+    .msg-widget-job-bar .btn-primary { margin-top: 0; padding: 0.4rem 0.7rem; font-size: 0.82rem; }
     .msg-widget-messages { flex: 1; overflow-y: auto; padding: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem; }
     .msg-widget-form { display: flex; gap: 0.5rem; padding: 0.75rem; border-top: 1px solid var(--color-border); flex-shrink: 0; }
     .msg-widget-form input {
@@ -2064,11 +2076,10 @@
         var badge = notifToggle.querySelector(".notification-badge");
         var csrfInput = document.querySelector('input[name="csrfmiddlewaretoken"]');
 
-        notifToggle.addEventListener("click", function (event) {
-          event.stopPropagation();
-          var isOpen = notifDropdown.classList.toggle("open");
-          notifToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
-          if (isOpen && badge && csrfInput) {
+        function openNotifDropdown() {
+          notifDropdown.classList.add("open");
+          notifToggle.setAttribute("aria-expanded", "true");
+          if (badge && csrfInput) {
             fetch("{% url 'accounts:notifications_mark_read' %}", {
               method: "POST",
               headers: { "X-CSRFToken": csrfInput.value },
@@ -2078,7 +2089,23 @@
               })
               .catch(function () {});
           }
+        }
+
+        notifToggle.addEventListener("click", function (event) {
+          event.stopPropagation();
+          if (notifDropdown.classList.contains("open")) {
+            notifDropdown.classList.remove("open");
+            notifToggle.setAttribute("aria-expanded", "false");
+          } else {
+            openNotifDropdown();
+          }
         });
+
+        // Surface unread notifications automatically rather than waiting for a manual click —
+        // e.g. a driver landing on a page after their invite was accepted should see it right away.
+        if (badge) {
+          setTimeout(openNotifDropdown, 600);
+        }
 
         document.addEventListener("click", function (event) {
           if (!notifDropdown.contains(event.target) && !notifToggle.contains(event.target)) {
@@ -2169,6 +2196,10 @@
         <div id="msg-widget-list" class="msg-widget-list"></div>
       </div>
       <div id="msg-widget-thread" class="msg-widget-thread hidden">
+        <div id="msg-widget-job-bar" class="msg-widget-job-bar hidden">
+          <span>This chat has an active job.</span>
+          <button type="button" id="msg-widget-mark-complete" class="btn-primary btn-inline">Mark Job Complete</button>
+        </div>
         <div id="msg-widget-messages" class="msg-widget-messages"></div>
         <form id="msg-widget-form" class="msg-widget-form">
           <input type="text" id="msg-widget-input" placeholder="Write a message…" autocomplete="off">
@@ -2193,8 +2224,11 @@
         var msgSearchInput = document.getElementById("msg-widget-search");
         var msgThreadEl = document.getElementById("msg-widget-thread");
         var msgMessages = document.getElementById("msg-widget-messages");
+        var msgJobBar = document.getElementById("msg-widget-job-bar");
+        var msgMarkCompleteBtn = document.getElementById("msg-widget-mark-complete");
         var msgForm = document.getElementById("msg-widget-form");
         var msgInput = document.getElementById("msg-widget-input");
+        var IS_DRIVER = "{{ user.role }}" === "driver";
         var navMessagesToggle = document.getElementById("nav-messages-toggle");
         var navDrawerMessagesToggle = document.getElementById("nav-drawer-messages-toggle");
         var navDrawerEl = document.getElementById("nav-drawer");
@@ -2202,6 +2236,7 @@
         var msgCsrfInput = document.querySelector('input[name="csrfmiddlewaretoken"]');
         var msgCsrf = msgCsrfInput ? msgCsrfInput.value : "";
         var currentThread = null;
+        var currentJobId = null;
         var badgePollTimer = null;
         var listPollTimer = null;
         var threadPollTimer = null;
@@ -2283,6 +2318,8 @@
                 msgEscapeHtml(conv.avatar_color || "") +
                 '" data-avatar-initial="' +
                 msgEscapeHtml(conv.avatar_initial || "") +
+                '" data-job-id="' +
+                (conv.job_id || "") +
                 '">' +
                 avatarHtml(conv) +
                 '<span class="msg-widget-convo-info"><span class="msg-widget-convo-name-row">' +
@@ -2304,7 +2341,7 @@
                 avatar_url: btn.dataset.avatarUrl,
                 avatar_color: btn.dataset.avatarColor,
                 avatar_initial: btn.dataset.avatarInitial,
-              });
+              }, btn.dataset.jobId || null);
             });
           });
         }
@@ -2365,7 +2402,7 @@
             body: params.toString(),
           })
             .then(function (r) { return r.json(); })
-            .then(function (data) { openThread(data.id, data.other_name, data); })
+            .then(function (data) { openThread(data.id, data.other_name, data, data.job_id); })
             .catch(function () {});
         }
 
@@ -2396,6 +2433,7 @@
             .then(function (r) { return r.json(); })
             .then(function (data) {
               renderMessages(data.messages);
+              updateJobBar(data.job_id);
               refreshBadge();
             })
             .catch(function () {});
@@ -2408,6 +2446,11 @@
           if (threadPollTimer) { clearInterval(threadPollTimer); threadPollTimer = null; }
         }
 
+        function updateJobBar(jobId) {
+          currentJobId = jobId || null;
+          if (msgJobBar) msgJobBar.classList.toggle("hidden", !(IS_DRIVER && currentJobId));
+        }
+
         function showListView() {
           currentThread = null;
           msgTitle.textContent = "Messages";
@@ -2416,13 +2459,14 @@
           msgBack.classList.add("hidden");
           msgListView.classList.remove("hidden");
           msgThreadEl.classList.add("hidden");
+          updateJobBar(null);
           if (msgSearchInput) msgSearchInput.value = "";
           stopThreadPoll();
           fetchList();
           listPollTimer = setInterval(fetchList, 25000);
         }
 
-        function openThread(id, name, avatar) {
+        function openThread(id, name, avatar, jobId) {
           currentThread = id;
           msgTitle.textContent = name;
           if (avatar && (avatar.avatar_url || avatar.avatar_initial)) {
@@ -2432,6 +2476,7 @@
             msgHeaderAvatar.innerHTML = "";
             msgHeaderAvatar.classList.add("hidden");
           }
+          updateJobBar(jobId);
           msgBack.classList.remove("hidden");
           msgListView.classList.add("hidden");
           msgThreadEl.classList.remove("hidden");
@@ -2477,6 +2522,22 @@
         msgClose.addEventListener("click", closePanel);
         msgBackdrop.addEventListener("click", closePanel);
         msgBack.addEventListener("click", showListView);
+
+        if (msgMarkCompleteBtn) {
+          msgMarkCompleteBtn.addEventListener("click", function () {
+            if (!currentJobId) return;
+            var form = document.createElement("form");
+            form.method = "post";
+            form.action = "/jobs/" + currentJobId + "/complete/";
+            var csrfField = document.createElement("input");
+            csrfField.type = "hidden";
+            csrfField.name = "csrfmiddlewaretoken";
+            csrfField.value = msgCsrf;
+            form.appendChild(csrfField);
+            document.body.appendChild(form);
+            form.submit();
+          });
+        }
 
         document.addEventListener("click", function (event) {
           if (
@@ -2584,7 +2645,7 @@
                 return String(c.id) === String(openChatId);
               })[0];
               if (match) {
-                openThread(match.id, match.other_name, match);
+                openThread(match.id, match.other_name, match, match.job_id);
               } else {
                 showListView();
               }

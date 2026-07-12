@@ -522,7 +522,7 @@ def serialize_conversation_message(message, request_user):
     }
 
 
-def serialize_conversation_row(conversation, other_profile, other_name, is_friend, has_job, last_message, unread_count):
+def serialize_conversation_row(conversation, other_profile, other_name, is_friend, job_id, last_message, unread_count):
     timestamp = last_message.created_at if last_message else conversation.created_at
     return {
         "id": conversation.pk,
@@ -531,11 +531,46 @@ def serialize_conversation_row(conversation, other_profile, other_name, is_frien
         "avatar_color": compute_avatar_color(other_profile.pk),
         "avatar_initial": compute_avatar_initial(other_name),
         "is_friend": is_friend,
-        "has_job": has_job,
+        "has_job": bool(job_id),
+        "job_id": job_id,
         "last_message": last_message.body if last_message else None,
         "last_message_at": timestamp.isoformat(),
         "unread_count": unread_count,
     }
+
+
+def active_job_id_for_pair(driver_profile, laborer_profile):
+    today = timezone.now().date()
+    application = (
+        JobApplication.objects.filter(
+            job__driver_profile=driver_profile,
+            laborer_profile=laborer_profile,
+            status=JobApplication.Status.ACCEPTED,
+            job__status=Job.Status.OPEN,
+            job__job_date__gte=today,
+        )
+        .order_by("job__job_date")
+        .first()
+    )
+    return application.job_id if application else None
+
+
+def markable_job_id_for_pair(driver_profile, laborer_profile):
+    """A job between this pair that's open and eligible to be marked completed right now
+    (mirrors JobMarkCompleteView's own gate) — deliberately separate from
+    active_job_id_for_pair, which is scoped to *upcoming* jobs for the JOB badge."""
+    application = (
+        JobApplication.objects.filter(
+            job__driver_profile=driver_profile,
+            laborer_profile=laborer_profile,
+            status=JobApplication.Status.ACCEPTED,
+            job__status=Job.Status.OPEN,
+            job__job_date__lte=timezone.now().date(),
+        )
+        .order_by("job__job_date")
+        .first()
+    )
+    return application.job_id if application else None
 
 
 class MessageUnreadCountAPIView(LoginRequiredMixin, View):
@@ -568,14 +603,18 @@ class ConversationListAPIView(LoginRequiredMixin, View):
                     driver_profile=profile, status=Connection.Status.ACCEPTED
                 ).values_list("laborer_profile_id", flat=True)
             )
-            job_ids = set(
+            job_id_by_other_profile = {}
+            for laborer_id, job_id in (
                 JobApplication.objects.filter(
                     job__driver_profile=profile,
                     status=JobApplication.Status.ACCEPTED,
                     job__status=Job.Status.OPEN,
                     job__job_date__gte=today,
-                ).values_list("laborer_profile_id", flat=True)
-            )
+                )
+                .order_by("job__job_date")
+                .values_list("laborer_profile_id", "job_id")
+            ):
+                job_id_by_other_profile.setdefault(laborer_id, job_id)
             for conversation in conversations_qs:
                 other_profile = conversation.laborer_profile
                 other_name = other_profile.display_name or other_profile.user.email
@@ -587,7 +626,7 @@ class ConversationListAPIView(LoginRequiredMixin, View):
                         other_profile,
                         other_name,
                         other_profile.pk in friend_ids,
-                        other_profile.pk in job_ids,
+                        job_id_by_other_profile.get(other_profile.pk),
                         last_message,
                         unread,
                     )
@@ -602,14 +641,18 @@ class ConversationListAPIView(LoginRequiredMixin, View):
                     laborer_profile=profile, status=Connection.Status.ACCEPTED
                 ).values_list("driver_profile_id", flat=True)
             )
-            job_ids = set(
+            job_id_by_other_profile = {}
+            for driver_id, job_id in (
                 JobApplication.objects.filter(
                     laborer_profile=profile,
                     status=JobApplication.Status.ACCEPTED,
                     job__status=Job.Status.OPEN,
                     job__job_date__gte=today,
-                ).values_list("job__driver_profile_id", flat=True)
-            )
+                )
+                .order_by("job__job_date")
+                .values_list("job__driver_profile_id", "job_id")
+            ):
+                job_id_by_other_profile.setdefault(driver_id, job_id)
             for conversation in conversations_qs:
                 other_profile = conversation.driver_profile
                 other_name = other_profile.company_name or other_profile.user.email
@@ -621,7 +664,7 @@ class ConversationListAPIView(LoginRequiredMixin, View):
                         other_profile,
                         other_name,
                         other_profile.pk in friend_ids,
-                        other_profile.pk in job_ids,
+                        job_id_by_other_profile.get(other_profile.pk),
                         last_message,
                         unread,
                     )
@@ -684,10 +727,12 @@ class ConversationStartAPIView(LoginRequiredMixin, View):
             other_profile = get_object_or_404(LaborerProfile, pk=other_profile_id)
             conversation = get_or_create_conversation(user.driver_profile, other_profile)
             other_name = other_profile.display_name or other_profile.user.email
+            job_id = markable_job_id_for_pair(user.driver_profile, other_profile)
         elif user.role == User.Role.LABORER and hasattr(user, "laborer_profile"):
             other_profile = get_object_or_404(DriverProfile, pk=other_profile_id)
             conversation = get_or_create_conversation(other_profile, user.laborer_profile)
             other_name = other_profile.company_name or other_profile.user.email
+            job_id = markable_job_id_for_pair(other_profile, user.laborer_profile)
         else:
             raise Http404
         return JsonResponse(
@@ -697,6 +742,7 @@ class ConversationStartAPIView(LoginRequiredMixin, View):
                 "avatar_url": other_profile.profile_picture.url if other_profile.profile_picture else None,
                 "avatar_color": compute_avatar_color(other_profile.pk),
                 "avatar_initial": compute_avatar_initial(other_name),
+                "job_id": job_id,
             }
         )
 
@@ -706,8 +752,12 @@ class ConversationThreadAPIView(LoginRequiredMixin, View):
         conversation = get_conversation_for_user(request, conversation_pk)
         conversation.messages.filter(is_read=False).exclude(sender=request.user).update(is_read=True)
         thread = conversation.messages.select_related("sender")
+        job_id = markable_job_id_for_pair(conversation.driver_profile, conversation.laborer_profile)
         return JsonResponse(
-            {"messages": [serialize_conversation_message(m, request.user) for m in thread]}
+            {
+                "messages": [serialize_conversation_message(m, request.user) for m in thread],
+                "job_id": job_id,
+            }
         )
 
     def post(self, request, conversation_pk):
