@@ -7,5 +7,16 @@
   {{ form.as_p }}
   <button type="submit">Log In</button>
 </form>
+{% if google_login_configured or facebook_login_configured %}
+<div class="social-login-divider"><span>or</span></div>
+<div class="social-login-buttons">
+  {% if google_login_configured %}
+    <a href="{% url 'google_login' %}" class="btn-social btn-social--google">{% include "includes/icon-google.svg" %} Continue with Google</a>
+  {% endif %}
+  {% if facebook_login_configured %}
+    <a href="{% url 'facebook_login' %}" class="btn-social btn-social--facebook">{% include "includes/icon-facebook.svg" %} Continue with Facebook</a>
+  {% endif %}
+</div>
+{% endif %}
 <p class="helper-link">Don't have an account? <a href="{% url 'accounts:register' %}">Register here</a>.</p>
 {% endblock %}

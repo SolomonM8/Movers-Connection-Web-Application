@@ -5,6 +5,24 @@ from django.contrib.auth.forms import AuthenticationForm
 from .constants import US_STATE_CHOICES
 from .models import DriverProfile, LaborerProfile, User
 
+PROFILE_MODEL_BY_ROLE = {
+    User.Role.DRIVER: (DriverProfile, "company_name"),
+    User.Role.LABORER: (LaborerProfile, "display_name"),
+}
+
+
+def create_profile_for_role(user, role, *, name, phone_number, city, state):
+    profile_model, name_field_name = PROFILE_MODEL_BY_ROLE[role]
+    profile_model.objects.update_or_create(
+        user=user,
+        defaults={
+            name_field_name: name,
+            "phone_number": phone_number,
+            "city": city,
+            "state": state,
+        },
+    )
+
 
 class NoAutofocusAuthenticationForm(AuthenticationForm):
     """Autofocus on the username field blocks the soft keyboard from
@@ -60,14 +78,13 @@ class BaseSignUpForm(forms.ModelForm):
         user.set_password(self.cleaned_data["password1"])
         if commit:
             user.save()
-            self.profile_model.objects.update_or_create(
-                user=user,
-                defaults={
-                    self.name_field_name: self.cleaned_data["name"],
-                    "phone_number": self.cleaned_data["phone_number"],
-                    "city": self.cleaned_data["city"],
-                    "state": self.cleaned_data["state"],
-                },
+            create_profile_for_role(
+                user,
+                self.role,
+                name=self.cleaned_data["name"],
+                phone_number=self.cleaned_data["phone_number"],
+                city=self.cleaned_data["city"],
+                state=self.cleaned_data["state"],
             )
         return user
 
@@ -197,3 +214,24 @@ class DriverProfileEditForm(ProfileEditFormBase):
         self.order_fields(
             ["email", "company_name", "dot_number", "phone_number", "city", "state", "profile_picture", "banner_image"]
         )
+
+
+class SocialSignupForm(forms.Form):
+    """Shown once, right after a brand-new Google/Facebook sign-in, to collect the
+    role + profile fields the site requires but the provider doesn't supply. A
+    plain Form rather than a subclass of allauth's own signup form, since our
+    SocialAccountAdapter drives it directly via cleaned_data instead of relying on
+    allauth-internal form behavior."""
+
+    role = forms.ChoiceField(choices=User.Role.choices, widget=forms.RadioSelect, label="I am a...")
+    name = forms.CharField(max_length=255, label="Name")
+    phone_number = forms.CharField(max_length=20, label="Phone number")
+    city = forms.CharField(max_length=100)
+    state = forms.ChoiceField(choices=US_STATE_CHOICES)
+
+    def __init__(self, *args, **kwargs):
+        kwargs.pop("sociallogin", None)
+        super().__init__(*args, **kwargs)
+        self.fields["role"].choices = [
+            choice for choice in User.Role.choices if choice[0] != User.Role.ADMIN
+        ]

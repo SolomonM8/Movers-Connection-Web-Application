@@ -52,11 +52,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'cloudinary',
     'accounts',
     'coverage',
     'jobs',
     'board',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.facebook',
 ]
 
 MIDDLEWARE = [
@@ -67,8 +73,16 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
     'accounts.middleware.LaborerOnboardingLockMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+SITE_ID = 1
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
 ROOT_URLCONF = 'movers_connection.urls'
@@ -84,6 +98,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'accounts.context_processors.nav_context',
+                'accounts.context_processors.social_login_context',
             ],
         },
     },
@@ -184,3 +199,48 @@ if not DEBUG:
     SECURE_HSTS_SECONDS = 60 * 60 * 24 * 7
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Google/Facebook sign-in (django-allauth). Buttons only render when the
+# matching pair of env vars is set (login.html checks *_LOGIN_CONFIGURED) --
+# mirrors the CLOUDINARY_CONFIGURED graceful-degradation pattern above, so
+# this is safe to leave unset in any environment.
+GOOGLE_OAUTH_CLIENT_ID = env('GOOGLE_OAUTH_CLIENT_ID', default=None)
+GOOGLE_OAUTH_CLIENT_SECRET = env('GOOGLE_OAUTH_CLIENT_SECRET', default=None)
+GOOGLE_LOGIN_CONFIGURED = bool(GOOGLE_OAUTH_CLIENT_ID and GOOGLE_OAUTH_CLIENT_SECRET)
+
+FACEBOOK_OAUTH_CLIENT_ID = env('FACEBOOK_OAUTH_CLIENT_ID', default=None)
+FACEBOOK_OAUTH_CLIENT_SECRET = env('FACEBOOK_OAUTH_CLIENT_SECRET', default=None)
+FACEBOOK_LOGIN_CONFIGURED = bool(FACEBOOK_OAUTH_CLIENT_ID and FACEBOOK_OAUTH_CLIENT_SECRET)
+
+# Our User model has no username field at all (USERNAME_FIELD = "email",
+# REQUIRED_FIELDS = []) -- tell allauth not to look for one.
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_LOGIN_METHODS = {'email'}
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*']
+ACCOUNT_EMAIL_VERIFICATION = 'none'  # matches classic signup, which never verifies email either
+SOCIALACCOUNT_LOGIN_ON_GET = True
+
+# Required: User.role has no default and every other consumer in this codebase
+# assumes it's set. Auto-signup would create a role-less, profile-less user, so
+# every brand-new social user is forced through accounts.forms.SocialSignupForm.
+SOCIALACCOUNT_AUTO_SIGNUP = False
+SOCIALACCOUNT_ADAPTER = 'accounts.adapters.SocialAccountAdapter'
+SOCIALACCOUNT_FORMS = {'signup': 'accounts.forms.SocialSignupForm'}
+
+SOCIALACCOUNT_PROVIDERS = {}
+if GOOGLE_LOGIN_CONFIGURED:
+    SOCIALACCOUNT_PROVIDERS['google'] = {
+        'APP': {
+            'client_id': GOOGLE_OAUTH_CLIENT_ID,
+            'secret': GOOGLE_OAUTH_CLIENT_SECRET,
+            'key': '',
+        },
+    }
+if FACEBOOK_LOGIN_CONFIGURED:
+    SOCIALACCOUNT_PROVIDERS['facebook'] = {
+        'APP': {
+            'client_id': FACEBOOK_OAUTH_CLIENT_ID,
+            'secret': FACEBOOK_OAUTH_CLIENT_SECRET,
+            'key': '',
+        },
+    }

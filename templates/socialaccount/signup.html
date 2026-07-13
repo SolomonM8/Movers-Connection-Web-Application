@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Complete Your Account - Movers Connection{% endblock %}
+{% block content %}
+<div class="form-header">
+  <h1>Complete Your Account</h1>
+</div>
+<p class="helper-link">You're signing in with {{ account.get_provider.name }} as {{ account.extra_data.email|default:"" }}. Just a couple more details to finish setting up your account.</p>
+<form method="post" action="{% url 'socialaccount_signup' %}">
+  {% csrf_token %}
+  {{ form.as_p }}
+  {{ redirect_field }}
+  <button type="submit">Finish Sign Up</button>
+</form>
+{% endblock %}

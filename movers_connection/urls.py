@@ -19,6 +19,16 @@ urlpatterns = [
     path('jobs/', include('jobs.urls')),
     path('board/', include('board.urls')),
     path('privacy/', TemplateView.as_view(template_name='privacy_policy.html'), name='privacy_policy'),
+    # Only the socialaccount + provider URLs (signup, connections, google/facebook
+    # login+callback) so allauth's own account app never competes with our
+    # accounts:login/accounts:register views. allauth.account.urls is still
+    # mounted (unlinked from anywhere) purely so reverse("account_login") -- used
+    # internally by SignupView's no-pending-signup fallback redirect -- resolves
+    # instead of raising NoReverseMatch.
+    path('social-auth/', include('allauth.socialaccount.urls')),
+    path('social-auth/', include('allauth.socialaccount.providers.google.urls')),
+    path('social-auth/', include('allauth.socialaccount.providers.facebook.urls')),
+    path('social-auth/fallback/', include('allauth.account.urls')),
     path('', LandingView.as_view(), name='landing'),
 ]
 

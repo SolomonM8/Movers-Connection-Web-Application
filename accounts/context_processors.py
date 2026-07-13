@@ -1,4 +1,13 @@
+from django.conf import settings
+
 from .models import User
+
+
+def social_login_context(request):
+    return {
+        "google_login_configured": settings.GOOGLE_LOGIN_CONFIGURED,
+        "facebook_login_configured": settings.FACEBOOK_LOGIN_CONFIGURED,
+    }
 
 
 def nav_context(request):
