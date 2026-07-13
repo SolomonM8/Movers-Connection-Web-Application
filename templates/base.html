@@ -1518,6 +1518,26 @@
       margin: 1rem 1.25rem 0;
     }
 
+    .push-toast {
+      position: fixed;
+      top: calc(env(safe-area-inset-top, 0px) + 0.75rem);
+      left: 0.75rem;
+      right: 0.75rem;
+      z-index: 2000;
+      background: #fff;
+      color: var(--color-text);
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(16, 32, 58, 0.18);
+      padding: 0.85rem 1rem;
+      cursor: pointer;
+      transform: translateY(-150%);
+      transition: transform 0.25s ease;
+    }
+    .push-toast.show { transform: translateY(0); }
+    .push-toast strong { display: block; color: var(--color-primary-dark); margin-bottom: 0.15rem; }
+    .push-toast p { margin: 0; font-size: 0.9rem; color: var(--color-muted); }
+
     label { display: block; margin-top: 0.9rem; font-weight: 600; font-size: 0.9rem; color: var(--color-text); }
 
     input, select {
@@ -2681,6 +2701,41 @@
         });
         PushNotifications.addListener("registrationError", function (err) {
           console.error("Push registration error", err);
+        });
+
+        var toastHideTimer = null;
+        function showPushToast(title, body, url) {
+          var toast = document.getElementById("push-toast");
+          if (!toast) {
+            toast = document.createElement("div");
+            toast.id = "push-toast";
+            toast.className = "push-toast";
+            document.body.appendChild(toast);
+          }
+          toast.innerHTML = "<strong></strong><p></p>";
+          toast.querySelector("strong").textContent = title || "Movers Connection";
+          toast.querySelector("p").textContent = body || "";
+          toast.onclick = function () {
+            clearTimeout(toastHideTimer);
+            toast.classList.remove("show");
+            if (url) window.location.href = url;
+          };
+          requestAnimationFrame(function () {
+            toast.classList.add("show");
+          });
+          clearTimeout(toastHideTimer);
+          toastHideTimer = setTimeout(function () {
+            toast.classList.remove("show");
+          }, 6000);
+        }
+
+        PushNotifications.addListener("pushNotificationReceived", function (notification) {
+          var data = notification.data || {};
+          showPushToast(
+            (notification.title || (notification.notification && notification.notification.title)),
+            (notification.body || (notification.notification && notification.notification.body)),
+            data.url
+          );
         });
 
         PushNotifications.requestPermissions().then(function (result) {

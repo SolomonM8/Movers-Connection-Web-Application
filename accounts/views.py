@@ -245,23 +245,6 @@ class RegisterPushTokenView(LoginRequiredMixin, View):
         return JsonResponse({"status": "ok"})
 
 
-class PushDebugView(LoginRequiredMixin, View):
-    """Temporary: sends a test push to the logged-in user and reports per-token
-    success/failure. Remove once push notifications are confirmed working."""
-
-    def get(self, request):
-        from .push import _send_to_tokens
-
-        tokens = list(request.user.device_tokens.values_list("token", flat=True))
-        results = _send_to_tokens(tokens, "Debug push", "This is a test.", "")
-        return JsonResponse(
-            {
-                "token_count": len(tokens),
-                "results": [{"ok": ok, "error": err} for _, ok, err in results],
-            }
-        )
-
-
 class NotificationListView(LoginRequiredMixin, ListView):
     template_name = "accounts/notifications.html"
     context_object_name = "notification_list"
