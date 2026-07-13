@@ -11,10 +11,6 @@ REMINDER_MESSAGE = "Reminder: select at least one service-area county to unlock 
 REMINDER_INTERVAL = timedelta(minutes=10)
 
 EXEMPT_URL_NAMES = {
-    ("accounts", "dashboard"),
-    ("accounts", "driver_dashboard"),
-    ("accounts", "laborer_dashboard"),
-    ("accounts", "laborer_profile_edit"),
     ("accounts", "logout"),
     ("accounts", "notifications_mark_read"),
     ("accounts", "notifications_clear"),
@@ -58,7 +54,7 @@ class LaborerOnboardingLockMiddleware:
 
         self._maybe_send_reminder(user)
         messages.error(request, "Select at least one service-area county to unlock the rest of the site.")
-        return redirect("accounts:dashboard")
+        return redirect("coverage:service_areas")
 
     def _maybe_send_reminder(self, user):
         cutoff = timezone.now() - REMINDER_INTERVAL

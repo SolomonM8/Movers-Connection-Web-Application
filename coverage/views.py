@@ -89,6 +89,17 @@ class ToggleServiceAreaAPIView(RoleRequiredMixin, View):
             ServiceArea.objects.create(
                 laborer_profile=profile, county=county, is_primary=current_count == 0
             )
+            if current_count == 0:
+                tour_fields = (
+                    "has_seen_tour",
+                    "has_seen_service_area_tour",
+                    "has_seen_browse_jobs_tour",
+                    "has_seen_friends_tour",
+                )
+                if not all(getattr(request.user, f) for f in tour_fields):
+                    from jobs.demo_data import ensure_demo_data_for_new_county
+
+                    ensure_demo_data_for_new_county(profile, county)
             status = "added"
 
         selected_counties = _serialize_service_areas(profile)

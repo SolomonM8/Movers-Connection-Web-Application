@@ -71,7 +71,7 @@
           {% else %}
             <form method="post" action="{% url 'jobs:apply' job.pk %}">
               {% csrf_token %}
-              <button type="submit" class="btn-primary btn-inline">Apply</button>
+              <button type="submit" class="btn-primary btn-inline"{% if forloop.first %} id="tour-first-apply-btn"{% endif %}>Apply</button>
             </form>
           {% endif %}
         </div>
@@ -82,4 +82,36 @@
   {% endif %}
   <p class="helper-link"><a href="{% url 'accounts:dashboard' %}">&larr; Back to dashboard</a></p>
 </main>
+
+{% if not user.has_seen_browse_jobs_tour %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.css">
+<script src="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.js.iife.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  if (!window.driver || !window.driver.js) return;
+  var steps = [
+    { element: ".job-list", popover: { title: "Jobs in your area", description: "Jobs posted in your service counties show up here." } },
+    { element: "#tour-first-apply-btn", popover: { title: "Apply for a job", description: "Click Apply to let the driver know you're interested. They'll review and accept applicants." } }
+  ].filter(function (step) {
+    if (!step.element) return true;
+    var el = document.querySelector(step.element);
+    return !!el && el.offsetParent !== null;
+  });
+  if (steps.length === 0) return;
+
+  var tourDriver = window.driver.js.driver({ showProgress: true, steps: steps });
+  tourDriver.drive();
+
+  var csrf = document.querySelector('input[name="csrfmiddlewaretoken"]');
+  fetch("{% url 'accounts:mark_tour_seen' %}", {
+    method: "POST",
+    body: "tour=browse_jobs",
+    headers: Object.assign(
+      { "Content-Type": "application/x-www-form-urlencoded" },
+      csrf ? { "X-CSRFToken": csrf.value } : {}
+    )
+  });
+});
+</script>
+{% endif %}
 {% endblock %}

@@ -50,7 +50,7 @@ class DriverSignUpView(CreateView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        login(self.request, self.object)
+        login(self.request, self.object, backend="django.contrib.auth.backends.ModelBackend")
         messages.info(
             self.request,
             "Welcome! Head to the Coverage Map and search an address to find labor groups near your next job.",
@@ -69,7 +69,7 @@ class LaborerSignUpView(CreateView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        login(self.request, self.object)
+        login(self.request, self.object, backend="django.contrib.auth.backends.ModelBackend")
         messages.info(
             self.request,
             "Welcome! Your next step is to select the counties you serve.",
@@ -247,10 +247,29 @@ class RegisterPushTokenView(LoginRequiredMixin, View):
 
 
 class MarkTourSeenView(LoginRequiredMixin, View):
+    TOUR_FIELD_BY_KEY = {
+        "dashboard": "has_seen_tour",
+        "service_area": "has_seen_service_area_tour",
+        "browse_jobs": "has_seen_browse_jobs_tour",
+        "friends": "has_seen_friends_tour",
+    }
+
     def post(self, request):
-        if not request.user.has_seen_tour:
-            request.user.has_seen_tour = True
-            request.user.save(update_fields=["has_seen_tour"])
+        field_name = self.TOUR_FIELD_BY_KEY.get(request.POST.get("tour"))
+        if field_name is None:
+            return JsonResponse({"status": "error", "message": "Unknown tour"}, status=400)
+        user = request.user
+        if not getattr(user, field_name):
+            setattr(user, field_name, True)
+            user.save(update_fields=[field_name])
+        if (
+            user.is_laborer
+            and hasattr(user, "laborer_profile")
+            and all(getattr(user, f) for f in self.TOUR_FIELD_BY_KEY.values())
+        ):
+            from jobs.demo_data import cleanup_demo_data
+
+            cleanup_demo_data(user.laborer_profile)
         return JsonResponse({"status": "ok"})
 
 

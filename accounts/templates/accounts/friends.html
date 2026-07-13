@@ -126,7 +126,7 @@
                   <span class="friend-meta">{{ profile.city }}{% if profile.city %}, {% endif %}{{ profile.state }} &middot; {{ profile.phone_number }}</span>
                 </div>
                 <div class="friend-actions">
-                  <button type="button" class="btn-secondary btn-inline" data-open-conversation="{{ profile.pk }}">Message &rarr;</button>
+                  <button type="button" class="btn-secondary btn-inline"{% if forloop.first %} id="tour-first-message-btn"{% endif %} data-open-conversation="{{ profile.pk }}">Message &rarr;</button>
                   <form method="post" action="{% url 'accounts:remove_friend' connection.pk %}">
                     {% csrf_token %}
                     <button type="submit" class="btn-danger btn-inline">Remove</button>
@@ -145,4 +145,36 @@
   </section>
   <p class="helper-link"><a href="{% url 'accounts:dashboard' %}">&larr; Back to dashboard</a></p>
 </main>
+
+{% if not is_driver and not user.has_seen_friends_tour %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.css">
+<script src="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.js.iife.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  if (!window.driver || !window.driver.js) return;
+  var steps = [
+    { element: ".friend-list", popover: { title: "Your friends", description: "Companies you've worked with (or that have friended you back) show up here." } },
+    { element: "#tour-first-message-btn", popover: { title: "Message a driver", description: "Click here to send a message any time — no need to wait for a new job." } }
+  ].filter(function (step) {
+    if (!step.element) return true;
+    var el = document.querySelector(step.element);
+    return !!el && el.offsetParent !== null;
+  });
+  if (steps.length === 0) return;
+
+  var tourDriver = window.driver.js.driver({ showProgress: true, steps: steps });
+  tourDriver.drive();
+
+  var csrf = document.querySelector('input[name="csrfmiddlewaretoken"]');
+  fetch("{% url 'accounts:mark_tour_seen' %}", {
+    method: "POST",
+    body: "tour=friends",
+    headers: Object.assign(
+      { "Content-Type": "application/x-www-form-urlencoded" },
+      csrf ? { "X-CSRFToken": csrf.value } : {}
+    )
+  });
+});
+</script>
+{% endif %}
 {% endblock %}

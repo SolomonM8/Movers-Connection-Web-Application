@@ -5,7 +5,9 @@
 <main class="wide-card map-page">
   <div class="map-toolbar">
     <h1 class="map-page-title">Manage Your Service Areas</h1>
-    <a href="{% url 'accounts:dashboard' %}" class="btn-primary btn-inline">Save &amp; Return to Dashboard &rarr;</a>
+    {% if not laborer_locked %}
+      <a href="{% url 'accounts:dashboard' %}" class="btn-primary btn-inline">Save &amp; Return to Dashboard &rarr;</a>
+    {% endif %}
   </div>
 
   <div class="service-summary">
@@ -44,4 +46,37 @@
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <script src="https://unpkg.com/topojson-client@3"></script>
 <script src="{% static 'coverage/js/service_area_map.js' %}?v={% now 'U' %}"></script>
+
+{% if not user.has_seen_service_area_tour %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.css">
+<script src="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.js.iife.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  if (!window.driver || !window.driver.js) return;
+  var steps = [
+    { popover: { title: "Welcome to Movers Connection", description: "Let's get your account set up so drivers and moving companies can find you. This takes less than a minute." } },
+    { element: ".state-picker-form", popover: { title: "Pick your state", description: "Start by choosing the state you work in." } },
+    { element: "#map-container", popover: { title: "Choose your counties", description: "Click a county on the map to add it. Your first pick becomes your HOME county." } },
+    { element: "#county-slots", popover: { title: "Your selected counties", description: "Everything you pick shows up here. You can add up to 6 and change your home county any time." } }
+  ].filter(function (step) {
+    if (!step.element) return true;
+    var el = document.querySelector(step.element);
+    return !!el && el.offsetParent !== null;
+  });
+
+  var tourDriver = window.driver.js.driver({ showProgress: true, steps: steps });
+  tourDriver.drive();
+
+  var csrf = document.querySelector('input[name="csrfmiddlewaretoken"]');
+  fetch("{% url 'accounts:mark_tour_seen' %}", {
+    method: "POST",
+    body: "tour=service_area",
+    headers: Object.assign(
+      { "Content-Type": "application/x-www-form-urlencoded" },
+      csrf ? { "X-CSRFToken": csrf.value } : {}
+    )
+  });
+});
+</script>
+{% endif %}
 {% endblock %}

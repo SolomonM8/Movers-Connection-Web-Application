@@ -91,7 +91,11 @@ document.addEventListener("DOMContentLoaded", function () {
   var csrf = document.querySelector('input[name="csrfmiddlewaretoken"]');
   fetch("{% url 'accounts:mark_tour_seen' %}", {
     method: "POST",
-    headers: csrf ? {"X-CSRFToken": csrf.value} : {}
+    body: "tour=dashboard",
+    headers: Object.assign(
+      { "Content-Type": "application/x-www-form-urlencoded" },
+      csrf ? { "X-CSRFToken": csrf.value } : {}
+    )
   });
 });
 </script>

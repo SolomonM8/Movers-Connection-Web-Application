@@ -49,6 +49,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(default=timezone.now)
     has_seen_tour = models.BooleanField(default=False)
+    has_seen_service_area_tour = models.BooleanField(default=False)
+    has_seen_browse_jobs_tour = models.BooleanField(default=False)
+    has_seen_friends_tour = models.BooleanField(default=False)
 
     objects = UserManager()
 
