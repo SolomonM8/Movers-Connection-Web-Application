@@ -130,17 +130,6 @@
     return projection;
   }
 
-  function disableZoom() {
-    if (zoom) {
-      svg.on(".zoom", null);
-      zoom = null;
-    }
-    regionLayer.attr("transform", null);
-    roadLayer.attr("transform", null);
-    cityLayer.attr("transform", null);
-    zoomControls.classList.add("hidden");
-  }
-
   function enableZoom(size) {
     zoom = d3
       .zoom()
@@ -153,10 +142,13 @@
         regionLayer.attr("transform", event.transform);
         roadLayer.attr("transform", event.transform);
         cityLayer.attr("transform", event.transform);
+        stateLabelLayer.attr("transform", event.transform);
         cityLayer.selectAll("circle").attr("r", 2.5 / event.transform.k);
         cityLayer.selectAll("text").style("font-size", 10 / event.transform.k + "px");
+        stateLabelLayer.selectAll("text").style("font-size", 11 / event.transform.k + "px");
       });
     svg.call(zoom);
+    svg.call(zoom.transform, d3.zoomIdentity);
     zoomControls.classList.remove("hidden");
   }
 
@@ -207,7 +199,6 @@
   function drawNation() {
     backButton.classList.add("hidden");
     closePanel();
-    disableZoom();
     hideTooltip();
     statusEl.textContent = "Click a state to see its counties.";
 
@@ -230,6 +221,8 @@
     roadClipGroup.selectAll("path.interstate").remove();
     drawStateLabels(statesFC.features);
     drawCities([], projection);
+
+    enableZoom(size);
   }
 
   function drawState(abbr, stateFipsId) {
