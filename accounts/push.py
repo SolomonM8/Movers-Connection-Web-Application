@@ -30,19 +30,15 @@ def _get_firebase_app():
     return _firebase_app
 
 
-def send_push_to_user(user, title, body, url=""):
-    """Send a push notification to every registered device for a user.
-
-    No-ops silently if Firebase isn't configured, and skips any device
-    token FCM rejects (e.g. the app was uninstalled) rather than raising.
-    """
+def _send_to_tokens(tokens, title, body, url):
+    """Attempt delivery to each token, returning (token, ok, error) for each."""
     app = _get_firebase_app()
     if not app:
-        return
+        return [(t, False, "Firebase not configured") for t in tokens]
 
     from firebase_admin import messaging
 
-    tokens = list(user.device_tokens.values_list("token", flat=True))
+    results = []
     for token in tokens:
         try:
             messaging.send(
@@ -53,5 +49,17 @@ def send_push_to_user(user, title, body, url=""):
                 ),
                 app=app,
             )
-        except Exception:
-            continue
+            results.append((token, True, None))
+        except Exception as exc:
+            results.append((token, False, str(exc)))
+    return results
+
+
+def send_push_to_user(user, title, body, url=""):
+    """Send a push notification to every registered device for a user.
+
+    No-ops silently if Firebase isn't configured, and skips any device
+    token FCM rejects (e.g. the app was uninstalled) rather than raising.
+    """
+    tokens = list(user.device_tokens.values_list("token", flat=True))
+    _send_to_tokens(tokens, title, body, url)
