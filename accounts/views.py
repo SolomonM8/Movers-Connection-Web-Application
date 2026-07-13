@@ -1,7 +1,5 @@
-import os
-
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import LoginView
 from django.http import JsonResponse
@@ -39,44 +37,6 @@ class CustomLoginView(LoginView):
     template_name = "accounts/login.html"
     form_class = NoAutofocusAuthenticationForm
 
-
-class LoginDebugView(View):
-    """Temporary: diagnoses why authenticate() rejects valid-looking
-    credentials in production. Remove once the login bug is found."""
-
-    def get(self, request):
-        if request.GET.get("secret") != "temp-debug-4f8a2c19":
-            return JsonResponse({"error": "forbidden"}, status=403)
-
-        from django.conf import settings
-        from django.db import connection
-
-        db_info = {
-            "vendor": connection.vendor,
-            "database_url_set": bool(os.environ.get("DATABASE_URL")),
-            "engine": settings.DATABASES["default"]["ENGINE"],
-            "total_user_count": User.objects.count(),
-        }
-
-        email = request.GET.get("email", "")
-        password = request.GET.get("password", "")
-        if not email:
-            return JsonResponse(db_info)
-        try:
-            user = User.objects.get(email__iexact=email)
-        except User.DoesNotExist:
-            return JsonResponse({**db_info, "exists": False})
-        return JsonResponse(
-            {
-                **db_info,
-                "exists": True,
-                "is_active": user.is_active,
-                "role": user.role,
-                "check_password": user.check_password(password),
-                "authenticate_result": authenticate(request, username=email, password=password)
-                is not None,
-            }
-        )
 
 
 class DriverSignUpView(CreateView):
