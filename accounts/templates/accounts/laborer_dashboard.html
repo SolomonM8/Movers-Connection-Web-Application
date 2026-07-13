@@ -3,7 +3,7 @@
 {% block title %}Laborer Dashboard - Movers Connection{% endblock %}
 {% block dashboard_title %}Laborer Dashboard{% endblock %}
 {% block dashboard_content %}
-<section class="dashboard-section">
+<section class="dashboard-section" id="tour-account-info">
   <div class="dashboard-section-header">
     <h2>Account Information</h2>
     <a class="btn-primary btn-inline" href="{% url 'accounts:laborer_profile_edit' %}">Edit &rarr;</a>
@@ -20,7 +20,7 @@
   </dl>
 </section>
 
-<section class="dashboard-section">
+<section class="dashboard-section" id="tour-service-areas">
   <div class="dashboard-section-header">
     <h2>Areas You Serve ({{ service_areas_count }}/6)</h2>
     <a class="btn-primary btn-inline" href="{% url 'coverage:service_areas' %}">Manage &rarr;</a>
@@ -45,7 +45,7 @@
   {% endif %}
 </section>
 
-<section class="dashboard-section">
+<section class="dashboard-section" id="tour-browse-jobs">
   <div class="onboarding-callout">
     <p><strong>Looking for work?</strong> See jobs posted in the counties you serve and apply.</p>
     <a class="btn-primary btn-inline" href="{% url 'jobs:browse' %}">Browse Jobs &rarr;</a>
@@ -60,4 +60,39 @@
 </section>
 
 {% include "accounts/includes/rating_summary.html" %}
+{% endblock %}
+
+{% block tour %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.css">
+<script src="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.js.iife.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  if (!window.driver || !window.driver.js) return;
+  var steps = [
+    { popover: { title: "Welcome to Movers Connection", description: "Here's a quick look at what you can do as a laborer. You can skip this any time." } },
+    { element: "#tour-account-info", popover: { title: "Your account", description: "Your profile basics live here — keep them up to date so drivers can find you." } },
+    { element: "#tour-service-areas", popover: { title: "Select your counties", description: "Select the counties you serve — this unlocks the rest of the site." } },
+    { element: "#tour-browse-jobs", popover: { title: "Browse jobs", description: "Once you've picked your counties, you can browse and apply to jobs posted there." } },
+    { element: "#tour-nav-friends", popover: { title: "Friends", description: "Worked with a good company before? Add them as a friend to hear from them directly." } },
+    { element: "#tour-nav-community", popover: { title: "Community board", description: "Post updates, ask questions, and share guides with other users." } }
+  ].filter(function (step) {
+    if (!step.element) return true;
+    var el = document.querySelector(step.element);
+    return !!el && el.offsetParent !== null;
+  });
+
+  var tourDriver = window.driver.js.driver({ showProgress: true, steps: steps });
+  tourDriver.drive();
+
+  // driver.js's onDestroyed callback isn't reliably fired when the user closes
+  // via the (x) button (it only runs if a highlighted element is still active
+  // at destroy time), so mark the tour seen as soon as it starts instead --
+  // it's shown at most once either way, whether skipped or finished.
+  var csrf = document.querySelector('input[name="csrfmiddlewaretoken"]');
+  fetch("{% url 'accounts:mark_tour_seen' %}", {
+    method: "POST",
+    headers: csrf ? {"X-CSRFToken": csrf.value} : {}
+  });
+});
+</script>
 {% endblock %}

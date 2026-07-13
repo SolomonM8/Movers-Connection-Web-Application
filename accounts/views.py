@@ -246,6 +246,14 @@ class RegisterPushTokenView(LoginRequiredMixin, View):
         return JsonResponse({"status": "ok"})
 
 
+class MarkTourSeenView(LoginRequiredMixin, View):
+    def post(self, request):
+        if not request.user.has_seen_tour:
+            request.user.has_seen_tour = True
+            request.user.save(update_fields=["has_seen_tour"])
+        return JsonResponse({"status": "ok"})
+
+
 class NotificationListView(LoginRequiredMixin, ListView):
     template_name = "accounts/notifications.html"
     context_object_name = "notification_list"

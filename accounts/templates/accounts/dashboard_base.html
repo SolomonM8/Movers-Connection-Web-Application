@@ -5,4 +5,5 @@
   <p>Welcome back, {{ user.email }}.</p>
   {% block dashboard_content %}{% endblock %}
 </main>
+{% if not user.has_seen_tour %}{% block tour %}{% endblock %}{% endif %}
 {% endblock %}
