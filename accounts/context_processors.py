@@ -9,6 +9,12 @@ def nav_context(request):
     context = {
         "unread_notification_count": user.notifications.filter(is_read=False).count(),
         "recent_notifications": user.notifications.select_related("related_connection").all()[:5],
+        "laborer_locked": (
+            user.role == User.Role.LABORER
+            and not user.is_superuser
+            and hasattr(user, "laborer_profile")
+            and not user.laborer_profile.service_areas.exists()
+        ),
     }
 
     name_source = None
