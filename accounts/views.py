@@ -1,3 +1,5 @@
+import os
+
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -45,14 +47,28 @@ class LoginDebugView(View):
     def get(self, request):
         if request.GET.get("secret") != "temp-debug-4f8a2c19":
             return JsonResponse({"error": "forbidden"}, status=403)
+
+        from django.conf import settings
+        from django.db import connection
+
+        db_info = {
+            "vendor": connection.vendor,
+            "database_url_set": bool(os.environ.get("DATABASE_URL")),
+            "engine": settings.DATABASES["default"]["ENGINE"],
+            "total_user_count": User.objects.count(),
+        }
+
         email = request.GET.get("email", "")
         password = request.GET.get("password", "")
+        if not email:
+            return JsonResponse(db_info)
         try:
             user = User.objects.get(email__iexact=email)
         except User.DoesNotExist:
-            return JsonResponse({"exists": False})
+            return JsonResponse({**db_info, "exists": False})
         return JsonResponse(
             {
+                **db_info,
                 "exists": True,
                 "is_active": user.is_active,
                 "role": user.role,
