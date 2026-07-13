@@ -218,20 +218,30 @@ class DriverProfileEditForm(ProfileEditFormBase):
 
 class SocialSignupForm(forms.Form):
     """Shown once, right after a brand-new Google/Facebook sign-in, to collect the
-    role + profile fields the site requires but the provider doesn't supply. A
-    plain Form rather than a subclass of allauth's own signup form, since our
-    SocialAccountAdapter drives it directly via cleaned_data instead of relying on
-    allauth-internal form behavior."""
+    profile fields the site requires but the provider doesn't supply. Role isn't
+    asked here -- it's picked before the OAuth round-trip even starts (see
+    accounts.views.SocialSignupRoleGateView) and read back from the session by
+    SocialAccountAdapter.save_user.
 
-    role = forms.ChoiceField(choices=User.Role.choices, widget=forms.RadioSelect, label="I am a...")
+    save()/try_save() match the exact contract allauth's own BaseSignupForm
+    provides (confirmed by reading allauth/account/forms.py and
+    allauth/socialaccount/internal/flows/signup.py::signup_by_form, which calls
+    form.try_save(request) directly) -- without these, submitting this form
+    crashes with AttributeError."""
+
     name = forms.CharField(max_length=255, label="Name")
     phone_number = forms.CharField(max_length=20, label="Phone number")
     city = forms.CharField(max_length=100)
     state = forms.ChoiceField(choices=US_STATE_CHOICES)
 
     def __init__(self, *args, **kwargs):
-        kwargs.pop("sociallogin", None)
+        self.sociallogin = kwargs.pop("sociallogin", None)
         super().__init__(*args, **kwargs)
-        self.fields["role"].choices = [
-            choice for choice in User.Role.choices if choice[0] != User.Role.ADMIN
-        ]
+
+    def save(self, request):
+        from allauth.socialaccount.adapter import get_adapter
+
+        return get_adapter().save_user(request, self.sociallogin, form=self)
+
+    def try_save(self, request):
+        return self.save(request), None

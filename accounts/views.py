@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import LoginView
-from django.http import JsonResponse
+from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
@@ -46,6 +46,7 @@ class DriverSignUpView(CreateView):
     extra_context = {
         "role_label": "Driver / Moving Company",
         "role_icon": "includes/icon-truck.svg",
+        "role_slug": "driver",
     }
 
     def form_valid(self, form):
@@ -65,6 +66,7 @@ class LaborerSignUpView(CreateView):
     extra_context = {
         "role_label": "Laborer / Labor Group",
         "role_icon": "includes/icon-hardhat.svg",
+        "role_slug": "laborer",
     }
 
     def form_valid(self, form):
@@ -75,6 +77,25 @@ class LaborerSignUpView(CreateView):
             "Welcome! Your next step is to select the counties you serve.",
         )
         return response
+
+
+SOCIAL_PROVIDER_LOGIN_URL_NAMES = {"google": "google_login", "facebook": "facebook_login"}
+
+
+class SocialSignupRoleGateView(View):
+    """Stashes which role a brand-new user picked before sending them into the
+    Google/Facebook OAuth round-trip, since the provider has no way to carry that
+    back to us. SocialAccountAdapter.save_user reads it back out of the session
+    once the round-trip completes."""
+
+    def get(self, request, role, provider):
+        if role not in (User.Role.DRIVER, User.Role.LABORER):
+            raise Http404
+        url_name = SOCIAL_PROVIDER_LOGIN_URL_NAMES.get(provider)
+        if url_name is None:
+            raise Http404
+        request.session["pending_social_role"] = role
+        return redirect(url_name)
 
 
 def dashboard_redirect(request):

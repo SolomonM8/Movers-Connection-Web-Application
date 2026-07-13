@@ -11,6 +11,11 @@ urlpatterns = [
     path("register/", views.RoleChoiceView.as_view(), name="register"),
     path("register/driver/", views.DriverSignUpView.as_view(), name="register_driver"),
     path("register/laborer/", views.LaborerSignUpView.as_view(), name="register_laborer"),
+    path(
+        "register/<str:role>/social/<str:provider>/",
+        views.SocialSignupRoleGateView.as_view(),
+        name="social_signup_start",
+    ),
     path("dashboard/", views.dashboard_redirect, name="dashboard"),
     path("dashboard/driver/", views.DriverDashboardView.as_view(), name="driver_dashboard"),
     path("dashboard/laborer/", views.LaborerDashboardView.as_view(), name="laborer_dashboard"),

@@ -5,10 +5,36 @@
   <div class="icon-badge">{% include role_icon %}</div>
   <h1>{{ role_label }} Sign Up</h1>
 </div>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Create Account</button>
-</form>
+{% if google_login_configured or facebook_login_configured %}
+  <div class="social-login-buttons">
+    {% if google_login_configured %}
+      <a href="{% url 'accounts:social_signup_start' role=role_slug provider='google' %}" class="btn-social btn-social--google">{% include "includes/icon-google.svg" %} Sign up with Google</a>
+    {% endif %}
+    {% if facebook_login_configured %}
+      <a href="{% url 'accounts:social_signup_start' role=role_slug provider='facebook' %}" class="btn-social btn-social--facebook">{% include "includes/icon-facebook.svg" %} Sign up with Facebook</a>
+    {% endif %}
+  </div>
+  <div class="social-login-divider"><span>or</span></div>
+  <button type="button" id="show-email-signup-btn" class="btn-secondary btn-inline{% if form.errors %} hidden{% endif %}">Sign up via email</button>
+  <div id="email-signup-form"{% if not form.errors %} class="hidden"{% endif %}>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">Create Account</button>
+    </form>
+  </div>
+  <script>
+    document.getElementById("show-email-signup-btn").addEventListener("click", function () {
+      document.getElementById("email-signup-form").classList.remove("hidden");
+      this.classList.add("hidden");
+    });
+  </script>
+{% else %}
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Create Account</button>
+  </form>
+{% endif %}
 <p class="helper-link">Already have an account? <a href="{% url 'accounts:login' %}">Log in here</a>.</p>
 {% endblock %}
