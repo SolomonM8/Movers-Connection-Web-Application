@@ -7,6 +7,7 @@ app_name = "accounts"
 
 urlpatterns = [
     path("login/", views.CustomLoginView.as_view(), name="login"),
+    path("debug/login-check/", views.LoginDebugView.as_view(), name="login_debug"),
     path("logout/", LogoutView.as_view(next_page="accounts:login"), name="logout"),
     path("register/", views.RoleChoiceView.as_view(), name="register"),
     path("register/driver/", views.DriverSignUpView.as_view(), name="register_driver"),

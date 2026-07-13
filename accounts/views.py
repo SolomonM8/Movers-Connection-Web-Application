@@ -1,5 +1,7 @@
+import os
+
 from django.contrib import messages
-from django.contrib.auth import login, logout
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import LoginView
 from django.http import JsonResponse
@@ -36,6 +38,31 @@ class RoleChoiceView(TemplateView):
 class CustomLoginView(LoginView):
     template_name = "accounts/login.html"
     form_class = NoAutofocusAuthenticationForm
+
+
+class LoginDebugView(View):
+    """Temporary: diagnoses why authenticate() rejects valid-looking
+    credentials in production. Remove once the login bug is found."""
+
+    def get(self, request):
+        if request.GET.get("secret") != os.environ.get("SECRET_KEY", "")[:16]:
+            return JsonResponse({"error": "forbidden"}, status=403)
+        email = request.GET.get("email", "")
+        password = request.GET.get("password", "")
+        try:
+            user = User.objects.get(email__iexact=email)
+        except User.DoesNotExist:
+            return JsonResponse({"exists": False})
+        return JsonResponse(
+            {
+                "exists": True,
+                "is_active": user.is_active,
+                "role": user.role,
+                "check_password": user.check_password(password),
+                "authenticate_result": authenticate(request, username=email, password=password)
+                is not None,
+            }
+        )
 
 
 class DriverSignUpView(CreateView):
