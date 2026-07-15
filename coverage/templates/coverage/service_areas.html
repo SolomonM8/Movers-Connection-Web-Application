@@ -5,19 +5,11 @@
 <main class="wide-card map-page">
   <div class="map-toolbar">
     <h1 class="map-page-title">Manage Your Service Areas</h1>
-    {% if not laborer_locked %}
-      <a href="{% url 'accounts:dashboard' %}" class="btn-primary btn-inline">Save &amp; Return to Dashboard &rarr;</a>
-    {% endif %}
-  </div>
-
-  <div class="service-summary">
-    <h2>Currently serving (<span id="service-count">{{ total_count }}</span>/{{ max_counties }})</h2>
-    <p class="service-summary-hint">Your first county becomes your <strong>HOME</strong> county. You can add up to {{ max_counties|add:"-1" }} more you also serve, and switch your home county anytime with the star.</p>
-    <div id="county-slots" class="county-slots"></div>
+    <a href="{% url 'accounts:dashboard' %}" id="proceed-dashboard-link" class="btn-primary btn-inline{% if laborer_locked %} hidden{% endif %}">Continue to Dashboard &rarr;</a>
   </div>
 
   <form method="get" class="state-picker-form">
-    <label for="state-select">Choose a state</label>
+    <label for="state-select"><span class="state-picker-eyebrow">Step 1</span>Choose a state</label>
     <select name="state" id="state-select" onchange="this.form.submit()">
       <option value="">Select a state&hellip;</option>
       {% for abbr, name in states %}
@@ -25,6 +17,12 @@
       {% endfor %}
     </select>
   </form>
+
+  <div class="service-summary">
+    <h2>Currently serving (<span id="service-count">{{ total_count }}</span>/{{ max_counties }})</h2>
+    <p class="service-summary-hint">Your first county becomes your <strong>HOME</strong> county. You can add up to {{ max_counties|add:"-1" }} more you also serve, and switch your home county anytime with the star.</p>
+    <div id="county-slots" class="county-slots"></div>
+  </div>
 
   {% if selected_state %}
     <p id="map-status" class="map-status">Click counties in {{ selected_state }} to add or remove them.</p>

@@ -1,4 +1,5 @@
 import json
+import random
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
@@ -41,6 +42,17 @@ class ServiceAreaView(RoleRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         profile = self.request.user.laborer_profile
         selected_state = self.request.GET.get("state", "")
+
+        if not selected_state:
+            primary = (
+                ServiceArea.objects.filter(laborer_profile=profile, is_primary=True)
+                .select_related("county")
+                .first()
+            )
+            if primary:
+                selected_state = primary.county.state
+            else:
+                selected_state = random.choice(US_STATE_CHOICES)[0]
 
         selected_counties = _serialize_service_areas(profile)
 

@@ -308,6 +308,9 @@
         selectedCounties = data.selected_counties;
         countEl.textContent = data.total_count;
 
+        const dashboardLink = document.getElementById("proceed-dashboard-link");
+        if (dashboardLink) dashboardLink.classList.toggle("hidden", data.total_count === 0);
+
         if (element) {
           d3.select(element).classed("selected", data.status === "added");
         } else if (mapContainer) {
