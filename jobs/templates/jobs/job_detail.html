@@ -19,64 +19,98 @@
     {% if job.weight_lbs %}<div><dt>Weight</dt><dd>{{ job.weight_lbs }} lbs</dd></div>{% endif %}
   </dl>
 
-  <div class="job-actions">
-    <a class="btn-primary btn-inline" href="{% url 'jobs:edit' job.pk %}">Edit Job</a>
-    {% if job.status == "open" and can_mark_complete %}
-      <form method="post" action="{% url 'jobs:mark_complete' job.pk %}">
-        {% csrf_token %}
-        <button type="submit" class="btn-primary btn-inline">Mark Completed</button>
-      </form>
+  {% if is_owner %}
+    <div class="job-actions">
+      <a class="btn-primary btn-inline" href="{% url 'jobs:edit' job.pk %}">Edit Job</a>
+      {% if job.status == "open" and can_mark_complete %}
+        <form method="post" action="{% url 'jobs:mark_complete' job.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="btn-primary btn-inline">Mark Completed</button>
+        </form>
+      {% endif %}
+      {% if job.status == "open" %}
+        <form method="post" action="{% url 'jobs:delete' job.pk %}" onsubmit="return confirm('Delete this job? This cannot be undone.');">
+          {% csrf_token %}
+          <button type="submit" class="btn-danger btn-inline">Delete Job</button>
+        </form>
+      {% endif %}
+    </div>
+    {% if job.status == "open" and not can_mark_complete %}
+      <p class="helper-link">You can mark this job completed once {{ job.job_date|date:"F j, Y" }} arrives.</p>
     {% endif %}
-    {% if job.status == "open" %}
-      <form method="post" action="{% url 'jobs:delete' job.pk %}" onsubmit="return confirm('Delete this job? This cannot be undone.');">
-        {% csrf_token %}
-        <button type="submit" class="btn-danger btn-inline">Delete Job</button>
-      </form>
-    {% endif %}
-  </div>
-  {% if job.status == "open" and not can_mark_complete %}
-    <p class="helper-link">You can mark this job completed once {{ job.job_date|date:"F j, Y" }} arrives.</p>
-  {% endif %}
 
-  <section class="dashboard-section">
-    <h2>Applicants ({{ applications.count }})</h2>
-    {% if applications %}
-      <div class="job-list">
-        {% for application in applications %}
-          <div class="job-card">
-            <div class="job-card-header">
-              <strong>{{ application.laborer_profile.display_name|default:application.laborer_profile.user.email }}</strong>
-              <span class="county-slot-badge{% if application.status != "accepted" %} county-slot-badge--muted{% endif %}">{{ application.display_label|upper }}</span>
+    <section class="dashboard-section">
+      <h2>Applicants ({{ applications.count }})</h2>
+      {% if applications %}
+        <div class="job-list">
+          {% for application in applications %}
+            <div class="job-card">
+              <div class="job-card-header">
+                <strong>{{ application.laborer_profile.display_name|default:application.laborer_profile.user.email }}</strong>
+                <span class="county-slot-badge{% if application.status != "accepted" %} county-slot-badge--muted{% endif %}">{{ application.display_label|upper }}</span>
+              </div>
+              <p><a class="helper-link" href="{% url 'accounts:laborer_profile_detail' application.laborer_profile.pk %}">View Profile &rarr;</a></p>
+              <p>{{ application.laborer_profile.city }}{% if application.laborer_profile.city %}, {% endif %}{{ application.laborer_profile.state }}</p>
+              <p>{{ application.laborer_profile.phone_number }}</p>
+              <p>Applied {{ application.applied_at|date:"M j, Y" }}</p>
+              {% if application.status == "pending" and application.source == "applied" %}
+                <div class="job-actions">
+                  <form method="post" action="{% url 'jobs:application_respond' job.pk application.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" name="action" value="accept" class="btn-primary btn-inline">Accept</button>
+                  </form>
+                  <form method="post" action="{% url 'jobs:application_respond' job.pk application.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" name="action" value="decline" class="btn-danger btn-inline">Decline</button>
+                  </form>
+                </div>
+              {% elif application.status == "pending" and application.source == "invited" %}
+                <p class="helper-link">Waiting for them to respond to your invite.</p>
+              {% elif application.status == "accepted" %}
+                <div class="job-actions">
+                  <button type="button" class="btn-primary btn-inline" data-open-conversation="{{ application.laborer_profile.pk }}">Message &rarr;</button>
+                </div>
+              {% endif %}
             </div>
-            <p><a class="helper-link" href="{% url 'accounts:laborer_profile_detail' application.laborer_profile.pk %}">View Profile &rarr;</a></p>
-            <p>{{ application.laborer_profile.city }}{% if application.laborer_profile.city %}, {% endif %}{{ application.laborer_profile.state }}</p>
-            <p>{{ application.laborer_profile.phone_number }}</p>
-            <p>Applied {{ application.applied_at|date:"M j, Y" }}</p>
-            {% if application.status == "pending" and application.source == "applied" %}
-              <div class="job-actions">
-                <form method="post" action="{% url 'jobs:application_respond' job.pk application.pk %}">
-                  {% csrf_token %}
-                  <button type="submit" name="action" value="accept" class="btn-primary btn-inline">Accept</button>
-                </form>
-                <form method="post" action="{% url 'jobs:application_respond' job.pk application.pk %}">
-                  {% csrf_token %}
-                  <button type="submit" name="action" value="decline" class="btn-danger btn-inline">Decline</button>
-                </form>
-              </div>
-            {% elif application.status == "pending" and application.source == "invited" %}
-              <p class="helper-link">Waiting for them to respond to your invite.</p>
-            {% elif application.status == "accepted" %}
-              <div class="job-actions">
-                <button type="button" class="btn-primary btn-inline" data-open-conversation="{{ application.laborer_profile.pk }}">Message &rarr;</button>
-              </div>
-            {% endif %}
+          {% endfor %}
+        </div>
+      {% else %}
+        <p>No one has applied to this job yet.</p>
+      {% endif %}
+    </section>
+  {% elif user.is_laborer %}
+    <section class="dashboard-section">
+      <p><strong>Posted by</strong> {{ job.driver_profile.company_name|default:job.driver_profile.user.email }}</p>
+      {% if my_application %}
+        <span class="county-slot-badge{% if my_application.status != "accepted" %} county-slot-badge--muted{% endif %}">{{ my_application.display_label|upper }}</span>
+        {% if my_application.status == "pending" and my_application.source == "invited" %}
+          <div class="job-actions">
+            <form method="post" action="{% url 'jobs:invitation_respond' my_application.pk %}">
+              {% csrf_token %}
+              <button type="submit" name="action" value="accept" class="btn-primary btn-inline">Accept</button>
+            </form>
+            <form method="post" action="{% url 'jobs:invitation_respond' my_application.pk %}">
+              {% csrf_token %}
+              <button type="submit" name="action" value="decline" class="btn-danger btn-inline">Decline</button>
+            </form>
           </div>
-        {% endfor %}
-      </div>
-    {% else %}
-      <p>No one has applied to this job yet.</p>
-    {% endif %}
-  </section>
+        {% elif my_application.status == "accepted" %}
+          <div class="job-actions">
+            <button type="button" class="btn-primary btn-inline" data-open-conversation="{{ job.driver_profile.pk }}">Message &rarr;</button>
+          </div>
+        {% endif %}
+      {% elif job.status == "open" %}
+        <form method="post" action="{% url 'jobs:apply' job.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="btn-primary btn-inline">Apply</button>
+        </form>
+      {% endif %}
+    </section>
+  {% else %}
+    <section class="dashboard-section">
+      <p><strong>Posted by</strong> {{ job.driver_profile.company_name|default:job.driver_profile.user.email }}</p>
+    </section>
+  {% endif %}
 
   <p class="helper-link"><a href="{% url 'accounts:dashboard' %}">&larr; Back to dashboard</a></p>
 </main>

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Past Jobs - Movers Connection{% endblock %}
+{% block main %}
+<main class="wide-card">
+  <h1>Past Jobs</h1>
+  <p class="hero-subtitle-muted" style="margin:0 0 1.25rem;text-align:left;">Jobs you worked that have already passed or been marked completed.</p>
+  {% if jobs %}
+    <div class="job-list">
+      {% for job in jobs %}
+        <a class="job-card job-card-link" href="{% url 'jobs:detail' job.pk %}">
+          <div class="job-card-header">
+            <strong>{{ job.get_job_type_display }}</strong>
+            <span class="job-card-date">{{ job.job_date|date:"M j, Y" }}</span>
+          </div>
+          {% if job.my_application %}
+            <span class="county-slot-badge county-slot-badge--muted">{{ job.my_application.display_label|upper }}</span>
+          {% endif %}
+          <p>{{ job.county.name }}, {{ job.county.state }}{% if job.city %} &middot; {{ job.city }}{% endif %}</p>
+          <p>{{ job.driver_profile.company_name|default:job.driver_profile.user.email }}</p>
+          {% if job.status == "completed" %}
+            <span class="county-slot-badge county-slot-badge--muted">COMPLETED</span>
+          {% endif %}
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>No past jobs to show.</p>
+  {% endif %}
+  <p class="helper-link"><a href="{% url 'jobs:browse' %}">&larr; Back to Browse Jobs</a></p>
+</main>
+{% endblock %}

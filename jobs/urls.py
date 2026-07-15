@@ -5,6 +5,9 @@ from . import views
 app_name = "jobs"
 
 urlpatterns = [
+    path("", views.job_hub_redirect, name="hub"),
+    path("mine/", views.DriverJobHubView.as_view(), name="driver_hub"),
+    path("mine/history/", views.LaborerPastJobListView.as_view(), name="laborer_past"),
     path("create/", views.JobCreateView.as_view(), name="create"),
     path("past/", views.DriverPastJobListView.as_view(), name="past"),
     path("browse/", views.LaborerJobListView.as_view(), name="browse"),

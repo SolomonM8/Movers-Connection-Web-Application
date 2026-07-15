@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Jobs - Movers Connection{% endblock %}
+{% block main %}
+<main class="wide-card">
+  <div class="dashboard-section-header">
+    <h1>Jobs</h1>
+    <a class="btn-primary btn-inline" href="{% url 'jobs:create' %}">+ Post a Job</a>
+  </div>
+
+  <section class="dashboard-section">
+    <div class="stat-highlight">
+      <span class="stat-highlight-number">{{ completed_jobs_count }}</span>
+      <span class="stat-highlight-label">Total Jobs Completed</span>
+    </div>
+  </section>
+
+  <section class="dashboard-section">
+    <h2>Active Jobs</h2>
+    {% if active_jobs %}
+      <div class="job-list">
+        {% for job in active_jobs %}
+          <a class="job-card job-card-link" href="{% url 'jobs:detail' job.pk %}">
+            <div class="job-card-header">
+              <strong>{{ job.get_job_type_display }}</strong>
+              <span class="job-card-date">{{ job.job_date|date:"M j, Y" }}</span>
+            </div>
+            <p>{{ job.county.name }}, {{ job.county.state }}{% if job.city %} &middot; {{ job.city }}{% endif %}</p>
+            <p>
+              {{ job.workers_needed }} worker{{ job.workers_needed|pluralize }} needed &middot;
+              {% if job.pricing_model == "flat_rate" %}${{ job.flat_rate_per_worker }} per worker{% else %}${{ job.hourly_rate }}/hr per worker{% endif %}
+            </p>
+            {% if job.weight_lbs %}<p>Approx. {{ job.weight_lbs }} lbs</p>{% endif %}
+            <span class="county-slot-badge{% if not job.application_count %} county-slot-badge--muted{% endif %}">{{ job.application_count }} APPLICANT{{ job.application_count|pluralize }}</span>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>You don't have any active jobs right now.</p>
+    {% endif %}
+  </section>
+
+  <section class="dashboard-section">
+    <h2>Past Jobs</h2>
+    {% if past_jobs %}
+      <div class="job-list">
+        {% for job in past_jobs %}
+          <a class="job-card job-card-link" href="{% url 'jobs:detail' job.pk %}">
+            <div class="job-card-header">
+              <strong>{{ job.get_job_type_display }}</strong>
+              <span class="job-card-date">{{ job.job_date|date:"M j, Y" }}</span>
+            </div>
+            <p>{{ job.county.name }}, {{ job.county.state }}{% if job.city %} &middot; {{ job.city }}{% endif %}</p>
+            {% if job.status == "completed" %}
+              <span class="county-slot-badge county-slot-badge--muted">COMPLETED</span>
+            {% endif %}
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>No past jobs to show.</p>
+    {% endif %}
+  </section>
+
+  <p class="helper-link"><a href="{% url 'accounts:dashboard' %}">&larr; Back to dashboard</a></p>
+</main>
+{% endblock %}

@@ -2,6 +2,13 @@
 {% block title %}Browse Jobs - Movers Connection{% endblock %}
 {% block main %}
 <main class="wide-card">
+  <section class="dashboard-section">
+    <div class="stat-highlight">
+      <span class="stat-highlight-number">{{ completed_jobs_count }}</span>
+      <span class="stat-highlight-label">Total Jobs Completed</span>
+    </div>
+    <p class="helper-link"><a href="{% url 'jobs:laborer_past' %}">View Past Jobs &rarr;</a></p>
+  </section>
   {% if invitations %}
     <section class="dashboard-section">
       <h2>Invitations ({{ invitations|length }})</h2>

@@ -1993,6 +1993,7 @@
         {% with url_name=request.resolver_match.url_name %}
         <a id="tour-nav-dashboard" href="{% url 'accounts:dashboard' %}" class="nav-link-btn{% if url_name == 'driver_dashboard' or url_name == 'laborer_dashboard' or url_name == 'admin_dashboard' %} active{% endif %}" aria-label="Dashboard">{% include "includes/icon-dashboard.svg" %}<span>Dashboard</span></a>
         <a id="tour-nav-coverage-map" href="{% url 'coverage:map' %}" class="nav-link-btn{% if url_name == 'map' %} active{% endif %}" aria-label="Coverage Map">{% include "includes/icon-target.svg" %}<span>Coverage Map</span></a>
+        <a href="{% url 'jobs:hub' %}" class="nav-link-btn{% if request.resolver_match.app_name == 'jobs' %} active{% endif %}" aria-label="Jobs">{% include "includes/icon-briefcase.svg" %}<span>Jobs</span></a>
         <a id="tour-nav-friends" href="{% url 'accounts:friends' %}" class="nav-link-btn{% if url_name == 'friends' %} active{% endif %}" aria-label="Friends">{% include "includes/icon-friends.svg" %}<span>Friends</span></a>
         <a id="tour-nav-community" href="{% url 'board:feed' %}" class="nav-link-btn{% if request.resolver_match.app_name == 'board' %} active{% endif %}" aria-label="Community">{% include "includes/icon-board.svg" %}<span>Community</span></a>
         {% if not laborer_locked %}<button type="button" id="nav-messages-toggle" class="nav-link-btn" aria-label="Messages">{% include "includes/icon-message.svg" %}<span>Messages</span></button>{% endif %}
@@ -2085,6 +2086,7 @@
       </div>
       <a href="{% url 'accounts:dashboard' %}" class="nav-drawer-link">{% include "includes/icon-dashboard.svg" %} Dashboard</a>
       <a href="{% url 'coverage:map' %}" class="nav-drawer-link">{% include "includes/icon-target.svg" %} Coverage Map</a>
+      <a href="{% url 'jobs:hub' %}" class="nav-drawer-link">{% include "includes/icon-briefcase.svg" %} Jobs</a>
       <a href="{% url 'accounts:friends' %}" class="nav-drawer-link">{% include "includes/icon-friends.svg" %} Friends</a>
       <a href="{% url 'board:feed' %}" class="nav-drawer-link">{% include "includes/icon-board.svg" %} Community</a>
       {% if not laborer_locked %}<button type="button" id="nav-drawer-messages-toggle" class="nav-drawer-link">{% include "includes/icon-message.svg" %} Messages</button>{% endif %}

@@ -2,14 +2,14 @@ import json
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import F, Q
+from django.db.models import Count, F, Q
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.html import format_html
 from django.views import View
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from django.views.generic import CreateView, DetailView, ListView, TemplateView, UpdateView
 
 from accounts.constants import US_STATE_CHOICES
 from accounts.models import Connection, DriverProfile, LaborerProfile, Notification, User
@@ -132,17 +132,33 @@ class DriverJobOwnerMixin(RoleRequiredMixin):
         return Job.objects.filter(driver_profile=self.request.user.driver_profile)
 
 
-class JobDetailView(DriverJobOwnerMixin, DetailView):
+class JobDetailView(LoginRequiredMixin, DetailView):
     model = Job
     template_name = "jobs/job_detail.html"
     context_object_name = "job"
 
+    def get_queryset(self):
+        return Job.objects.select_related("county", "driver_profile", "driver_profile__user")
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["applications"] = self.object.applications.select_related(
-            "laborer_profile", "laborer_profile__user"
+        job = self.object
+        user = self.request.user
+        is_owner = (
+            user.role == User.Role.DRIVER
+            and hasattr(user, "driver_profile")
+            and job.driver_profile_id == user.driver_profile.pk
         )
-        context["can_mark_complete"] = self.object.job_date <= timezone.now().date()
+        context["is_owner"] = is_owner
+        if is_owner:
+            context["applications"] = job.applications.select_related(
+                "laborer_profile", "laborer_profile__user"
+            )
+            context["can_mark_complete"] = job.job_date <= timezone.now().date()
+        elif user.role == User.Role.LABORER and hasattr(user, "laborer_profile"):
+            context["my_application"] = job.applications.filter(
+                laborer_profile=user.laborer_profile
+            ).first()
         return context
 
 
@@ -170,17 +186,82 @@ class JobDeleteView(DriverJobOwnerMixin, View):
         return redirect("accounts:dashboard")
 
 
+def driver_past_jobs_queryset(driver_profile):
+    today = timezone.now().date()
+    return (
+        Job.objects.filter(driver_profile=driver_profile)
+        .filter(Q(job_date__lt=today) | Q(status=Job.Status.COMPLETED))
+        .select_related("county")
+    )
+
+
+def laborer_past_jobs_queryset(laborer_profile):
+    today = timezone.now().date()
+    return (
+        Job.objects.filter(
+            applications__laborer_profile=laborer_profile,
+            applications__status=JobApplication.Status.ACCEPTED,
+        )
+        .filter(Q(job_date__lt=today) | Q(status=Job.Status.COMPLETED))
+        .select_related("county", "driver_profile")
+        .distinct()
+    )
+
+
+def job_hub_redirect(request):
+    if not request.user.is_authenticated:
+        return redirect("accounts:login")
+    if request.user.role == User.Role.DRIVER:
+        return redirect("jobs:driver_hub")
+    if request.user.role == User.Role.LABORER:
+        return redirect("jobs:browse")
+    return redirect("accounts:dashboard")
+
+
 class DriverPastJobListView(DriverJobOwnerMixin, ListView):
     template_name = "jobs/job_past.html"
     context_object_name = "jobs"
 
     def get_queryset(self):
+        return driver_past_jobs_queryset(self.request.user.driver_profile)
+
+
+class DriverJobHubView(DriverJobOwnerMixin, TemplateView):
+    template_name = "jobs/job_hub_driver.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        profile = self.request.user.driver_profile
         today = timezone.now().date()
-        return (
-            Job.objects.filter(driver_profile=self.request.user.driver_profile)
-            .filter(Q(job_date__lt=today) | Q(status=Job.Status.COMPLETED))
+        context["profile"] = profile
+        context["active_jobs"] = (
+            profile.jobs.filter(status=Job.Status.OPEN, job_date__gte=today)
             .select_related("county")
+            .annotate(application_count=Count("applications"))
         )
+        context["past_jobs"] = driver_past_jobs_queryset(profile)
+        context["completed_jobs_count"] = profile.jobs.filter(status=Job.Status.COMPLETED).count()
+        return context
+
+
+class LaborerPastJobListView(RoleRequiredMixin, ListView):
+    template_name = "jobs/job_past_laborer.html"
+    context_object_name = "jobs"
+    allowed_roles = (User.Role.LABORER,)
+
+    def get_queryset(self):
+        return laborer_past_jobs_queryset(self.request.user.laborer_profile)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        profile = self.request.user.laborer_profile
+        applications = JobApplication.objects.filter(laborer_profile=profile)
+        application_by_job = {app.job_id: app for app in applications}
+        jobs = list(context["jobs"])
+        for job in jobs:
+            job.my_application = application_by_job.get(job.id)
+        context["jobs"] = jobs
+        return context
 
 
 class JobMarkCompleteView(DriverJobOwnerMixin, View):
@@ -372,6 +453,9 @@ class LaborerJobListView(RoleRequiredMixin, ListView):
             source=JobApplication.Source.INVITED,
             status=JobApplication.Status.PENDING,
         ).select_related("job", "job__county", "job__driver_profile", "job__driver_profile__user")
+        context["completed_jobs_count"] = JobApplication.objects.filter(
+            laborer_profile=profile, status=JobApplication.Status.ACCEPTED, job__status=Job.Status.COMPLETED
+        ).count()
         return context
 
 
