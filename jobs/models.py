@@ -78,6 +78,15 @@ class JobApplication(models.Model):
     def __str__(self):
         return f"{self.laborer_profile} applied to {self.job}"
 
+    @property
+    def display_label(self):
+        """One unambiguous label instead of separately showing status and
+        source. While pending, the source is what's actionable ("Invited" vs
+        "Applied"); once responded to, the outcome is what matters."""
+        if self.status == self.Status.PENDING:
+            return self.get_source_display()
+        return self.get_status_display()
+
 
 RATING_CHOICES = [(i, str(i)) for i in range(1, 6)]
 

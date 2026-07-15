@@ -12,6 +12,7 @@
               <strong>{{ invitation.job.get_job_type_display }}</strong>
               <span class="job-card-date">{{ invitation.job.job_date|date:"M j, Y" }}</span>
             </div>
+            <span class="county-slot-badge county-slot-badge--muted">{{ invitation.display_label|upper }}</span>
             <p>{{ invitation.job.county.name }}, {{ invitation.job.county.state }}</p>
             <p>Invited by {{ invitation.job.driver_profile.company_name|default:invitation.job.driver_profile.user.email }}</p>
             <p>
@@ -62,7 +63,7 @@
           </p>
           {% if job.weight_lbs %}<p>Approx. {{ job.weight_lbs }} lbs</p>{% endif %}
           {% if job.my_application %}
-            <span class="county-slot-badge county-slot-badge--muted">{{ job.my_application.get_status_display|upper }}</span>
+            <span class="county-slot-badge county-slot-badge--muted">{{ job.my_application.display_label|upper }}</span>
             {% if job.my_application.status == "accepted" %}
               <div class="job-actions">
                 <button type="button" class="btn-primary btn-inline" data-open-conversation="{{ job.driver_profile.pk }}">Message &rarr;</button>

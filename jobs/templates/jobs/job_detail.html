@@ -46,12 +46,9 @@
           <div class="job-card">
             <div class="job-card-header">
               <strong>{{ application.laborer_profile.display_name|default:application.laborer_profile.user.email }}</strong>
-              <span class="county-slot-badge{% if application.status != "accepted" %} county-slot-badge--muted{% endif %}">{{ application.get_status_display|upper }}</span>
+              <span class="county-slot-badge{% if application.status != "accepted" %} county-slot-badge--muted{% endif %}">{{ application.display_label|upper }}</span>
             </div>
             <p><a class="helper-link" href="{% url 'accounts:laborer_profile_detail' application.laborer_profile.pk %}">View Profile &rarr;</a></p>
-            <p>
-              <span class="county-slot-badge county-slot-badge--muted">VIA {{ application.get_source_display|upper }}</span>
-            </p>
             <p>{{ application.laborer_profile.city }}{% if application.laborer_profile.city %}, {% endif %}{{ application.laborer_profile.state }}</p>
             <p>{{ application.laborer_profile.phone_number }}</p>
             <p>Applied {{ application.applied_at|date:"M j, Y" }}</p>
