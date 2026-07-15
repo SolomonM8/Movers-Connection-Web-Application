@@ -34,8 +34,10 @@ def get_or_create_conversation(driver_profile, laborer_profile):
     return conversation
 
 
-def add_system_message(conversation, body):
-    ConversationMessage.objects.create(conversation=conversation, is_system=True, body=body)
+def add_system_message(conversation, body, related_job=None):
+    ConversationMessage.objects.create(
+        conversation=conversation, is_system=True, body=body, related_job=related_job
+    )
 
 
 def notify_new_message(recipient, sender_display, url):
@@ -379,6 +381,7 @@ class ApplicationRespondView(DriverJobOwnerMixin, View):
             add_system_message(
                 conversation,
                 f"Job accepted: {job.get_job_type_display()} on {job.job_date} in {job.county}.",
+                related_job=job,
             )
             Notification.objects.create(
                 recipient=application.laborer_profile.user,
@@ -470,6 +473,9 @@ class InvitationRespondView(RoleRequiredMixin, View):
             source=JobApplication.Source.INVITED,
         )
         job = application.job
+        if application.status != JobApplication.Status.PENDING:
+            messages.info(request, "You've already responded to this invite.")
+            return redirect("jobs:browse")
         action = request.POST.get("action")
         if action == "accept":
             application.status = JobApplication.Status.ACCEPTED
@@ -479,6 +485,7 @@ class InvitationRespondView(RoleRequiredMixin, View):
             add_system_message(
                 conversation,
                 f"Invite accepted: {job.get_job_type_display()} on {job.job_date} in {job.county}.",
+                related_job=job,
             )
             Notification.objects.create(
                 recipient=job.driver_profile.user,
@@ -567,6 +574,7 @@ class JobInviteView(RoleRequiredMixin, View):
             add_system_message(
                 conversation,
                 f"New job invite: {job.get_job_type_display()} on {job.job_date} in {job.county}.",
+                related_job=job,
             )
             Notification.objects.create(
                 recipient=laborer_profile.user,
@@ -595,15 +603,34 @@ def get_conversation_for_user(request, conversation_pk):
     return conversation
 
 
-def serialize_conversation_message(message, request_user):
-    return {
+def serialize_conversation_message(message, request_user, conversation=None):
+    data = {
         "id": message.pk,
         "is_system": message.is_system,
         "is_self": bool(message.sender_id) and message.sender_id == request_user.id,
         "sender_email": message.sender.email if message.sender else None,
         "body": message.body,
         "created_at": message.created_at.isoformat(),
+        "job": None,
     }
+    if message.related_job_id and conversation is not None:
+        application = JobApplication.objects.filter(
+            job_id=message.related_job_id, laborer_profile=conversation.laborer_profile
+        ).first()
+        if application:
+            data["job"] = {
+                "id": message.related_job_id,
+                "application_id": application.pk,
+                "label": application.display_label,
+                "can_respond": (
+                    request_user.is_laborer
+                    and hasattr(request_user, "laborer_profile")
+                    and request_user.laborer_profile.pk == application.laborer_profile_id
+                    and application.status == JobApplication.Status.PENDING
+                    and application.source == JobApplication.Source.INVITED
+                ),
+            }
+    return data
 
 
 def serialize_conversation_row(conversation, other_profile, other_name, is_friend, job_id, last_message, unread_count):
@@ -839,7 +866,7 @@ class ConversationThreadAPIView(LoginRequiredMixin, View):
         job_id = markable_job_id_for_pair(conversation.driver_profile, conversation.laborer_profile)
         return JsonResponse(
             {
-                "messages": [serialize_conversation_message(m, request.user) for m in thread],
+                "messages": [serialize_conversation_message(m, request.user, conversation) for m in thread],
                 "job_id": job_id,
             }
         )
@@ -863,4 +890,4 @@ class ConversationThreadAPIView(LoginRequiredMixin, View):
         notify_new_message(
             recipient, sender_display, reverse("accounts:dashboard") + f"?open_chat={conversation.pk}"
         )
-        return JsonResponse({"message": serialize_conversation_message(message, request.user)})
+        return JsonResponse({"message": serialize_conversation_message(message, request.user, conversation)})

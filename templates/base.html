@@ -1231,6 +1231,25 @@
       font-size: 0.78rem;
       text-align: center;
     }
+    .message-bubble--system:has(.msg-widget-job-extra) {
+      border-radius: 12px;
+      text-align: left;
+      max-width: 100%;
+    }
+    .msg-widget-job-extra {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .msg-widget-job-extra .btn-primary,
+    .msg-widget-job-extra .btn-danger {
+      padding: 0.3rem 0.7rem;
+      font-size: 0.75rem;
+      margin: 0;
+      width: auto;
+    }
     .message-meta { margin: 0 0 0.2rem; font-size: 0.75rem; color: var(--color-muted); }
 
     .board-feed { display: flex; flex-direction: column; gap: 1rem; }
@@ -2479,7 +2498,22 @@
             msgs
               .map(function (m) {
                 if (m.is_system) {
-                  return '<div class="message-bubble--system">' + msgEscapeHtml(m.body) + "</div>";
+                  var jobExtra = "";
+                  if (m.job) {
+                    jobExtra += '<div class="msg-widget-job-extra">';
+                    if (m.job.can_respond) {
+                      jobExtra +=
+                        '<button type="button" class="btn-primary btn-inline msg-invite-respond" data-application-id="' +
+                        m.job.application_id +
+                        '" data-action="accept">Accept</button>' +
+                        '<button type="button" class="btn-danger btn-inline msg-invite-respond" data-application-id="' +
+                        m.job.application_id +
+                        '" data-action="decline">Decline</button>';
+                    }
+                    jobExtra +=
+                      '<a class="helper-link" href="/jobs/' + m.job.id + '/">View Job Details &rarr;</a></div>';
+                  }
+                  return '<div class="message-bubble--system">' + msgEscapeHtml(m.body) + jobExtra + "</div>";
                 }
                 return (
                   '<div class="message-bubble' +
@@ -2606,6 +2640,28 @@
             form.submit();
           });
         }
+
+        msgMessages.addEventListener("click", function (event) {
+          var btn = event.target.closest(".msg-invite-respond");
+          if (!btn) return;
+          var applicationId = btn.dataset.applicationId;
+          var action = btn.dataset.action;
+          var form = document.createElement("form");
+          form.method = "post";
+          form.action = "/jobs/applications/" + applicationId + "/respond-invite/";
+          var csrfField = document.createElement("input");
+          csrfField.type = "hidden";
+          csrfField.name = "csrfmiddlewaretoken";
+          csrfField.value = msgCsrf;
+          form.appendChild(csrfField);
+          var actionField = document.createElement("input");
+          actionField.type = "hidden";
+          actionField.name = "action";
+          actionField.value = action;
+          form.appendChild(actionField);
+          document.body.appendChild(form);
+          form.submit();
+        });
 
         document.addEventListener("click", function (event) {
           if (

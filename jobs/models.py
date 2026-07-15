@@ -186,6 +186,9 @@ class ConversationMessage(models.Model):
     body = models.TextField()
     is_system = models.BooleanField(default=False)
     is_read = models.BooleanField(default=False)
+    related_job = models.ForeignKey(
+        "jobs.Job", on_delete=models.SET_NULL, null=True, blank=True, related_name="conversation_messages"
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
