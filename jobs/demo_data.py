@@ -3,12 +3,15 @@ from decimal import Decimal
 
 from django.utils import timezone
 
-from accounts.models import Connection, DriverProfile, User
+from accounts.models import Connection, DriverProfile, LaborerProfile, User
 
 from .models import Conversation, ConversationMessage, Job
 
 DEMO_DRIVER_EMAIL = "demo-driver@themoversconnection.com"
 DEMO_COMPANY_NAME = "(Example) Ace Moving Co"
+
+DEMO_LABORER_EMAIL = "demo-laborer@themoversconnection.com"
+DEMO_LABORER_NAME = "(Example) Jordan the Mover"
 
 
 def get_or_create_demo_driver_profile():
@@ -25,6 +28,20 @@ def get_or_create_demo_driver_profile():
     if not profile.company_name:
         profile.company_name = DEMO_COMPANY_NAME
         profile.save(update_fields=["company_name"])
+    return profile
+
+
+def get_or_create_demo_laborer_profile():
+    user, created = User.objects.get_or_create(
+        email=DEMO_LABORER_EMAIL, defaults={"role": User.Role.LABORER, "is_active": True}
+    )
+    if created:
+        user.set_unusable_password()
+        user.save(update_fields=["password"])
+    profile, _ = LaborerProfile.objects.get_or_create(user=user)
+    if not profile.display_name:
+        profile.display_name = DEMO_LABORER_NAME
+        profile.save(update_fields=["display_name"])
     return profile
 
 
@@ -79,15 +96,32 @@ def ensure_demo_data_for_new_county(laborer_profile, county):
         )
 
 
-def cleanup_demo_data(laborer_profile):
-    """Called once all onboarding tours are done. Removes the temporary friend
-    connection + conversation; the shared demo Job is intentionally left alone."""
-    demo_driver_profile = DriverProfile.objects.filter(user__email=DEMO_DRIVER_EMAIL).first()
-    if demo_driver_profile is None:
-        return
-    Connection.objects.filter(
-        driver_profile=demo_driver_profile, laborer_profile=laborer_profile
-    ).delete()
-    Conversation.objects.filter(
-        driver_profile=demo_driver_profile, laborer_profile=laborer_profile
-    ).delete()
+def ensure_demo_data_for_new_driver(driver_profile):
+    """Gives a brand-new driver an example laborer contact, mirroring what a
+    brand-new laborer gets in ensure_demo_data_for_new_county. No job/application
+    involved here -- a driver has no jobs posted yet at signup time."""
+    demo_laborer_profile = get_or_create_demo_laborer_profile()
+    Connection.objects.get_or_create(
+        driver_profile=driver_profile,
+        laborer_profile=demo_laborer_profile,
+        defaults={"status": Connection.Status.ACCEPTED, "responded_at": timezone.now()},
+    )
+    conversation, created = Conversation.objects.get_or_create(
+        driver_profile=driver_profile, laborer_profile=demo_laborer_profile
+    )
+    if created:
+        ConversationMessage.objects.create(
+            conversation=conversation,
+            sender=demo_laborer_profile.user,
+            is_system=False,
+            body="Welcome to Movers Connection! Glad to have you on board.",
+        )
+        ConversationMessage.objects.create(
+            conversation=conversation,
+            sender=demo_laborer_profile.user,
+            is_system=False,
+            body=(
+                "This is what messaging looks like — laborers you invite or friend "
+                "will reach out the same way once you're connected with them."
+            ),
+        )

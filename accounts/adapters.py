@@ -49,4 +49,8 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
                 city=cleaned["city"],
                 state=cleaned["state"],
             )
+            if role == User.Role.DRIVER:
+                from jobs.demo_data import ensure_demo_data_for_new_driver
+
+                ensure_demo_data_for_new_driver(user.driver_profile)
         return user

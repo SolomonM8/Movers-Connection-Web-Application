@@ -52,6 +52,9 @@ class DriverSignUpView(CreateView):
     def form_valid(self, form):
         response = super().form_valid(form)
         login(self.request, self.object, backend="django.contrib.auth.backends.ModelBackend")
+        from jobs.demo_data import ensure_demo_data_for_new_driver
+
+        ensure_demo_data_for_new_driver(self.object.driver_profile)
         messages.info(
             self.request,
             "Welcome! Head to the Coverage Map and search an address to find labor groups near your next job.",
@@ -283,14 +286,6 @@ class MarkTourSeenView(LoginRequiredMixin, View):
         if not getattr(user, field_name):
             setattr(user, field_name, True)
             user.save(update_fields=[field_name])
-        if (
-            user.is_laborer
-            and hasattr(user, "laborer_profile")
-            and all(getattr(user, f) for f in self.TOUR_FIELD_BY_KEY.values())
-        ):
-            from jobs.demo_data import cleanup_demo_data
-
-            cleanup_demo_data(user.laborer_profile)
         return JsonResponse({"status": "ok"})
 
 
@@ -348,6 +343,39 @@ class FriendsListView(RoleRequiredMixin, TemplateView):
         context["outgoing_requests"] = qs.filter(
             status=Connection.Status.PENDING, requested_by=user
         )
+
+        from jobs.models import Conversation
+
+        if is_driver:
+            connected_ids = qs.values_list("laborer_profile_id", flat=True)
+            job_conversations = (
+                Conversation.objects.filter(driver_profile=user.driver_profile)
+                .exclude(laborer_profile_id__in=connected_ids)
+                .select_related("laborer_profile", "laborer_profile__user")
+            )
+            context["job_contacts"] = [
+                {
+                    "conversation": c,
+                    "profile": c.laborer_profile,
+                    "last_message": c.messages.order_by("-created_at").first(),
+                }
+                for c in job_conversations
+            ]
+        else:
+            connected_ids = qs.values_list("driver_profile_id", flat=True)
+            job_conversations = (
+                Conversation.objects.filter(laborer_profile=user.laborer_profile)
+                .exclude(driver_profile_id__in=connected_ids)
+                .select_related("driver_profile", "driver_profile__user")
+            )
+            context["job_contacts"] = [
+                {
+                    "conversation": c,
+                    "profile": c.driver_profile,
+                    "last_message": c.messages.order_by("-created_at").first(),
+                }
+                for c in job_conversations
+            ]
         return context
 
 

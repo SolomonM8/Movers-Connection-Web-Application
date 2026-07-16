@@ -587,21 +587,48 @@
     }
     .county-slot-badge--muted { background: var(--color-muted); }
 
-    .friend-list { display: flex; flex-direction: column; gap: 0.6rem; }
-    .friend-row {
-      display: flex;
-      align-items: center;
-      gap: 0.9rem;
-      padding: 0.75rem 1rem;
-      border: 1px solid var(--color-border);
-      border-radius: 12px;
-      background: #fff;
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1rem;
     }
-    a.friend-row { text-decoration: none; color: inherit; transition: background 0.15s ease; }
-    a.friend-row:hover { background: var(--color-primary-light); }
+    .contact-card {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      padding: 1.1rem;
+      border: 1px solid var(--color-border);
+      border-radius: 14px;
+      background: #fff;
+      transition: box-shadow 0.15s ease, transform 0.15s ease;
+    }
+    .contact-card:hover { box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08); transform: translateY(-2px); }
+    .contact-card-header { display: flex; align-items: center; gap: 0.8rem; }
+    .contact-card-name { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.3rem; }
+    .contact-card-name strong { color: var(--color-text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .contact-card-meta {
+      font-size: 0.85rem;
+      color: var(--color-muted);
+      margin: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .message-preview { font-size: 0.85rem; color: var(--color-muted); margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .message-preview--empty { font-style: italic; }
+    .message-time { font-size: 0.75rem; color: var(--color-muted); margin: 0; }
 
-    .friend-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.1rem; }
-    .friend-info strong { color: var(--color-text); }
+    .contact-card-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-top: auto; padding-top: 0.4rem; }
+    .contact-card-actions .btn-primary,
+    .contact-card-actions .btn-secondary,
+    .contact-card-actions .btn-danger {
+      width: auto;
+      margin: 0;
+      padding: 0.45rem 0.8rem;
+      font-size: 0.82rem;
+    }
+    .contact-card-actions form { margin: 0; }
+
     .friend-meta {
       font-size: 0.85rem;
       color: var(--color-muted);
@@ -609,14 +636,6 @@
       text-overflow: ellipsis;
       white-space: nowrap;
     }
-    .message-preview { font-size: 0.85rem; color: var(--color-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .message-preview--empty { font-style: italic; }
-    .message-time { flex-shrink: 0; font-size: 0.75rem; color: var(--color-muted); }
-
-    .friend-actions { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
-    .friend-actions .btn-primary,
-    .friend-actions .btn-danger,
-    .friend-actions form { margin: 0; }
 
     .county-slot-actions {
       display: flex;
@@ -2013,7 +2032,7 @@
         <a id="tour-nav-dashboard" href="{% url 'accounts:dashboard' %}" class="nav-link-btn{% if url_name == 'driver_dashboard' or url_name == 'laborer_dashboard' or url_name == 'admin_dashboard' %} active{% endif %}" aria-label="Dashboard">{% include "includes/icon-dashboard.svg" %}<span>Dashboard</span></a>
         <a id="tour-nav-coverage-map" href="{% url 'coverage:map' %}" class="nav-link-btn{% if url_name == 'map' %} active{% endif %}" aria-label="Coverage Map">{% include "includes/icon-target.svg" %}<span>Coverage Map</span></a>
         <a href="{% url 'jobs:hub' %}" class="nav-link-btn{% if request.resolver_match.app_name == 'jobs' %} active{% endif %}" aria-label="Jobs">{% include "includes/icon-briefcase.svg" %}<span>Jobs</span></a>
-        <a id="tour-nav-friends" href="{% url 'accounts:friends' %}" class="nav-link-btn{% if url_name == 'friends' %} active{% endif %}" aria-label="Friends">{% include "includes/icon-friends.svg" %}<span>Friends</span></a>
+        <a id="tour-nav-friends" href="{% url 'accounts:friends' %}" class="nav-link-btn{% if url_name == 'friends' %} active{% endif %}" aria-label="Contacts">{% include "includes/icon-friends.svg" %}<span>Contacts</span></a>
         <a id="tour-nav-community" href="{% url 'board:feed' %}" class="nav-link-btn{% if request.resolver_match.app_name == 'board' %} active{% endif %}" aria-label="Community">{% include "includes/icon-board.svg" %}<span>Community</span></a>
         {% if not laborer_locked %}<button type="button" id="nav-messages-toggle" class="nav-link-btn" aria-label="Messages">{% include "includes/icon-message.svg" %}<span>Messages</span></button>{% endif %}
         <div class="notification-bell">
@@ -2106,7 +2125,7 @@
       <a href="{% url 'accounts:dashboard' %}" class="nav-drawer-link">{% include "includes/icon-dashboard.svg" %} Dashboard</a>
       <a href="{% url 'coverage:map' %}" class="nav-drawer-link">{% include "includes/icon-target.svg" %} Coverage Map</a>
       <a href="{% url 'jobs:hub' %}" class="nav-drawer-link">{% include "includes/icon-briefcase.svg" %} Jobs</a>
-      <a href="{% url 'accounts:friends' %}" class="nav-drawer-link">{% include "includes/icon-friends.svg" %} Friends</a>
+      <a href="{% url 'accounts:friends' %}" class="nav-drawer-link">{% include "includes/icon-friends.svg" %} Contacts</a>
       <a href="{% url 'board:feed' %}" class="nav-drawer-link">{% include "includes/icon-board.svg" %} Community</a>
       {% if not laborer_locked %}<button type="button" id="nav-drawer-messages-toggle" class="nav-drawer-link">{% include "includes/icon-message.svg" %} Messages</button>{% endif %}
       <a href="{% url 'accounts:notifications' %}" class="nav-drawer-link">

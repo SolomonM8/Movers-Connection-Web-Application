@@ -1,23 +1,25 @@
 {% extends "base.html" %}
 {% load avatar_tags %}
-{% block title %}Friends - Movers Connection{% endblock %}
+{% block title %}Contacts - Movers Connection{% endblock %}
 {% block main %}
 <main class="wide-card">
-  <h1>Friends</h1>
+  <h1>Contacts</h1>
 
   {% if incoming_requests %}
     <section class="dashboard-section">
       <h2>Requests waiting on you</h2>
-      <div class="friend-list">
+      <div class="contact-grid">
         {% for connection in incoming_requests %}
           {% if is_driver %}{% with profile=connection.laborer_profile %}
-            <div class="friend-row">
-              {% avatar profile "lg" %}
-              <div class="friend-info">
-                <strong>{{ profile.display_name|default:profile.user.email }}</strong>
-                <span class="friend-meta">wants to be friends</span>
+            <div class="contact-card">
+              <div class="contact-card-header">
+                {% avatar profile "lg" %}
+                <div class="contact-card-name">
+                  <strong>{{ profile.display_name|default:profile.user.email }}</strong>
+                  <span class="county-slot-badge county-slot-badge--muted">WANTS TO CONNECT</span>
+                </div>
               </div>
-              <div class="friend-actions">
+              <div class="contact-card-actions">
                 <a class="btn-secondary btn-inline" href="{% url 'accounts:laborer_profile_detail' profile.pk %}">View Profile</a>
                 <form method="post" action="{% url 'accounts:accept_friend_request' connection.pk %}">
                   {% csrf_token %}
@@ -30,13 +32,15 @@
               </div>
             </div>
           {% endwith %}{% else %}{% with profile=connection.driver_profile %}
-            <div class="friend-row">
-              {% avatar profile "lg" %}
-              <div class="friend-info">
-                <strong>{{ profile.company_name|default:profile.user.email }}</strong>
-                <span class="friend-meta">wants to be friends</span>
+            <div class="contact-card">
+              <div class="contact-card-header">
+                {% avatar profile "lg" %}
+                <div class="contact-card-name">
+                  <strong>{{ profile.company_name|default:profile.user.email }}</strong>
+                  <span class="county-slot-badge county-slot-badge--muted">WANTS TO CONNECT</span>
+                </div>
               </div>
-              <div class="friend-actions">
+              <div class="contact-card-actions">
                 <form method="post" action="{% url 'accounts:accept_friend_request' connection.pk %}">
                   {% csrf_token %}
                   <button type="submit" class="btn-primary btn-inline">Accept</button>
@@ -56,16 +60,18 @@
   {% if outgoing_requests %}
     <section class="dashboard-section">
       <h2>Requests you've sent</h2>
-      <div class="friend-list">
+      <div class="contact-grid">
         {% for connection in outgoing_requests %}
           {% if is_driver %}{% with profile=connection.laborer_profile %}
-            <div class="friend-row">
-              {% avatar profile "lg" %}
-              <div class="friend-info">
-                <strong>{{ profile.display_name|default:profile.user.email }}</strong>
-                <span class="friend-meta">Pending</span>
+            <div class="contact-card">
+              <div class="contact-card-header">
+                {% avatar profile "lg" %}
+                <div class="contact-card-name">
+                  <strong>{{ profile.display_name|default:profile.user.email }}</strong>
+                  <span class="county-slot-badge county-slot-badge--muted">PENDING</span>
+                </div>
               </div>
-              <div class="friend-actions">
+              <div class="contact-card-actions">
                 <a class="btn-secondary btn-inline" href="{% url 'accounts:laborer_profile_detail' profile.pk %}">View Profile</a>
                 <form method="post" action="{% url 'accounts:decline_friend_request' connection.pk %}">
                   {% csrf_token %}
@@ -74,13 +80,15 @@
               </div>
             </div>
           {% endwith %}{% else %}{% with profile=connection.driver_profile %}
-            <div class="friend-row">
-              {% avatar profile "lg" %}
-              <div class="friend-info">
-                <strong>{{ profile.company_name|default:profile.user.email }}</strong>
-                <span class="friend-meta">Pending</span>
+            <div class="contact-card">
+              <div class="contact-card-header">
+                {% avatar profile "lg" %}
+                <div class="contact-card-name">
+                  <strong>{{ profile.company_name|default:profile.user.email }}</strong>
+                  <span class="county-slot-badge county-slot-badge--muted">PENDING</span>
+                </div>
               </div>
-              <div class="friend-actions">
+              <div class="contact-card-actions">
                 <form method="post" action="{% url 'accounts:decline_friend_request' connection.pk %}">
                   {% csrf_token %}
                   <button type="submit" class="btn-danger btn-inline">Cancel</button>
@@ -94,19 +102,22 @@
   {% endif %}
 
   <section class="dashboard-section">
-    {% if incoming_requests or outgoing_requests %}<h2>Friends</h2>{% endif %}
+    <h2>Friends</h2>
     {% if connections %}
-      <div class="friend-list">
+      <div class="contact-grid">
         {% for connection in connections %}
           {% if is_driver %}
             {% with profile=connection.laborer_profile %}
-              <div class="friend-row">
-                {% avatar profile "lg" %}
-                <div class="friend-info">
-                  <strong>{{ profile.display_name|default:profile.user.email }}</strong>
-                  <span class="friend-meta">{{ profile.city }}{% if profile.city %}, {% endif %}{{ profile.state }} &middot; {{ profile.phone_number }}</span>
+              <div class="contact-card">
+                <div class="contact-card-header">
+                  {% avatar profile "lg" %}
+                  <div class="contact-card-name">
+                    <strong>{{ profile.display_name|default:profile.user.email }}</strong>
+                    <span class="county-slot-badge">FRIEND</span>
+                  </div>
                 </div>
-                <div class="friend-actions">
+                <p class="contact-card-meta">{{ profile.city }}{% if profile.city %}, {% endif %}{{ profile.state }} &middot; {{ profile.phone_number }}</p>
+                <div class="contact-card-actions">
                   <a class="btn-secondary btn-inline" href="{% url 'accounts:laborer_profile_detail' profile.pk %}">View Profile</a>
                   <button type="button" class="btn-secondary btn-inline" data-open-conversation="{{ profile.pk }}">Message &rarr;</button>
                   <a class="btn-primary btn-inline" href="{% url 'jobs:invite' profile.pk %}">Invite to Job &rarr;</a>
@@ -119,13 +130,16 @@
             {% endwith %}
           {% else %}
             {% with profile=connection.driver_profile %}
-              <div class="friend-row">
-                {% avatar profile "lg" %}
-                <div class="friend-info">
-                  <strong>{{ profile.company_name|default:profile.user.email }}</strong>
-                  <span class="friend-meta">{{ profile.city }}{% if profile.city %}, {% endif %}{{ profile.state }} &middot; {{ profile.phone_number }}</span>
+              <div class="contact-card">
+                <div class="contact-card-header">
+                  {% avatar profile "lg" %}
+                  <div class="contact-card-name">
+                    <strong>{{ profile.company_name|default:profile.user.email }}</strong>
+                    <span class="county-slot-badge">FRIEND</span>
+                  </div>
                 </div>
-                <div class="friend-actions">
+                <p class="contact-card-meta">{{ profile.city }}{% if profile.city %}, {% endif %}{{ profile.state }} &middot; {{ profile.phone_number }}</p>
+                <div class="contact-card-actions">
                   <button type="button" class="btn-secondary btn-inline"{% if forloop.first %} id="tour-first-message-btn"{% endif %} data-open-conversation="{{ profile.pk }}">Message &rarr;</button>
                   <form method="post" action="{% url 'accounts:remove_friend' connection.pk %}">
                     {% csrf_token %}
@@ -137,12 +151,57 @@
           {% endif %}
         {% endfor %}
       </div>
-    {% elif not incoming_requests and not outgoing_requests %}
-      <p>You haven't added any friends yet. {% if is_driver %}Add laborers from the Coverage Map.{% else %}Add drivers from jobs you see in Browse Jobs.{% endif %}</p>
     {% else %}
-      <p>No friends yet.</p>
+      <p>No friends yet. {% if is_driver %}Add laborers from the Coverage Map.{% else %}Add drivers from jobs you see in Browse Jobs.{% endif %}</p>
     {% endif %}
   </section>
+
+  <section class="dashboard-section">
+    <h2>Contacts via Jobs</h2>
+    <p class="hero-subtitle-muted" style="margin:0 0 1rem;text-align:left;">People you've messaged through a job invite or application, but haven't added as a friend yet.</p>
+    {% if job_contacts %}
+      <div class="contact-grid">
+        {% for entry in job_contacts %}
+          {% with profile=entry.profile %}
+            <div class="contact-card">
+              <div class="contact-card-header">
+                {% avatar profile "lg" %}
+                <div class="contact-card-name">
+                  <strong>{{ profile.display_name|default:profile.company_name|default:profile.user.email }}</strong>
+                  <span class="county-slot-badge county-slot-badge--muted">MET VIA JOB</span>
+                </div>
+              </div>
+              {% if entry.last_message %}
+                <p class="message-preview">{{ entry.last_message.body|truncatechars:70 }}</p>
+                <p class="message-time">{{ entry.last_message.created_at|timesince }} ago</p>
+              {% else %}
+                <p class="message-preview message-preview--empty">No messages yet</p>
+              {% endif %}
+              <div class="contact-card-actions">
+                {% if is_driver %}
+                  <button type="button" class="btn-secondary btn-inline" data-open-conversation="{{ profile.pk }}">Message &rarr;</button>
+                  <a class="btn-secondary btn-inline" href="{% url 'accounts:laborer_profile_detail' profile.pk %}">View Profile</a>
+                  <form method="post" action="{% url 'accounts:add_laborer_friend' profile.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-primary btn-inline">Add as Friend</button>
+                  </form>
+                {% else %}
+                  <button type="button" class="btn-secondary btn-inline" data-open-conversation="{{ profile.pk }}">Message &rarr;</button>
+                  <form method="post" action="{% url 'accounts:add_driver_friend' profile.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-primary btn-inline">Add as Friend</button>
+                  </form>
+                {% endif %}
+              </div>
+            </div>
+          {% endwith %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>No job-based contacts yet.</p>
+    {% endif %}
+  </section>
+
   <p class="helper-link"><a href="{% url 'accounts:dashboard' %}">&larr; Back to dashboard</a></p>
 </main>
 
@@ -153,7 +212,7 @@
 document.addEventListener("DOMContentLoaded", function () {
   if (!window.driver || !window.driver.js) return;
   var steps = [
-    { element: ".friend-list", popover: { title: "Your friends", description: "Companies you've worked with (or that have friended you back) show up here." } },
+    { element: ".contact-grid", popover: { title: "Your contacts", description: "Companies you've worked with (or that have friended you back) show up here." } },
     { element: "#tour-first-message-btn", popover: { title: "Message a driver", description: "Click here to send a message any time — no need to wait for a new job." } }
   ].filter(function (step) {
     if (!step.element) return true;
