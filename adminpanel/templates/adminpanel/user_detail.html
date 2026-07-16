@@ -1,0 +1,78 @@
+{% extends "accounts/dashboard_base.html" %}
+{% block title %}{{ target_user.email }} - Admin{% endblock %}
+{% block dashboard_title %}{{ target_user.email }}{% endblock %}
+{% block dashboard_content %}
+<dl class="info-list">
+  <div><dt>Role</dt><dd>{{ target_user.get_role_display }}</dd></div>
+  <div><dt>Joined</dt><dd>{{ target_user.date_joined|date:"M j, Y" }}</dd></div>
+  <div><dt>Status</dt><dd>{% if target_user.is_banned %}<span class="badge-banned">BANNED</span> &mdash; {{ target_user.ban_reason }}{% else %}Active{% endif %}</dd></div>
+  {% if profile %}
+    <div><dt>Contact</dt><dd>{{ profile.phone_number|default:"Not set" }}</dd></div>
+    <div><dt>Location</dt><dd>{% if profile.city %}{{ profile.city }}, {% endif %}{{ profile.get_state_display|default:"Not set" }}</dd></div>
+    <div><dt>{% if target_user.role == "driver" %}Jobs Posted{% else %}Jobs Completed{% endif %}</dt><dd>{{ jobs_count }}</dd></div>
+  {% endif %}
+</dl>
+
+<div class="admin-nav-links">
+  <form method="post" action="{% url 'adminpanel:support_start' target_user.pk %}">
+    {% csrf_token %}
+    <button type="submit" class="btn-secondary btn-inline">Message this user</button>
+  </form>
+</div>
+
+<section class="dashboard-section">
+  <h2>Ban / Unban</h2>
+  {% if target_user.is_banned %}
+    <form method="post" action="{% url 'adminpanel:ban_user' target_user.pk %}">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="unban">
+      <button type="submit" class="btn-primary btn-inline">Unban this user</button>
+    </form>
+  {% else %}
+    <form method="post" action="{% url 'adminpanel:ban_user' target_user.pk %}">
+      {% csrf_token %}
+      {{ ban_form.ban_reason }}
+      <button type="submit" class="btn-danger btn-inline">Ban this user</button>
+    </form>
+  {% endif %}
+</section>
+
+<section class="dashboard-section">
+  <h2>Reports received ({{ reports_received|length }})</h2>
+  {% if reports_received %}
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead><tr><th>Reporter</th><th>Reason</th><th>Status</th><th>Date</th></tr></thead>
+        <tbody>
+          {% for report in reports_received %}
+            <tr><td>{{ report.reporter.email }}</td><td>{{ report.get_reason_display }}</td><td>{{ report.get_status_display }}</td><td>{{ report.created_at|date:"M j, Y" }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <p class="helper-link"><a href="{% url 'adminpanel:report_list' %}">View all reports &rarr;</a></p>
+  {% else %}
+    <p>No reports filed against this user.</p>
+  {% endif %}
+</section>
+
+<section class="dashboard-section">
+  <h2>Reports filed by this user ({{ reports_filed|length }})</h2>
+  {% if reports_filed %}
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead><tr><th>Reported user</th><th>Reason</th><th>Status</th><th>Date</th></tr></thead>
+        <tbody>
+          {% for report in reports_filed %}
+            <tr><td>{{ report.reported_user.email }}</td><td>{{ report.get_reason_display }}</td><td>{{ report.get_status_display }}</td><td>{{ report.created_at|date:"M j, Y" }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p>No reports filed by this user.</p>
+  {% endif %}
+</section>
+
+<p class="helper-link"><a href="{% url 'adminpanel:user_list' %}">&larr; Back to users</a></p>
+{% endblock %}

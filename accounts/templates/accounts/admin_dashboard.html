@@ -2,6 +2,23 @@
 {% block title %}Admin Dashboard - Movers Connection{% endblock %}
 {% block dashboard_title %}Admin Dashboard{% endblock %}
 {% block dashboard_content %}
-<p>Use the Django admin site to manage users, driver/company profiles, and laborer profiles.</p>
+<div class="admin-stat-grid">
+  <div class="admin-stat-card"><span class="stat-highlight-number">{{ stats.driver_count }}</span><br>Drivers</div>
+  <div class="admin-stat-card"><span class="stat-highlight-number">{{ stats.laborer_count }}</span><br>Laborers</div>
+  <div class="admin-stat-card"><span class="stat-highlight-number">{{ stats.open_jobs_count }}</span><br>Open Jobs</div>
+  <div class="admin-stat-card"><span class="stat-highlight-number">{{ stats.completed_jobs_count }}</span><br>Completed Jobs</div>
+  <div class="admin-stat-card"><span class="stat-highlight-number">{{ stats.connection_count }}</span><br>Connections</div>
+  <div class="admin-stat-card"><span class="stat-highlight-number">{{ stats.open_reports_count }}</span><br>Open Reports</div>
+  <div class="admin-stat-card"><span class="stat-highlight-number">{{ stats.open_bug_reports_count }}</span><br>Open Bug Reports</div>
+</div>
+
+<div class="admin-nav-links">
+  <a class="btn-secondary btn-inline" href="{% url 'adminpanel:user_list' %}">Users</a>
+  <a class="btn-secondary btn-inline" href="{% url 'adminpanel:job_list' %}">Jobs</a>
+  <a class="btn-secondary btn-inline" href="{% url 'adminpanel:report_list' %}">User Reports</a>
+  <a class="btn-secondary btn-inline" href="{% url 'adminpanel:bug_report_list' %}">Bug Reports</a>
+  <a class="btn-secondary btn-inline" href="{% url 'adminpanel:support_inbox' %}">Support Inbox</a>
+</div>
+
 <p><a href="/admin/">Go to Django Admin &rarr;</a></p>
 {% endblock %}

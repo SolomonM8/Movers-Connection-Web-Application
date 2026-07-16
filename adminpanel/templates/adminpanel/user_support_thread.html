@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Contact Support - Movers Connection{% endblock %}
+{% block main %}
+<main class="wide-card">
+  <h1>Contact Support</h1>
+  <div>
+    {% for message in message_list %}
+      <div class="support-message{% if message.is_from_admin %} support-message--admin{% else %} support-message--user{% endif %}">
+        <div>{{ message.body }}</div>
+        <div class="support-message-meta">{% if message.is_from_admin %}Movers Connection Support{% else %}You{% endif %} &middot; {{ message.created_at|date:"M j, g:i A" }}</div>
+      </div>
+    {% empty %}
+      <p>No messages yet. Send us a message below and we'll get back to you.</p>
+    {% endfor %}
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+    <textarea name="body" rows="3" placeholder="Write a message..." style="width:100%;" required></textarea>
+    <button type="submit" class="btn-primary btn-inline">Send</button>
+  </form>
+
+  <p class="helper-link"><a href="{% url 'accounts:dashboard' %}">&larr; Back to dashboard</a></p>
+</main>
+{% endblock %}

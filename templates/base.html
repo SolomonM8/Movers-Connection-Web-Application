@@ -1743,6 +1743,43 @@
     p.helper-link a { color: var(--color-primary); font-weight: 600; text-decoration: none; }
     p.helper-link a:hover { text-decoration: underline; }
 
+    .admin-table-wrap { overflow-x: auto; }
+    .admin-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    .admin-table th, .admin-table td {
+      padding: 0.6rem 0.7rem;
+      border-bottom: 1px solid var(--color-border);
+      text-align: left;
+      white-space: nowrap;
+    }
+    .admin-table th { color: var(--color-muted); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; }
+    .admin-table tr:last-child td { border-bottom: none; }
+    .admin-filter-bar { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; margin-bottom: 1rem; }
+    .admin-filter-bar select, .admin-filter-bar input[type="text"] {
+      padding: 0.45rem 0.6rem;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      font-size: 0.85rem;
+    }
+    .admin-stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .admin-stat-card {
+      padding: 1rem;
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      text-align: center;
+    }
+    .admin-stat-card .stat-highlight-number { font-size: 1.8rem; }
+    .admin-nav-links { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 1.5rem; }
+    .badge-banned { background: #c0362c; color: #fff; padding: 0.15rem 0.5rem; border-radius: 999px; font-size: 0.75rem; font-weight: 700; }
+    .support-message { padding: 0.6rem 0.9rem; border-radius: 12px; margin-bottom: 0.6rem; max-width: 70%; }
+    .support-message--admin { background: var(--color-primary-light); margin-left: auto; }
+    .support-message--user { background: #f0f0f0; }
+    .support-message-meta { font-size: 0.75rem; color: var(--color-muted); margin-top: 0.2rem; }
+
     /* Giant choice buttons used on the landing and role-choice pages */
     main.page-fill {
       display: flex;
@@ -2128,6 +2165,7 @@
               <strong>{{ nav_display_name }}</strong>
               <span>{{ user.email }}</span>
             </div>
+            <a href="{% url 'adminpanel:user_support_thread' %}" class="nav-drawer-link">Contact Support</a>
             <form action="{% url 'accounts:logout' %}" method="post" class="profile-dropdown-logout-form">
               {% csrf_token %}
               <button type="submit" class="nav-drawer-link"><span class="icon-flip">{% include "includes/icon-login.svg" %}</span> Log out</button>
@@ -2171,6 +2209,7 @@
         {% include "includes/icon-bell.svg" %} Notifications
         {% if unread_notification_count %}<span class="notification-badge">{{ unread_notification_count }}</span>{% endif %}
       </a>
+      <a href="{% url 'adminpanel:user_support_thread' %}" class="nav-drawer-link">Contact Support</a>
       <form action="{% url 'accounts:logout' %}" method="post" class="nav-drawer-logout">
         {% csrf_token %}
         <button type="submit" class="nav-drawer-link"><span class="icon-flip">{% include "includes/icon-login.svg" %}</span> Log out</button>
@@ -2318,7 +2357,10 @@
     </div>
     <p>&copy; {% now "Y" %} Four Pillars Moving. All rights reserved.</p>
     <p>Developed and managed by Four Pillars Moving.</p>
-    <p><a href="{% url 'privacy_policy' %}">Privacy Policy</a></p>
+    <p>
+      <a href="{% url 'privacy_policy' %}">Privacy Policy</a>
+      {% if user.is_authenticated %} &middot; <a href="{% url 'adminpanel:report_bug' %}?from={{ request.path|urlencode }}">Report a bug</a>{% endif %}
+    </p>
   </footer>
   {% if user.is_authenticated %}
   {% if not laborer_locked %}

@@ -32,6 +32,20 @@ class NoAutofocusAuthenticationForm(AuthenticationForm):
         super().__init__(*args, **kwargs)
         self.fields["username"].widget.attrs.pop("autofocus", None)
 
+    def clean(self):
+        # The default ModelBackend refuses to authenticate an inactive user
+        # before confirm_login_allowed() ever runs, so a banned user (who is
+        # also set inactive) would otherwise just get the generic "invalid
+        # login" error. Check ban status directly first so we can show a
+        # clearer message instead.
+        email = self.data.get("username", "").strip()
+        if email and User.objects.filter(email__iexact=email, is_banned=True).exists():
+            raise forms.ValidationError(
+                "This account has been suspended. Contact support if you think this is a mistake.",
+                code="banned",
+            )
+        return super().clean()
+
 
 class BaseSignUpForm(forms.ModelForm):
     role = None

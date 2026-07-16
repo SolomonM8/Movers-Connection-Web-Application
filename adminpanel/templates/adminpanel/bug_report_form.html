@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Report a Bug - Movers Connection{% endblock %}
+{% block main %}
+<main class="wide-card">
+  <h1>Report a Bug</h1>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn-primary btn-inline">Submit</button>
+  </form>
+  <p class="helper-link"><a href="{% url 'accounts:dashboard' %}">&larr; Cancel</a></p>
+</main>
+{% endblock %}

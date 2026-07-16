@@ -269,6 +269,13 @@ class AdminDashboardView(RoleRequiredMixin, TemplateView):
     template_name = "accounts/admin_dashboard.html"
     allowed_roles = (User.Role.ADMIN,)
 
+    def get_context_data(self, **kwargs):
+        from adminpanel.views import admin_stats
+
+        context = super().get_context_data(**kwargs)
+        context["stats"] = admin_stats()
+        return context
+
 
 class RegisterPushTokenView(LoginRequiredMixin, View):
     def post(self, request):

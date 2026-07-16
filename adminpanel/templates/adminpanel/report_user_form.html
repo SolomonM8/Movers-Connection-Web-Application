@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Report User - Movers Connection{% endblock %}
+{% block main %}
+<main class="wide-card">
+  <h1>Report {{ reported_user.email }}</h1>
+  <p class="hero-subtitle-muted" style="text-align:left;">This report is only visible to our admin team.</p>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn-primary btn-inline">Submit Report</button>
+  </form>
+  <p class="helper-link"><a href="{% url 'accounts:dashboard' %}">&larr; Cancel</a></p>
+</main>
+{% endblock %}

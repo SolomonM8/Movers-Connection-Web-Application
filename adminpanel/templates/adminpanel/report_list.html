@@ -1,0 +1,57 @@
+{% extends "accounts/dashboard_base.html" %}
+{% block title %}User Reports - Admin{% endblock %}
+{% block dashboard_title %}User Reports{% endblock %}
+{% block dashboard_content %}
+<form method="get" class="admin-filter-bar">
+  <select name="status">
+    <option value="">All statuses</option>
+    {% for value, label in status_choices %}
+      <option value="{{ value }}"{% if status_filter == value %} selected{% endif %}>{{ label }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit" class="btn-primary btn-inline">Filter</button>
+</form>
+
+<div class="admin-table-wrap">
+  <table class="admin-table">
+    <thead>
+      <tr><th>Reporter</th><th>Reported user</th><th>Reason</th><th>Details</th><th>Status</th><th>Date</th><th>Update</th></tr>
+    </thead>
+    <tbody>
+      {% for report in report_list %}
+        <tr>
+          <td><a href="{% url 'adminpanel:user_detail' report.reporter.pk %}">{{ report.reporter.email }}</a></td>
+          <td><a href="{% url 'adminpanel:user_detail' report.reported_user.pk %}">{{ report.reported_user.email }}</a></td>
+          <td>{{ report.get_reason_display }}</td>
+          <td>{{ report.details|default:"—"|truncatechars:60 }}</td>
+          <td>{{ report.get_status_display }}</td>
+          <td>{{ report.created_at|date:"M j, Y" }}</td>
+          <td>
+            <form method="post" action="{% url 'adminpanel:report_update_status' report.pk %}" style="display:inline-flex; gap:0.3rem;">
+              {% csrf_token %}
+              <select name="status">
+                {% for value, label in status_choices %}
+                  <option value="{{ value }}"{% if report.status == value %} selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+              </select>
+              <button type="submit" class="btn-secondary btn-inline">Save</button>
+            </form>
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="7">No reports.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% if is_paginated %}
+  <p class="helper-link">
+    {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}">&larr; Prev</a>{% endif %}
+    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+    {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}">Next &rarr;</a>{% endif %}
+  </p>
+{% endif %}
+
+<p class="helper-link"><a href="{% url 'accounts:admin_dashboard' %}">&larr; Back to admin dashboard</a></p>
+{% endblock %}

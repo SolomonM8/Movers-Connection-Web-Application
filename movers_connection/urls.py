@@ -18,6 +18,7 @@ urlpatterns = [
     path('coverage/', include('coverage.urls')),
     path('jobs/', include('jobs.urls')),
     path('board/', include('board.urls')),
+    path('admin-panel/', include('adminpanel.urls')),
     path('privacy/', TemplateView.as_view(template_name='privacy_policy.html'), name='privacy_policy'),
     # Only the socialaccount + provider URLs (signup, connections, google/facebook
     # login+callback) so allauth's own account app never competes with our

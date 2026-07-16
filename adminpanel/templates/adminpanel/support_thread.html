@@ -1,0 +1,23 @@
+{% extends "accounts/dashboard_base.html" %}
+{% block title %}Support: {{ thread.user.email }} - Admin{% endblock %}
+{% block dashboard_title %}Support: {{ thread.user.email }}{% endblock %}
+{% block dashboard_content %}
+<div>
+  {% for message in message_list %}
+    <div class="support-message{% if message.is_from_admin %} support-message--admin{% else %} support-message--user{% endif %}">
+      <div>{{ message.body }}</div>
+      <div class="support-message-meta">{% if message.is_from_admin %}Admin{% else %}{{ thread.user.email }}{% endif %} &middot; {{ message.created_at|date:"M j, g:i A" }}</div>
+    </div>
+  {% empty %}
+    <p>No messages yet.</p>
+  {% endfor %}
+</div>
+
+<form method="post">
+  {% csrf_token %}
+  <textarea name="body" rows="3" placeholder="Write a reply..." style="width:100%;" required></textarea>
+  <button type="submit" class="btn-primary btn-inline">Send</button>
+</form>
+
+<p class="helper-link"><a href="{% url 'adminpanel:support_inbox' %}">&larr; Back to inbox</a></p>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "accounts/dashboard_base.html" %}
+{% block title %}Support Inbox - Admin{% endblock %}
+{% block dashboard_title %}Support Inbox{% endblock %}
+{% block dashboard_content %}
+<div class="admin-table-wrap">
+  <table class="admin-table">
+    <thead><tr><th>User</th><th>Last message</th><th>Unread</th><th></th></tr></thead>
+    <tbody>
+      {% for thread in thread_list %}
+        <tr>
+          <td>{{ thread.user.email }}</td>
+          <td>{% if thread.last_message %}{{ thread.last_message.body|truncatechars:60 }}{% else %}No messages yet{% endif %}</td>
+          <td>{% if thread.unread_count %}<span class="badge-banned">{{ thread.unread_count }}</span>{% else %}0{% endif %}</td>
+          <td><a class="btn-secondary btn-inline" href="{% url 'adminpanel:support_thread' thread.pk %}">Open</a></td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="4">No support threads yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<p class="helper-link"><a href="{% url 'accounts:admin_dashboard' %}">&larr; Back to admin dashboard</a></p>
+{% endblock %}

@@ -38,6 +38,9 @@
 
   {% include "accounts/includes/rating_summary.html" %}
 
-  <p class="helper-link"><a href="{% url 'accounts:dashboard' %}">&larr; Back to dashboard</a></p>
+  <p class="helper-link">
+    <a href="{% url 'accounts:dashboard' %}">&larr; Back to dashboard</a>
+    {% if profile.user != request.user %} &middot; <a href="{% url 'adminpanel:report_user' profile.user.pk %}">Report User</a>{% endif %}
+  </p>
 </main>
 {% endblock %}
