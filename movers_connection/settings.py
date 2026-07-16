@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'coverage',
     'jobs',
     'board',
+    'adminpanel',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',

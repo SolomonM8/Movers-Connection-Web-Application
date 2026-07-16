@@ -52,6 +52,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     has_seen_service_area_tour = models.BooleanField(default=False)
     has_seen_browse_jobs_tour = models.BooleanField(default=False)
     has_seen_friends_tour = models.BooleanField(default=False)
+    is_banned = models.BooleanField(default=False)
+    ban_reason = models.TextField(blank=True)
+    banned_at = models.DateTimeField(null=True, blank=True)
 
     objects = UserManager()
 

@@ -26,6 +26,7 @@ urlpatterns = [
     path("push/register/", views.RegisterPushTokenView.as_view(), name="register_push_token"),
     path("tour/seen/", views.MarkTourSeenView.as_view(), name="mark_tour_seen"),
     path("laborer/<int:laborer_pk>/", views.LaborerProfileDetailView.as_view(), name="laborer_profile_detail"),
+    path("driver/<int:driver_pk>/", views.DriverProfileDetailView.as_view(), name="driver_profile_detail"),
     path("notifications/", views.NotificationListView.as_view(), name="notifications"),
     path(
         "notifications/mark-read/",

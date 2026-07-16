@@ -223,6 +223,18 @@ class LaborerProfileDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
+class DriverProfileDetailView(LoginRequiredMixin, DetailView):
+    model = DriverProfile
+    pk_url_kwarg = "driver_pk"
+    template_name = "accounts/driver_profile_detail.html"
+    context_object_name = "profile"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["jobs_posted_count"] = self.object.jobs.count()
+        return context
+
+
 class DriverProfileEditView(RoleRequiredMixin, UpdateView):
     form_class = DriverProfileEditForm
     template_name = "accounts/driver_profile_edit.html"

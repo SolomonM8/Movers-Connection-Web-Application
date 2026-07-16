@@ -149,6 +149,7 @@
                 </div>
                 <p class="contact-card-meta">{{ profile.city }}{% if profile.city %}, {% endif %}{{ profile.state }} &middot; {{ profile.phone_number }}</p>
                 <div class="contact-card-actions">
+                  <a class="btn-secondary btn-inline" href="{% url 'accounts:driver_profile_detail' profile.pk %}">View Profile</a>
                   <button type="button" class="btn-secondary btn-inline"{% if forloop.first %} id="tour-first-message-btn"{% endif %} data-open-conversation="{{ profile.pk }}">Message &rarr;</button>
                   <form method="post" action="{% url 'accounts:remove_friend' connection.pk %}">
                     {% csrf_token %}
@@ -196,6 +197,7 @@
                   </form>
                 {% else %}
                   <button type="button" class="btn-secondary btn-inline" data-open-conversation="{{ profile.pk }}">Message &rarr;</button>
+                  <a class="btn-secondary btn-inline" href="{% url 'accounts:driver_profile_detail' profile.pk %}">View Profile</a>
                   <form method="post" action="{% url 'accounts:add_driver_friend' profile.pk %}">
                     {% csrf_token %}
                     <button type="submit" class="btn-primary btn-inline">Add as Friend</button>
