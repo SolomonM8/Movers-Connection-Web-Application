@@ -101,7 +101,16 @@
     </section>
   {% endif %}
 
-  <section class="dashboard-section">
+  <div class="contact-tabs">
+    <button type="button" class="contact-tab{% if default_contact_tab == 'friends' %} active{% endif %}" data-tab="friends">
+      Friends{% if friends_unread_count %} <span class="contact-tab-badge">{{ friends_unread_count }}</span>{% endif %}
+    </button>
+    <button type="button" class="contact-tab{% if default_contact_tab == 'job-contacts' %} active{% endif %}" data-tab="job-contacts">
+      Contacts via Jobs{% if job_contacts_unread_count %} <span class="contact-tab-badge">{{ job_contacts_unread_count }}</span>{% endif %}
+    </button>
+  </div>
+
+  <section class="dashboard-section contact-tab-panel{% if default_contact_tab != 'friends' %} hidden{% endif %}" data-panel="friends">
     <h2>Friends</h2>
     {% if connections %}
       <div class="contact-grid">
@@ -156,7 +165,7 @@
     {% endif %}
   </section>
 
-  <section class="dashboard-section">
+  <section class="dashboard-section contact-tab-panel{% if default_contact_tab != 'job-contacts' %} hidden{% endif %}" data-panel="job-contacts">
     <h2>Contacts via Jobs</h2>
     <p class="hero-subtitle-muted" style="margin:0 0 1rem;text-align:left;">People you've messaged through a job invite or application, but haven't added as a friend yet.</p>
     {% if job_contacts %}
@@ -167,7 +176,7 @@
               <div class="contact-card-header">
                 {% avatar profile "lg" %}
                 <div class="contact-card-name">
-                  <strong>{{ profile.display_name|default:profile.company_name|default:profile.user.email }}</strong>
+                  <strong>{{ entry.name }}</strong>
                   <span class="county-slot-badge county-slot-badge--muted">MET VIA JOB</span>
                 </div>
               </div>
@@ -205,6 +214,19 @@
   <p class="helper-link"><a href="{% url 'accounts:dashboard' %}">&larr; Back to dashboard</a></p>
 </main>
 
+<script>
+document.querySelectorAll(".contact-tab").forEach(function (tab) {
+  tab.addEventListener("click", function () {
+    document.querySelectorAll(".contact-tab").forEach(function (t) { t.classList.remove("active"); });
+    tab.classList.add("active");
+    var target = tab.dataset.tab;
+    document.querySelectorAll(".contact-tab-panel").forEach(function (panel) {
+      panel.classList.toggle("hidden", panel.dataset.panel !== target);
+    });
+  });
+});
+</script>
+
 {% if not is_driver and not user.has_seen_friends_tour %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.css">
 <script src="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.js.iife.js"></script>
@@ -212,7 +234,7 @@
 document.addEventListener("DOMContentLoaded", function () {
   if (!window.driver || !window.driver.js) return;
   var steps = [
-    { element: ".contact-grid", popover: { title: "Your contacts", description: "Companies you've worked with (or that have friended you back) show up here." } },
+    { element: "[data-panel='friends'] .contact-grid", popover: { title: "Your contacts", description: "Companies you've worked with (or that have friended you back) show up here." } },
     { element: "#tour-first-message-btn", popover: { title: "Message a driver", description: "Click here to send a message any time — no need to wait for a new job." } }
   ].filter(function (step) {
     if (!step.element) return true;

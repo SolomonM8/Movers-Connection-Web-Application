@@ -344,8 +344,11 @@ class FriendsListView(RoleRequiredMixin, TemplateView):
             status=Connection.Status.PENDING, requested_by=user
         )
 
-        from jobs.models import Conversation
+        from jobs.models import Conversation, ConversationMessage
 
+        accepted_ids = context["connections"].values_list(
+            "laborer_profile_id" if is_driver else "driver_profile_id", flat=True
+        )
         if is_driver:
             connected_ids = qs.values_list("laborer_profile_id", flat=True)
             job_conversations = (
@@ -357,10 +360,20 @@ class FriendsListView(RoleRequiredMixin, TemplateView):
                 {
                     "conversation": c,
                     "profile": c.laborer_profile,
+                    "name": c.laborer_profile.display_name or c.laborer_profile.user.email,
                     "last_message": c.messages.order_by("-created_at").first(),
                 }
                 for c in job_conversations
             ]
+            unread = ConversationMessage.objects.filter(
+                conversation__driver_profile=user.driver_profile, is_read=False
+            ).exclude(sender=user)
+            context["friends_unread_count"] = unread.filter(
+                conversation__laborer_profile_id__in=accepted_ids
+            ).count()
+            context["job_contacts_unread_count"] = unread.exclude(
+                conversation__laborer_profile_id__in=accepted_ids
+            ).count()
         else:
             connected_ids = qs.values_list("driver_profile_id", flat=True)
             job_conversations = (
@@ -372,10 +385,26 @@ class FriendsListView(RoleRequiredMixin, TemplateView):
                 {
                     "conversation": c,
                     "profile": c.driver_profile,
+                    "name": c.driver_profile.company_name or c.driver_profile.user.email,
                     "last_message": c.messages.order_by("-created_at").first(),
                 }
                 for c in job_conversations
             ]
+            unread = ConversationMessage.objects.filter(
+                conversation__laborer_profile=user.laborer_profile, is_read=False
+            ).exclude(sender=user)
+            context["friends_unread_count"] = unread.filter(
+                conversation__driver_profile_id__in=accepted_ids
+            ).count()
+            context["job_contacts_unread_count"] = unread.exclude(
+                conversation__driver_profile_id__in=accepted_ids
+            ).count()
+
+        context["default_contact_tab"] = (
+            "job-contacts"
+            if context["job_contacts_unread_count"] > context["friends_unread_count"]
+            else "friends"
+        )
         return context
 
 
